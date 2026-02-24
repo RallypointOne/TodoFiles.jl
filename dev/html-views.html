@@ -260,6 +260,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#group-by-project" id="toc-group-by-project" class="nav-link" data-scroll-target="#group-by-project">Group by project</a></li>
   <li><a href="#group-by-context" id="toc-group-by-context" class="nav-link" data-scroll-target="#group-by-context">Group by context</a></li>
   </ul></li>
+  <li><a href="#ganttview" id="toc-ganttview" class="nav-link" data-scroll-target="#ganttview">GanttView</a></li>
   <li><a href="#the-html_view-convenience-function" id="toc-the-html_view-convenience-function" class="nav-link" data-scroll-target="#the-html_view-convenience-function">The <code>html_view</code> Convenience Function</a></li>
   </ul></li>
   </ul>
@@ -289,17 +290,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="html-views" class="level1 unnumbered">
 <h1 class="unnumbered">HTML Views</h1>
-<p>TodoFiles provides three HTML views for rich display of todo lists in Jupyter and Pluto notebooks. Each view renders via <code>show(io, MIME"text/html"(), ...)</code>, so simply returning a view object in a notebook cell will display it.</p>
+<p>TodoFiles provides four HTML views for rich display of todo lists in Jupyter and Pluto notebooks. Each view renders via <code>show(io, MIME"text/html"(), ...)</code>, so simply returning a view object in a notebook cell will display it.</p>
 <section id="setup" class="level2">
 <h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <p>Let’s create a sample <code>TodoFile</code> to demonstrate each view:</p>
 <div id="4" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>todos <span class="op">=</span> [</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Call Mom @phone +Family"</span>; priority<span class="op">=</span><span class="ch">'A'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">15</span>)),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Buy groceries @store +Errands"</span>; priority<span class="op">=</span><span class="ch">'B'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">20</span>)),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Write report @computer +Work due:2024-02-01"</span>; priority<span class="op">=</span><span class="ch">'A'</span>),</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Call Mom @phone +Family"</span>; priority<span class="op">=</span><span class="ch">'A'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">15</span>), metadata<span class="op">=</span><span class="fu">Dict</span>(<span class="st">"due"</span> <span class="op">=&gt;</span> <span class="st">"2024-01-20"</span>)),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Buy groceries @store +Errands"</span>; priority<span class="op">=</span><span class="ch">'B'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">20</span>), metadata<span class="op">=</span><span class="fu">Dict</span>(<span class="st">"due"</span> <span class="op">=&gt;</span> <span class="st">"2024-01-25"</span>)),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Write report @computer +Work"</span>; priority<span class="op">=</span><span class="ch">'A'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">10</span>), metadata<span class="op">=</span><span class="fu">Dict</span>(<span class="st">"due"</span> <span class="op">=&gt;</span> <span class="st">"2024-02-01"</span>)),</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Schedule dentist @phone +Health"</span>; priority<span class="op">=</span><span class="ch">'C'</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Pay bills"</span>; completed<span class="op">=</span><span class="cn">true</span>, completion_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">16</span>)),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Pay bills"</span>; completed<span class="op">=</span><span class="cn">true</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">10</span>), completion_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">16</span>)),</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Clean garage +Home"</span>),</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
@@ -333,7 +334,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
 </div>
 </div>
 </section>
@@ -369,7 +382,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
 </div>
 </div>
 <p>This is also the default HTML display for any <code>TodoFile</code>:</p>
@@ -402,7 +427,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
 </div>
 </div>
 </section>
@@ -438,6 +475,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
 </style><div class="todo-container">
 <table class="todo-table caption-top table table-sm table-striped small">
 <thead>
@@ -455,7 +504,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td></td>
 <td><span class="todo-priority todo-priority-a">A</span></td>
 <td>Call Mom</td>
-<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></td>
+<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></td>
 <td class="todo-date">2024-01-15</td>
 <td class="todo-date"></td>
 </tr>
@@ -463,7 +512,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td></td>
 <td><span class="todo-priority todo-priority-b">B</span></td>
 <td>Buy groceries</td>
-<td><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></td>
+<td><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></td>
 <td class="todo-date">2024-01-20</td>
 <td class="todo-date"></td>
 </tr>
@@ -472,7 +521,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><span class="todo-priority todo-priority-a">A</span></td>
 <td>Write report</td>
 <td><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></td>
-<td class="todo-date"></td>
+<td class="todo-date">2024-01-10</td>
 <td class="todo-date"></td>
 </tr>
 <tr class="even">
@@ -488,7 +537,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td></td>
 <td>Pay bills</td>
 <td></td>
-<td class="todo-date"></td>
+<td class="todo-date">2024-01-10</td>
 <td class="todo-date">2024-01-16</td>
 </tr>
 <tr class="even">
@@ -537,7 +586,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">A</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">B</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div></div><div class="todo-kanban-col"><h3 class="anchored">C</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(none)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">A</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">B</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">C</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(none)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
 </div>
 </div>
 <section id="group-by-completion-status" class="level3">
@@ -571,7 +632,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Done</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Pending</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Done</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Pending</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
 </div>
 </div>
 </section>
@@ -607,7 +680,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Errands</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Family</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Health</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Home</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Work</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no project)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Errands</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Family</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Health</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Home</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Work</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no project)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div></div></div>
 </div>
 </div>
 </section>
@@ -642,48 +727,124 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">computer</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">phone</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">store</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no context)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">computer</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">phone</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">store</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no context)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
 </div>
 </div>
 </section>
+</section>
+<section id="ganttview" class="level2">
+<h2 class="anchored" data-anchor-id="ganttview">GanttView</h2>
+<p><code>GanttView</code> renders tasks as horizontal bars on a timeline. Each task needs a <code>creation_date</code> (start) and either a <code>due</code> metadata key or <code>completion_date</code> (end) to appear on the chart. Tasks without both dates are silently excluded.</p>
+<div id="20" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GanttView</span>(tf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<style>
+.todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
+.todo-list { list-style: none; padding: 0; margin: 0; }
+.todo-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.todo-card.todo-done { opacity: 0.6; }
+.todo-checkbox { width: 18px; height: 18px; border: 2px solid #999; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.todo-card.todo-done .todo-checkbox { background: #4caf50; border-color: #4caf50; color: #fff; }
+.todo-desc { flex: 1; }
+.todo-card.todo-done .todo-desc { text-decoration: line-through; color: #888; }
+.todo-priority { display: inline-block; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
+.todo-priority-a { background: #e53935; }
+.todo-priority-b { background: #fb8c00; }
+.todo-priority-c { background: #fdd835; color: #333; }
+.todo-priority-other { background: #90a4ae; }
+.todo-pill { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
+.todo-ctx { background: #e3f2fd; color: #1565c0; }
+.todo-prj { background: #e8f5e9; color: #2e7d32; }
+.todo-meta { background: #f3e5f5; color: #6a1b9a; }
+.todo-date { color: #888; font-size: 12px; white-space: nowrap; }
+.todo-table { border-collapse: collapse; width: 100%; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+.todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
+.todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+.todo-kanban-col .todo-card { font-size: 13px; }
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container">
+<table class="todo-gantt caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th class="todo-gantt-label" data-quarto-table-cell-role="th">Task</th>
+<th data-quarto-table-cell-role="th">Timeline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td class="todo-gantt-label"><span class="todo-priority todo-priority-a">A</span> Call Mom</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-a" style="left:22.73%;width:22.73%" title="2024-01-15 → 2024-01-20">
+
+</div>
+</div></td>
+</tr>
+<tr class="even">
+<td class="todo-gantt-label"><span class="todo-priority todo-priority-b">B</span> Buy groceries</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-b" style="left:45.45%;width:22.73%" title="2024-01-20 → 2024-01-25">
+
+</div>
+</div></td>
+</tr>
+<tr class="odd">
+<td class="todo-gantt-label"><span class="todo-priority todo-priority-a">A</span> Write report</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-a" style="left:0.0%;width:100.0%" title="2024-01-10 → 2024-02-01">
+
+</div>
+</div></td>
+</tr>
+<tr class="even">
+<td class="todo-gantt-label">Pay bills</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-other todo-gantt-bar-done" style="left:0.0%;width:27.27%" title="2024-01-10 → 2024-01-16">
+
+</div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<div class="todo-gantt-dates"><span>2024-01-10</span><span>2024-02-01</span></div></div>
+</div>
+</div>
+<p>Bars are colored by priority and completed tasks are shown with reduced opacity.</p>
 </section>
 <section id="the-html_view-convenience-function" class="level2">
 <h2 class="anchored" data-anchor-id="the-html_view-convenience-function">The <code>html_view</code> Convenience Function</h2>
 <p><code>html_view</code> is a single entry point that returns the appropriate view type:</p>
-<div id="20" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(tf)  <span class="co"># ListView (default)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<style>
-.todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
-.todo-list { list-style: none; padding: 0; margin: 0; }
-.todo-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-.todo-card.todo-done { opacity: 0.6; }
-.todo-checkbox { width: 18px; height: 18px; border: 2px solid #999; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.todo-card.todo-done .todo-checkbox { background: #4caf50; border-color: #4caf50; color: #fff; }
-.todo-desc { flex: 1; }
-.todo-card.todo-done .todo-desc { text-decoration: line-through; color: #888; }
-.todo-priority { display: inline-block; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
-.todo-priority-a { background: #e53935; }
-.todo-priority-b { background: #fb8c00; }
-.todo-priority-c { background: #fdd835; color: #333; }
-.todo-priority-other { background: #90a4ae; }
-.todo-pill { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
-.todo-ctx { background: #e3f2fd; color: #1565c0; }
-.todo-prj { background: #e8f5e9; color: #2e7d32; }
-.todo-meta { background: #f3e5f5; color: #6a1b9a; }
-.todo-date { color: #888; font-size: 12px; white-space: nowrap; }
-.todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
-.todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-.todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
-.todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
-.todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
-.todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
-</div>
-</div>
 <div id="22" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(tf; view<span class="op">=:</span>table)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(tf)  <span class="co"># ListView (default)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <style>
 .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
@@ -711,6 +872,62 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
+</div>
+</div>
+<div id="24" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(tf; view<span class="op">=:</span>table)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<style>
+.todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
+.todo-list { list-style: none; padding: 0; margin: 0; }
+.todo-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.todo-card.todo-done { opacity: 0.6; }
+.todo-checkbox { width: 18px; height: 18px; border: 2px solid #999; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.todo-card.todo-done .todo-checkbox { background: #4caf50; border-color: #4caf50; color: #fff; }
+.todo-desc { flex: 1; }
+.todo-card.todo-done .todo-desc { text-decoration: line-through; color: #888; }
+.todo-priority { display: inline-block; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
+.todo-priority-a { background: #e53935; }
+.todo-priority-b { background: #fb8c00; }
+.todo-priority-c { background: #fdd835; color: #333; }
+.todo-priority-other { background: #90a4ae; }
+.todo-pill { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
+.todo-ctx { background: #e3f2fd; color: #1565c0; }
+.todo-prj { background: #e8f5e9; color: #2e7d32; }
+.todo-meta { background: #f3e5f5; color: #6a1b9a; }
+.todo-date { color: #888; font-size: 12px; white-space: nowrap; }
+.todo-table { border-collapse: collapse; width: 100%; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+.todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
+.todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+.todo-kanban-col .todo-card { font-size: 13px; }
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
 </style><div class="todo-container">
 <table class="todo-table caption-top table table-sm table-striped small">
 <thead>
@@ -728,7 +945,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td></td>
 <td><span class="todo-priority todo-priority-a">A</span></td>
 <td>Call Mom</td>
-<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></td>
+<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></td>
 <td class="todo-date">2024-01-15</td>
 <td class="todo-date"></td>
 </tr>
@@ -736,7 +953,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td></td>
 <td><span class="todo-priority todo-priority-b">B</span></td>
 <td>Buy groceries</td>
-<td><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></td>
+<td><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></td>
 <td class="todo-date">2024-01-20</td>
 <td class="todo-date"></td>
 </tr>
@@ -745,7 +962,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><span class="todo-priority todo-priority-a">A</span></td>
 <td>Write report</td>
 <td><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></td>
-<td class="todo-date"></td>
+<td class="todo-date">2024-01-10</td>
 <td class="todo-date"></td>
 </tr>
 <tr class="even">
@@ -761,7 +978,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td></td>
 <td>Pay bills</td>
 <td></td>
-<td class="todo-date"></td>
+<td class="todo-date">2024-01-10</td>
 <td class="todo-date">2024-01-16</td>
 </tr>
 <tr class="even">
@@ -777,8 +994,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="24" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(tf; view<span class="op">=:</span>kanban, group_by<span class="op">=:</span>projects)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="26" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(tf; view<span class="op">=:</span>kanban, group_by<span class="op">=:</span>projects)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <style>
 .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
@@ -806,7 +1023,110 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
 .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
 .todo-kanban-col .todo-card { font-size: 13px; }
-</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Errands</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Family</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Health</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Home</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Work</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no project)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div></div></div>
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Errands</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Family</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Health</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Home</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Work</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no project)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div></div></div>
+</div>
+</div>
+<div id="28" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(tf; view<span class="op">=:</span>gantt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<style>
+.todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
+.todo-list { list-style: none; padding: 0; margin: 0; }
+.todo-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.todo-card.todo-done { opacity: 0.6; }
+.todo-checkbox { width: 18px; height: 18px; border: 2px solid #999; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.todo-card.todo-done .todo-checkbox { background: #4caf50; border-color: #4caf50; color: #fff; }
+.todo-desc { flex: 1; }
+.todo-card.todo-done .todo-desc { text-decoration: line-through; color: #888; }
+.todo-priority { display: inline-block; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
+.todo-priority-a { background: #e53935; }
+.todo-priority-b { background: #fb8c00; }
+.todo-priority-c { background: #fdd835; color: #333; }
+.todo-priority-other { background: #90a4ae; }
+.todo-pill { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
+.todo-ctx { background: #e3f2fd; color: #1565c0; }
+.todo-prj { background: #e8f5e9; color: #2e7d32; }
+.todo-meta { background: #f3e5f5; color: #6a1b9a; }
+.todo-date { color: #888; font-size: 12px; white-space: nowrap; }
+.todo-table { border-collapse: collapse; width: 100%; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+.todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
+.todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+.todo-kanban-col .todo-card { font-size: 13px; }
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+</style><div class="todo-container">
+<table class="todo-gantt caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th class="todo-gantt-label" data-quarto-table-cell-role="th">Task</th>
+<th data-quarto-table-cell-role="th">Timeline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td class="todo-gantt-label"><span class="todo-priority todo-priority-a">A</span> Call Mom</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-a" style="left:22.73%;width:22.73%" title="2024-01-15 → 2024-01-20">
+
+</div>
+</div></td>
+</tr>
+<tr class="even">
+<td class="todo-gantt-label"><span class="todo-priority todo-priority-b">B</span> Buy groceries</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-b" style="left:45.45%;width:22.73%" title="2024-01-20 → 2024-01-25">
+
+</div>
+</div></td>
+</tr>
+<tr class="odd">
+<td class="todo-gantt-label"><span class="todo-priority todo-priority-a">A</span> Write report</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-a" style="left:0.0%;width:100.0%" title="2024-01-10 → 2024-02-01">
+
+</div>
+</div></td>
+</tr>
+<tr class="even">
+<td class="todo-gantt-label">Pay bills</td>
+<td><div class="todo-gantt-track">
+<div class="todo-gantt-bar todo-gantt-bar-other todo-gantt-bar-done" style="left:0.0%;width:27.27%" title="2024-01-10 → 2024-01-16">
+
+</div>
+</div></td>
+</tr>
+</tbody>
+</table>
+<div class="todo-gantt-dates"><span>2024-01-10</span><span>2024-02-01</span></div></div>
 </div>
 </div>
 
