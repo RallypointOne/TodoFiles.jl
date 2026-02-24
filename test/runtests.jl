@@ -10,6 +10,9 @@ using Test
         @test t.completion_date === nothing
         @test t.creation_date === nothing
         @test t.description == "Call Mom"
+        @test t.contexts == []
+        @test t.projects == []
+        @test t.metadata == Dict()
     end
 
     @testset "parse task with priority" begin
@@ -58,28 +61,35 @@ using Test
 
     @testset "contexts" begin
         t = parse_todo("Call Mom @phone @home")
-        @test contexts(t) == ["phone", "home"]
+        @test t.description == "Call Mom"
+        @test t.contexts == ["phone", "home"]
+        @test t.contexts == ["phone", "home"]
     end
 
     @testset "projects" begin
         t = parse_todo("Call Mom +Family +Health")
-        @test projects(t) == ["Family", "Health"]
+        @test t.description == "Call Mom"
+        @test t.projects == ["Family", "Health"]
+        @test t.projects == ["Family", "Health"]
     end
 
     @testset "metadata" begin
         t = parse_todo("Call Mom due:2024-01-20 effort:low")
-        m = metadata(t)
+        @test t.description == "Call Mom"
+        m = t.metadata
         @test m["due"] == "2024-01-20"
         @test m["effort"] == "low"
+        @test t.metadata == Dict("due" => "2024-01-20", "effort" => "low")
     end
 
     @testset "contexts, projects, and metadata together" begin
         t = parse_todo("(A) 2024-01-15 Call Mom +Family @phone due:2024-01-20")
         @test t.priority == 'A'
         @test t.creation_date == Date(2024, 1, 15)
-        @test contexts(t) == ["phone"]
-        @test projects(t) == ["Family"]
-        @test metadata(t)["due"] == "2024-01-20"
+        @test t.description == "Call Mom"
+        @test t.contexts == ["phone"]
+        @test t.projects == ["Family"]
+        @test t.metadata["due"] == "2024-01-20"
     end
 
     @testset "write_todo roundtrip" begin
@@ -141,11 +151,30 @@ using Test
         @test t.description == "Call Mom"
     end
 
+    @testset "Todo constructor extracts tags from description" begin
+        t = Todo("Call Mom @phone +Family due:2024-01-20")
+        @test t.description == "Call Mom"
+        @test t.contexts == ["phone"]
+        @test t.projects == ["Family"]
+        @test t.metadata == Dict("due" => "2024-01-20")
+    end
+
+    @testset "Todo constructor with explicit tags overrides extraction" begin
+        t = Todo("Call Mom @phone"; contexts=["work"])
+        @test t.description == "Call Mom"
+        @test t.contexts == ["work"]
+    end
+
     @testset "equality" begin
         t1 = parse_todo("(A) Call Mom")
         t2 = parse_todo("(A) Call Mom")
         @test t1 == t2
         t3 = parse_todo("(B) Call Mom")
         @test t1 != t3
+    end
+
+    @testset "canonical write order" begin
+        t = parse_todo("(A) Call Mom +Family @phone due:2024-01-20")
+        @test write_todo(t) == "(A) Call Mom @phone +Family due:2024-01-20"
     end
 end
