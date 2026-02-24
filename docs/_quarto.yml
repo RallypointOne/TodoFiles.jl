@@ -26,6 +26,7 @@ book:
       chapters:
         - index.qmd
         - getting-started.qmd
+        - html-views.qmd
     - part: "API"
       chapters:
         - api.qmd

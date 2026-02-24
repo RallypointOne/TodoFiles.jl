@@ -1,0 +1,99 @@
+---
+title: "HTML Views"
+engine: julia
+---
+
+# HTML Views {.unnumbered}
+
+```{julia}
+#| echo: false
+#| output: false
+using TodoFiles, Dates
+```
+
+TodoFiles provides three HTML views for rich display of todo lists in Jupyter and Pluto notebooks. Each view renders via `show(io, MIME"text/html"(), ...)`, so simply returning a view object in a notebook cell will display it.
+
+## Setup
+
+Let's create a sample `TodoFile` to demonstrate each view:
+
+```{julia}
+todos = [
+    Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15)),
+    Todo("Buy groceries @store +Errands"; priority='B', creation_date=Date(2024, 1, 20)),
+    Todo("Write report @computer +Work due:2024-02-01"; priority='A'),
+    Todo("Schedule dentist @phone +Health"; priority='C'),
+    Todo("Pay bills"; completed=true, completion_date=Date(2024, 1, 16)),
+    Todo("Clean garage +Home"),
+]
+
+path = tempname()
+write_todos(path, todos)
+tf = TodoFile(path)
+```
+
+## ListView
+
+`ListView` renders each task as a card with checkboxes, priority badges, and colored tag pills:
+
+```{julia}
+ListView(tf)
+```
+
+This is also the default HTML display for any `TodoFile`:
+
+```{julia}
+tf  # same as ListView(tf)
+```
+
+## TableView
+
+`TableView` renders tasks as a data table with columns for status, priority, description, tags, and dates:
+
+```{julia}
+TableView(tf)
+```
+
+## KanbanView
+
+`KanbanView` displays tasks grouped into columns. The default grouping is by `:priority`:
+
+```{julia}
+KanbanView(tf)
+```
+
+### Group by completion status
+
+```{julia}
+KanbanView(tf, :completed)
+```
+
+### Group by project
+
+Tasks with multiple projects appear in each relevant column:
+
+```{julia}
+KanbanView(tf, :projects)
+```
+
+### Group by context
+
+```{julia}
+KanbanView(tf, :contexts)
+```
+
+## The `html_view` Convenience Function
+
+`html_view` is a single entry point that returns the appropriate view type:
+
+```{julia}
+html_view(tf)  # ListView (default)
+```
+
+```{julia}
+html_view(tf; view=:table)
+```
+
+```{julia}
+html_view(tf; view=:kanban, group_by=:projects)
+```

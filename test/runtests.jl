@@ -289,4 +289,99 @@ using Test
             end
         end
     end
+
+    @testset "HTML Views" begin
+        todos = [
+            Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15)),
+            Todo("Pay bills"; completed=true, completion_date=Date(2024, 1, 16)),
+            Todo("Buy groceries @store +Errands"),
+        ]
+
+        mktempdir() do dir
+            filepath = joinpath(dir, "todo.txt")
+            write_todos(filepath, todos)
+            tf = TodoFile(filepath)
+
+            @testset "ListView" begin
+                lv = ListView(tf)
+                @test sprint(show, lv) == "ListView(3 tasks)"
+                html = sprint(show, MIME("text/html"), lv)
+                @test contains(html, "todo-container")
+                @test contains(html, "todo-card")
+                @test contains(html, "Call Mom")
+                @test contains(html, "Pay bills")
+                @test contains(html, "todo-done")
+                @test contains(html, "@phone")
+                @test contains(html, "+Family")
+                @test contains(html, "todo-priority-a")
+            end
+
+            @testset "TableView" begin
+                tv = TableView(tf)
+                @test sprint(show, tv) == "TableView(3 tasks)"
+                html = sprint(show, MIME("text/html"), tv)
+                @test contains(html, "todo-table")
+                @test contains(html, "<th>Description</th>")
+                @test contains(html, "Call Mom")
+                @test contains(html, "2024-01-15")
+                @test contains(html, "2024-01-16")
+            end
+
+            @testset "KanbanView" begin
+                kv = KanbanView(tf, :priority)
+                @test sprint(show, kv) == "KanbanView(3 tasks, group_by=:priority)"
+                html = sprint(show, MIME("text/html"), kv)
+                @test contains(html, "todo-kanban")
+                @test contains(html, "todo-kanban-col")
+                @test contains(html, "(none)")
+
+                kv2 = KanbanView(tf)
+                @test kv2.group_by == :priority
+
+                kv3 = KanbanView(tf, :completed)
+                html3 = sprint(show, MIME("text/html"), kv3)
+                @test contains(html3, "Pending")
+                @test contains(html3, "Done")
+
+                kv4 = KanbanView(tf, :projects)
+                html4 = sprint(show, MIME("text/html"), kv4)
+                @test contains(html4, "Family")
+                @test contains(html4, "Errands")
+                @test contains(html4, "(no project)")
+
+                kv5 = KanbanView(tf, :contexts)
+                html5 = sprint(show, MIME("text/html"), kv5)
+                @test contains(html5, "phone")
+                @test contains(html5, "store")
+                @test contains(html5, "(no context)")
+            end
+
+            @testset "TodoFile HTML show delegates to ListView" begin
+                html_tf = sprint(show, MIME("text/html"), tf)
+                html_lv = sprint(show, MIME("text/html"), ListView(tf))
+                @test html_tf == html_lv
+            end
+
+            @testset "html_view convenience function" begin
+                @test html_view(tf) isa ListView
+                @test html_view(tf; view=:list) isa ListView
+                @test html_view(tf; view=:table) isa TableView
+                @test html_view(tf; view=:kanban) isa KanbanView
+                @test html_view(tf; view=:kanban).group_by == :priority
+                @test html_view(tf; view=:kanban, group_by=:projects).group_by == :projects
+                @test_throws ErrorException html_view(tf; view=:invalid)
+            end
+
+            @testset "HTML escaping" begin
+                escaped_todos = [Todo("Buy <milk> & \"eggs\"")]
+                write_todos(filepath, escaped_todos)
+                tf2 = TodoFile(filepath)
+                html = sprint(show, MIME("text/html"), ListView(tf2))
+                @test contains(html, "&lt;milk&gt;")
+                @test contains(html, "&amp;")
+                @test contains(html, "&quot;eggs&quot;")
+                @test !contains(html, "<milk>")
+            end
+        end
+    end
 end

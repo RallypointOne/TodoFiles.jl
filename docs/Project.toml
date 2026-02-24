@@ -1,4 +1,5 @@
 [deps]
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-TodoFiles = "358ed29a-d93c-4fe8-8ea3-c6948dc61de3"
 LocalCoverage = "5f6e1e16-694c-5876-87ef-16b5274f298e"
+Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+TodoFiles = "358ed29a-d93c-4fe8-8ea3-c6948dc61de3"

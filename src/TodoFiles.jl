@@ -3,7 +3,8 @@ module TodoFiles
 using Dates
 using Tables
 
-export Todo, TodoFile, parse_todo, parse_todos, write_todo, write_todos, read_todos
+export Todo, TodoFile, parse_todo, parse_todos, write_todo, write_todos, read_todos,
+       ListView, TableView, KanbanView, html_view
 
 #--------------------------------------------------------------------------------# Helpers
 function _extract_tags(description::AbstractString)
@@ -339,5 +340,243 @@ Tables.schema(::TodoFile) = Tables.Schema(
 Tables.columnnames(::Todo) = fieldnames(Todo)
 Tables.getcolumn(t::Todo, nm::Symbol) = getfield(t, nm)
 Tables.getcolumn(t::Todo, i::Int) = getfield(t, i)
+
+#--------------------------------------------------------------------------------# HTML Helpers
+_html_escape(s::AbstractString) = replace(s, "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;")
+
+function _todo_css()
+    """
+    <style>
+    .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
+    .todo-list { list-style: none; padding: 0; margin: 0; }
+    .todo-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+    .todo-card.todo-done { opacity: 0.6; }
+    .todo-checkbox { width: 18px; height: 18px; border: 2px solid #999; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .todo-card.todo-done .todo-checkbox { background: #4caf50; border-color: #4caf50; color: #fff; }
+    .todo-desc { flex: 1; }
+    .todo-card.todo-done .todo-desc { text-decoration: line-through; color: #888; }
+    .todo-priority { display: inline-block; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
+    .todo-priority-a { background: #e53935; }
+    .todo-priority-b { background: #fb8c00; }
+    .todo-priority-c { background: #fdd835; color: #333; }
+    .todo-priority-other { background: #90a4ae; }
+    .todo-pill { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
+    .todo-ctx { background: #e3f2fd; color: #1565c0; }
+    .todo-prj { background: #e8f5e9; color: #2e7d32; }
+    .todo-meta { background: #f3e5f5; color: #6a1b9a; }
+    .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
+    .todo-table { border-collapse: collapse; width: 100%; }
+    .todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+    .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+    .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
+    .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+    .todo-kanban-col .todo-card { font-size: 13px; }
+    </style>"""
+end
+
+function _priority_html(p::Union{Char, Nothing})
+    isnothing(p) && return ""
+    cls = if p == 'A'; "todo-priority-a"
+    elseif p == 'B'; "todo-priority-b"
+    elseif p == 'C'; "todo-priority-c"
+    else; "todo-priority-other"
+    end
+    """<span class="todo-priority $cls">$(_html_escape(string(p)))</span>"""
+end
+
+function _tags_html(t::Todo)
+    parts = String[]
+    for c in t.contexts
+        push!(parts, """<span class="todo-pill todo-ctx">@$(_html_escape(c))</span>""")
+    end
+    for p in t.projects
+        push!(parts, """<span class="todo-pill todo-prj">+$(_html_escape(p))</span>""")
+    end
+    for (k, v) in sort(collect(t.metadata))
+        push!(parts, """<span class="todo-pill todo-meta">$(_html_escape(k)):$(_html_escape(v))</span>""")
+    end
+    join(parts)
+end
+
+function _description_html(t::Todo)
+    done_cls = t.completed ? " todo-done" : ""
+    check = t.completed ? "&#10003;" : ""
+    """<div class="todo-card$done_cls"><span class="todo-checkbox">$check</span><span class="todo-desc">$(_html_escape(t.description))</span>$(_priority_html(t.priority))$(_tags_html(t))</div>"""
+end
+
+_date_str(d::Union{Date, Nothing}) = isnothing(d) ? "" : string(d)
+
+function _group_keys(t::Todo, group_by::Symbol)
+    if group_by == :priority
+        return isnothing(t.priority) ? ["(none)"] : [string(t.priority)]
+    elseif group_by == :completed
+        return t.completed ? ["Done"] : ["Pending"]
+    elseif group_by == :projects
+        return isempty(t.projects) ? ["(no project)"] : t.projects
+    elseif group_by == :contexts
+        return isempty(t.contexts) ? ["(no context)"] : t.contexts
+    else
+        error("Invalid group_by: $group_by. Use :priority, :completed, :projects, or :contexts.")
+    end
+end
+
+function _kanban_groups(tf::TodoFile, group_by::Symbol)
+    groups = Dict{String, Vector{Todo}}()
+    for t in tf
+        for key in _group_keys(t, group_by)
+            push!(get!(Vector{Todo}, groups, key), t)
+        end
+    end
+    # Sort: special "(none)"/"(no ...)" keys go last
+    pairs = collect(groups)
+    sort!(pairs, by = p -> (startswith(p.first, "(") ? 1 : 0, p.first))
+    return pairs
+end
+
+#--------------------------------------------------------------------------------# HTML Views
+"""
+    ListView
+
+A card-style HTML list view of a [`TodoFile`](@ref). Display in Jupyter/Pluto notebooks
+via their rich HTML rendering.
+
+### Examples
+```julia
+julia> tf = TodoFile("todo.txt")
+
+julia> ListView(tf)
+ListView(3 tasks)
+```
+"""
+struct ListView
+    todofile::TodoFile
+end
+
+"""
+    TableView
+
+A tabular HTML view of a [`TodoFile`](@ref).
+
+### Examples
+```julia
+julia> tf = TodoFile("todo.txt")
+
+julia> TableView(tf)
+TableView(3 tasks)
+```
+"""
+struct TableView
+    todofile::TodoFile
+end
+
+"""
+    KanbanView
+
+A kanban board HTML view of a [`TodoFile`](@ref), grouped by a specified field.
+
+### Examples
+```julia
+julia> tf = TodoFile("todo.txt")
+
+julia> KanbanView(tf, :priority)
+KanbanView(3 tasks, group_by=:priority)
+
+julia> KanbanView(tf)  # defaults to :priority
+KanbanView(3 tasks, group_by=:priority)
+```
+"""
+struct KanbanView
+    todofile::TodoFile
+    group_by::Symbol
+end
+KanbanView(tf::TodoFile) = KanbanView(tf, :priority)
+
+# Plain-text show
+Base.show(io::IO, v::ListView) = print(io, "ListView($(length(v.todofile)) tasks)")
+Base.show(io::IO, v::TableView) = print(io, "TableView($(length(v.todofile)) tasks)")
+Base.show(io::IO, v::KanbanView) = print(io, "KanbanView($(length(v.todofile)) tasks, group_by=:$(v.group_by))")
+
+# HTML show — ListView
+function Base.show(io::IO, ::MIME"text/html", v::ListView)
+    print(io, _todo_css())
+    print(io, """<div class="todo-container"><div class="todo-list">""")
+    for t in v.todofile
+        print(io, _description_html(t))
+    end
+    print(io, "</div></div>")
+end
+
+# HTML show — TableView
+function Base.show(io::IO, ::MIME"text/html", v::TableView)
+    print(io, _todo_css())
+    print(io, """<div class="todo-container"><table class="todo-table">""")
+    print(io, "<thead><tr><th>Done</th><th>Priority</th><th>Description</th><th>Tags</th><th>Created</th><th>Completed</th></tr></thead><tbody>")
+    for t in v.todofile
+        check = t.completed ? "&#10003;" : ""
+        pri = isnothing(t.priority) ? "" : _priority_html(t.priority)
+        print(io, "<tr>")
+        print(io, "<td>$check</td>")
+        print(io, "<td>$pri</td>")
+        print(io, "<td>$(_html_escape(t.description))</td>")
+        print(io, "<td>$(_tags_html(t))</td>")
+        print(io, """<td class="todo-date">$(_date_str(t.creation_date))</td>""")
+        print(io, """<td class="todo-date">$(_date_str(t.completion_date))</td>""")
+        print(io, "</tr>")
+    end
+    print(io, "</tbody></table></div>")
+end
+
+# HTML show — KanbanView
+function Base.show(io::IO, ::MIME"text/html", v::KanbanView)
+    print(io, _todo_css())
+    print(io, """<div class="todo-container"><div class="todo-kanban">""")
+    for (label, todos) in _kanban_groups(v.todofile, v.group_by)
+        print(io, """<div class="todo-kanban-col"><h3>$(_html_escape(label))</h3>""")
+        for t in todos
+            print(io, _description_html(t))
+        end
+        print(io, "</div>")
+    end
+    print(io, "</div></div>")
+end
+
+# Default HTML for TodoFile delegates to ListView
+function Base.show(io::IO, mime::MIME"text/html", tf::TodoFile)
+    show(io, mime, ListView(tf))
+end
+
+"""
+    html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)
+
+Create an HTML view of a [`TodoFile`](@ref) for rich display in notebooks.
+
+Returns a [`ListView`](@ref), [`TableView`](@ref), or [`KanbanView`](@ref).
+
+### Examples
+```julia
+julia> tf = TodoFile("todo.txt")
+
+julia> html_view(tf)
+ListView(3 tasks)
+
+julia> html_view(tf; view=:table)
+TableView(3 tasks)
+
+julia> html_view(tf; view=:kanban, group_by=:projects)
+KanbanView(3 tasks, group_by=:projects)
+```
+"""
+function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)
+    if view == :list
+        return ListView(tf)
+    elseif view == :table
+        return TableView(tf)
+    elseif view == :kanban
+        return KanbanView(tf, group_by)
+    else
+        error("Invalid view: $view. Use :list, :table, or :kanban.")
+    end
+end
 
 end # module
