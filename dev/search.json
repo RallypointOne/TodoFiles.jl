@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "TodoFiles.jl",
     "section": "",
-    "text": "Overview\nWelcome to the documentation for TodoFiles.jl.\nTodoFiles.jl is a Julia package for reading and writing the Todo.txt format.",
+    "text": "Installation\nTodoFiles.jl is a Julia package for reading and writing the Todo.txt format. It parses todo.txt files into structured Todo objects with direct access to priorities, dates, contexts (@tag), projects (+tag), and metadata (key:value pairs).",
     "crumbs": [
       "Docs",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>TodoFiles.jl</span>"
@@ -14,8 +14,8 @@
     "objectID": "index.html#installation",
     "href": "index.html#installation",
     "title": "TodoFiles.jl",
-    "section": "Installation",
-    "text": "Installation\nusing Pkg\nPkg.add(\"TodoFiles\")",
+    "section": "",
+    "text": "using Pkg\nPkg.add(\"TodoFiles\")",
     "crumbs": [
       "Docs",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>TodoFiles.jl</span>"
@@ -26,7 +26,7 @@
     "href": "index.html#quickstart",
     "title": "TodoFiles.jl",
     "section": "Quickstart",
-    "text": "Quickstart\n\nprintln(\"Hello, World!\")\n\nHello, World!",
+    "text": "Quickstart\n\nusing TodoFiles, Dates\n\n# Parse a single task\nt = parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\")\n\n\nPrecompiling packages...\n    896.5 ms  ✓ QuartoNotebookWorkerTablesExt (serial)\n  1 dependency successfully precompiled in 1 seconds\n\n\n\n\nTodo: (A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\n\n\n\n# Access fields directly\nt.priority, t.contexts, t.projects, t.metadata\n\n('A', [\"phone\"], [\"Family\"], Dict(\"due\" =&gt; \"2024-01-20\"))\n\n\n\n# Construct a Todo with keyword arguments -- tags are auto-extracted from the description\nt2 = Todo(\"Buy groceries @store +Errands\"; priority='B', creation_date=Date(2024, 1, 15))\n\nTodo: (B) 2024-01-15 Buy groceries @store +Errands\n\n\n\n# Roundtrip: write back to Todo.txt format\nwrite_todo(t2)\n\n\"(B) 2024-01-15 Buy groceries @store +Errands\"\n\n\n\n# Parse and write multiple tasks\ntext = \"\"\"\n(A) Call Mom @phone\n(B) 2024-01-15 Buy groceries @store +Errands\nx 2024-01-16 2024-01-15 Pay bills\n\"\"\"\n\ntodos = parse_todos(text)\n\n3-element Vector{Todo}:\n Todo: (A) Call Mom @phone\n Todo: (B) 2024-01-15 Buy groceries @store +Errands\n Todo: x 2024-01-16 2024-01-15 Pay bills\n\n\n\nprint(write_todos(todos))\n\n(A) Call Mom @phone\n(B) 2024-01-15 Buy groceries @store +Errands\nx 2024-01-16 2024-01-15 Pay bills",
     "crumbs": [
       "Docs",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>TodoFiles.jl</span>"
@@ -37,32 +37,76 @@
     "href": "getting-started.html",
     "title": "Getting Started",
     "section": "",
-    "text": "Basic Usage",
+    "text": "Getting Started",
     "crumbs": [
       "Docs",
-      "Getting Started"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
     ]
   },
   {
-    "objectID": "getting-started.html#basic-usage",
-    "href": "getting-started.html#basic-usage",
+    "objectID": "getting-started.html#the-todo.txt-format",
+    "href": "getting-started.html#the-todo.txt-format",
     "title": "Getting Started",
-    "section": "",
-    "text": "using TodoFiles",
+    "section": "The Todo.txt Format",
+    "text": "The Todo.txt Format\nTodo.txt is a plain-text format for managing tasks. Each line represents one task with an optional structure:\nx (A) 2024-01-16 2024-01-15 Description @context +project key:value\n│  │       │          │          │           │        │        │\n│  │       │          │          │           │        │        └─ metadata\n│  │       │          │          │           │        └─ project tag\n│  │       │          │          └─ description   └─ context tag\n│  │       │          └─ creation date\n│  │       └─ completion date\n│  └─ priority (A-Z)\n└─ completion marker\nAll parts are optional except the description.",
     "crumbs": [
       "Docs",
-      "Getting Started"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
     ]
   },
   {
-    "objectID": "getting-started.html#examples",
-    "href": "getting-started.html#examples",
+    "objectID": "getting-started.html#parsing-tasks",
+    "href": "getting-started.html#parsing-tasks",
     "title": "Getting Started",
-    "section": "Examples",
-    "text": "Examples\nTODO: Add examples here.",
+    "section": "Parsing Tasks",
+    "text": "Parsing Tasks\nUse parse_todo to parse a single line and parse_todos for multiple lines:\n\nt = parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\")\n\nTodo: (A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\n\n\nThe parser extracts each component into a dedicated field:\n\nt.completed\n\nfalse\n\n\n\nt.priority\n\n'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)\n\n\n\nt.creation_date\n\n2024-01-15\n\n\n\nt.description\n\n\"Call Mom\"\n\n\nNote that description contains only the plain text – contexts, projects, and metadata are stored separately:\n\nt.contexts\n\n1-element Vector{String}:\n \"phone\"\n\n\n\nt.projects\n\n1-element Vector{String}:\n \"Family\"\n\n\n\nt.metadata\n\nDict{String, String} with 1 entry:\n  \"due\" =&gt; \"2024-01-20\"\n\n\n\nCompleted Tasks\nCompleted tasks start with x and may include a completion date:\n\nt = parse_todo(\"x 2024-01-16 2024-01-15 Pay bills\")\nt.completed, t.completion_date, t.creation_date\n\n(true, Date(\"2024-01-16\"), Date(\"2024-01-15\"))",
     "crumbs": [
       "Docs",
-      "Getting Started"
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
+    ]
+  },
+  {
+    "objectID": "getting-started.html#constructing-tasks",
+    "href": "getting-started.html#constructing-tasks",
+    "title": "Getting Started",
+    "section": "Constructing Tasks",
+    "text": "Constructing Tasks\nThe Todo constructor accepts a description string and keyword arguments. Tags embedded in the description are automatically extracted:\n\nt = Todo(\"Buy groceries @store +Errands\"; priority='B', creation_date=Date(2024, 1, 15))\n\nTodo: (B) 2024-01-15 Buy groceries @store +Errands\n\n\n\nt.description  # tags have been stripped\n\n\"Buy groceries\"\n\n\n\nt.contexts\n\n1-element Vector{String}:\n \"store\"\n\n\nIf you pass explicit contexts, projects, or metadata keyword arguments, they override extraction from the description:\n\nt = Todo(\"Call Mom @phone\"; contexts=[\"work\"])\nt.contexts  # uses the explicit value, not \"phone\"\n\n1-element Vector{String}:\n \"work\"",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
+    ]
+  },
+  {
+    "objectID": "getting-started.html#writing-tasks",
+    "href": "getting-started.html#writing-tasks",
+    "title": "Getting Started",
+    "section": "Writing Tasks",
+    "text": "Writing Tasks\nwrite_todo serializes a Todo back to a single Todo.txt line. Tags are written in canonical order: description, contexts (@), projects (+), then metadata (key:value sorted by key).\n\nt = Todo(\"Call Mom @phone +Family\"; priority='A', creation_date=Date(2024, 1, 15))\nwrite_todo(t)\n\n\"(A) 2024-01-15 Call Mom @phone +Family\"\n\n\nwrite_todos joins multiple tasks with newlines:\n\ntodos = [\n    Todo(\"Call Mom\"; priority='A'),\n    Todo(\"Buy groceries @store +Errands\"; priority='B'),\n]\nprint(write_todos(todos))\n\n(A) Call Mom\n(B) Buy groceries @store +Errands",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
+    ]
+  },
+  {
+    "objectID": "getting-started.html#file-io",
+    "href": "getting-started.html#file-io",
+    "title": "Getting Started",
+    "section": "File I/O",
+    "text": "File I/O\nRead and write Todo.txt files directly:\n\n# Write to a file\ntodos = [\n    Todo(\"Call Mom @phone +Family\"; priority='A', creation_date=Date(2024, 1, 15)),\n    Todo(\"Pay bills\"; completed=true, completion_date=Date(2024, 1, 16)),\n    Todo(\"Buy groceries @store +Errands\"),\n]\n\npath = tempname()\nwrite_todos(path, todos)\n\n# Read it back\nloaded = read_todos(path)\nloaded == todos\n\ntrue",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
+    ]
+  },
+  {
+    "objectID": "getting-started.html#roundtrip-fidelity",
+    "href": "getting-started.html#roundtrip-fidelity",
+    "title": "Getting Started",
+    "section": "Roundtrip Fidelity",
+    "text": "Roundtrip Fidelity\nParsing and writing are inverse operations – a roundtrip preserves all data:\n\nline = \"(B) 2024-01-15 Buy groceries @store +Errands\"\nwrite_todo(parse_todo(line)) == line\n\ntrue\n\n\n\n\n\n\n\n\nNote\n\n\n\nTags in the original line may be reordered to canonical order (contexts, then projects, then sorted metadata). If the original line already follows this order, the roundtrip produces an identical string.",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
     ]
   },
   {
@@ -73,7 +117,7 @@
     "text": "Types",
     "crumbs": [
       "API",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>API</span>"
     ]
   },
   {
@@ -81,10 +125,10 @@
     "href": "api.html#types",
     "title": "API",
     "section": "",
-    "text": "Todo\n\n\nTodo\nA single task in the Todo.txt format.\n\nFields\n\ncompleted::Bool: Whether the task is marked complete (x).\npriority::Union{Char, Nothing}: Priority letter 'A'–'Z', or nothing.\ncompletion_date::Union{Date, Nothing}: Date the task was completed.\ncreation_date::Union{Date, Nothing}: Date the task was created.\ndescription::String: The task description text (tags are stored separately).\ncontexts::Vector{String}: @context tags.\nprojects::Vector{String}: +project tags.\nmetadata::Dict{String, String}: key:value pairs.\n\n\nExamples\njulia&gt; t = parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\n\njulia&gt; t.priority\n'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)\n\njulia&gt; t.contexts\n[\"phone\"]\n\njulia&gt; t.projects\n[\"Family\"]\n\njulia&gt; t.metadata\nDict{String, String} with 1 entry:\n  \"due\" =&gt; \"2024-01-20\"",
+    "text": "Todo\n\n\nTodo\nA single task in the Todo.txt format.\n\nFields\n\ncompleted::Bool: Whether the task is marked complete (x).\npriority::Union{Char, Nothing}: Priority letter 'A'–'Z', or nothing.\ncompletion_date::Union{Date, Nothing}: Date the task was completed.\ncreation_date::Union{Date, Nothing}: Date the task was created.\ndescription::String: The task description text (tags are stored separately).\ncontexts::Vector{String}: @context tags.\nprojects::Vector{String}: +project tags.\nmetadata::Dict{String, String}: key:value pairs.\n\n\nExamples\njulia&gt; t = parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\n\njulia&gt; t.priority\n'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)\n\njulia&gt; t.contexts\n[\"phone\"]\n\njulia&gt; t.projects\n[\"Family\"]\n\njulia&gt; t.metadata\nDict{String, String} with 1 entry:\n  \"due\" =&gt; \"2024-01-20\"\n\n\n\n\n\n\nTodoFile\n\n\nTodoFile\nA Todo.txt file represented as a filepath and a vector of Todo items. Implements the Tables.jl interface for interoperability with DataFrames, CSV, and other tabular data packages.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; length(tf)\n3\n\njulia&gt; tf[1]\nTodo: (A) Call Mom @phone +Family\n\njulia&gt; write_todos(tf)  # writes back to tf.filepath\nTodoFile(filepath::AbstractString)\nRead a Todo.txt file and return a TodoFile.",
     "crumbs": [
       "API",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>API</span>"
     ]
   },
   {
@@ -92,10 +136,10 @@
     "href": "api.html#functions",
     "title": "API",
     "section": "Functions",
-    "text": "Functions\n\n\nparse_todo\n\n\nparse_todo(line::AbstractString) -&gt; Todo\nParse a single line of Todo.txt format into a Todo.\n\nExamples\njulia&gt; parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; parse_todo(\"x 2024-01-16 2024-01-15 Call Mom @phone +Family\")\nTodo: x 2024-01-16 2024-01-15 Call Mom @phone +Family\n\n\n\n\n\nparse_todos\n\n\nparse_todos(text::AbstractString) -&gt; Vector{Todo}\nParse multiple lines of Todo.txt format into a vector of Todo items. Blank lines are skipped.\n\nExamples\njulia&gt; todos = parse_todos(\"\"\"\n       (A) Call Mom @phone\n       (B) Buy groceries @store +Errands\n\n       x 2024-01-15 Pay bills\n       \"\"\")\n3-element Vector{Todo}:\n Todo: (A) Call Mom @phone\n Todo: (B) Buy groceries @store +Errands\n Todo: x 2024-01-15 Pay bills\n\n\n\n\n\nread_todos\n\n\nread_todos(filepath::AbstractString) -&gt; Vector{Todo}\nRead a Todo.txt file and return a vector of Todo items.\n\nExamples\njulia&gt; todos = read_todos(\"todo.txt\")\n\n\n\n\n\nwrite_todo\n\n\nwrite_todo(t::Todo) -&gt; String\nSerialize a Todo back to a single Todo.txt formatted line.\n\nExamples\njulia&gt; t = Todo(\"Call Mom @phone +Family\"; priority='A', creation_date=Date(2024, 1, 15))\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; write_todo(t)\n\"(A) 2024-01-15 Call Mom @phone +Family\"\n\n\n\n\n\nwrite_todos\n\n\nwrite_todos(todos::Vector{Todo}) -&gt; String\nSerialize a vector of Todo items into a Todo.txt formatted string.\nwrite_todos(filepath::AbstractString, todos::Vector{Todo})\nWrite a vector of Todo items to a file in Todo.txt format.\n\nExamples\njulia&gt; write_todos(\"todo.txt\", todos)",
+    "text": "Functions\n\n\nparse_todo\n\n\nparse_todo(line::AbstractString) -&gt; Todo\nParse a single line of Todo.txt format into a Todo.\n\nExamples\njulia&gt; parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; parse_todo(\"x 2024-01-16 2024-01-15 Call Mom @phone +Family\")\nTodo: x 2024-01-16 2024-01-15 Call Mom @phone +Family\n\n\n\n\n\nparse_todos\n\n\nparse_todos(text::AbstractString) -&gt; Vector{Todo}\nParse multiple lines of Todo.txt format into a vector of Todo items. Blank lines are skipped.\n\nExamples\njulia&gt; todos = parse_todos(\"\"\"\n       (A) Call Mom @phone\n       (B) Buy groceries @store +Errands\n\n       x 2024-01-15 Pay bills\n       \"\"\")\n3-element Vector{Todo}:\n Todo: (A) Call Mom @phone\n Todo: (B) Buy groceries @store +Errands\n Todo: x 2024-01-15 Pay bills\n\n\n\n\n\nread_todos\n\n\nread_todos(filepath::AbstractString) -&gt; Vector{Todo}\nRead a Todo.txt file and return a vector of Todo items.\n\nExamples\njulia&gt; todos = read_todos(\"todo.txt\")\n\n\n\n\n\nwrite_todo\n\n\nwrite_todo(t::Todo) -&gt; String\nSerialize a Todo back to a single Todo.txt formatted line.\n\nExamples\njulia&gt; t = Todo(\"Call Mom @phone +Family\"; priority='A', creation_date=Date(2024, 1, 15))\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; write_todo(t)\n\"(A) 2024-01-15 Call Mom @phone +Family\"\n\n\n\n\n\nwrite_todos\n\n\nwrite_todos(todos::Vector{Todo}) -&gt; String\nSerialize a vector of Todo items into a Todo.txt formatted string.\nwrite_todos(filepath::AbstractString, todos::Vector{Todo})\nWrite a vector of Todo items to a file in Todo.txt format.\n\nExamples\njulia&gt; write_todos(\"todo.txt\", todos)\nwrite_todos(tf::TodoFile)\nWrite a TodoFile back to its filepath.",
     "crumbs": [
       "API",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>API</span>"
     ]
   },
   {
@@ -103,10 +147,10 @@
     "href": "resources/benchmarks.html",
     "title": "Benchmarks",
     "section": "",
-    "text": "NoteNo benchmark results available\n\n\n\nBenchmarks have not been set up for this package yet. See the CLAUDE.md for instructions on how to set up benchmarks.",
+    "text": "\u001b[32m\u001b[1mPrecompiling\u001b[22m\u001b[39m packages… 1196.9 ms\u001b[32m ✓ \u001b[39mQuartoNotebookWorkerJSON3Ext\u001b[90m (serial)\u001b[39m 1 dependency successfully precompiled in 1 seconds ::: {.callout-note} ## No benchmark results available\nBenchmarks have not been set up for this package yet. See the CLAUDE.md for instructions on how to set up benchmarks. :::",
     "crumbs": [
       "Resources",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Benchmarks</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Benchmarks</span>"
     ]
   },
   {
@@ -117,7 +161,7 @@
     "text": "Unreleased",
     "crumbs": [
       "Resources",
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Changelog</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Changelog</span>"
     ]
   }
 ]

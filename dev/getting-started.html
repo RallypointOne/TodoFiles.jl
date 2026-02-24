@@ -148,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Docs</a></li><li class="breadcrumb-item"><a href="./getting-started.html">Getting Started</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Docs</a></li><li class="breadcrumb-item"><a href="./getting-started.html"><span class="chapter-title">Getting Started</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -184,8 +184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting-started.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Getting Started</span></a>
+  <a href="./getting-started.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Getting Started</span></a>
   </div>
 </li>
       </ul>
@@ -242,17 +241,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#basic-usage" id="toc-basic-usage" class="nav-link active" data-scroll-target="#basic-usage">Basic Usage</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#the-todo.txt-format" id="toc-the-todo.txt-format" class="nav-link" data-scroll-target="#the-todo.txt-format">The Todo.txt Format</a></li>
+  <li><a href="#parsing-tasks" id="toc-parsing-tasks" class="nav-link" data-scroll-target="#parsing-tasks">Parsing Tasks</a>
+  <ul class="collapse">
+  <li><a href="#completed-tasks" id="toc-completed-tasks" class="nav-link" data-scroll-target="#completed-tasks">Completed Tasks</a></li>
+  </ul></li>
+  <li><a href="#constructing-tasks" id="toc-constructing-tasks" class="nav-link" data-scroll-target="#constructing-tasks">Constructing Tasks</a></li>
+  <li><a href="#writing-tasks" id="toc-writing-tasks" class="nav-link" data-scroll-target="#writing-tasks">Writing Tasks</a></li>
+  <li><a href="#file-io" id="toc-file-io" class="nav-link" data-scroll-target="#file-io">File I/O</a></li>
+  <li><a href="#roundtrip-fidelity" id="toc-roundtrip-fidelity" class="nav-link" data-scroll-target="#roundtrip-fidelity">Roundtrip Fidelity</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Docs</a></li><li class="breadcrumb-item"><a href="./getting-started.html">Getting Started</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Docs</a></li><li class="breadcrumb-item"><a href="./getting-started.html"><span class="chapter-title">Getting Started</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Getting Started</h1>
+<h1 class="title"><span class="chapter-title">Getting Started</span></h1>
 </div>
 
 
@@ -269,15 +278,193 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="basic-usage" class="level2">
-<h2 class="anchored" data-anchor-id="basic-usage">Basic Usage</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">TodoFiles</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="getting-started" class="level1 unnumbered">
+<h1 class="unnumbered">Getting Started</h1>
+<section id="the-todo.txt-format" class="level2">
+<h2 class="anchored" data-anchor-id="the-todo.txt-format">The Todo.txt Format</h2>
+<p><a href="https://github.com/todotxt/todo.txt">Todo.txt</a> is a plain-text format for managing tasks. Each line represents one task with an optional structure:</p>
+<pre><code>x (A) 2024-01-16 2024-01-15 Description @context +project key:value
+│  │       │          │          │           │        │        │
+│  │       │          │          │           │        │        └─ metadata
+│  │       │          │          │           │        └─ project tag
+│  │       │          │          └─ description   └─ context tag
+│  │       │          └─ creation date
+│  │       └─ completion date
+│  └─ priority (A-Z)
+└─ completion marker</code></pre>
+<p>All parts are optional except the description.</p>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<p><em>TODO: Add examples here.</em></p>
+<section id="parsing-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="parsing-tasks">Parsing Tasks</h2>
+<p>Use <code>parse_todo</code> to parse a single line and <code>parse_todos</code> for multiple lines:</p>
+<div id="4" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fu">parse_todo</span>(<span class="st">"(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Todo: (A) 2024-01-15 Call Mom @phone +Family due:2024-01-20</code></pre>
+</div>
+</div>
+<p>The parser extracts each component into a dedicated field:</p>
+<div id="6" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>t.completed</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>false</code></pre>
+</div>
+</div>
+<div id="8" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>t.priority</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)</code></pre>
+</div>
+</div>
+<div id="10" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>t.creation_date</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>2024-01-15</code></pre>
+</div>
+</div>
+<div id="12" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>t.description</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>"Call Mom"</code></pre>
+</div>
+</div>
+<p>Note that <code>description</code> contains only the plain text – contexts, projects, and metadata are stored separately:</p>
+<div id="14" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>t.contexts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>1-element Vector{String}:
+ "phone"</code></pre>
+</div>
+</div>
+<div id="16" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>t.projects</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>1-element Vector{String}:
+ "Family"</code></pre>
+</div>
+</div>
+<div id="18" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>t.metadata</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Dict{String, String} with 1 entry:
+  "due" =&gt; "2024-01-20"</code></pre>
+</div>
+</div>
+<section id="completed-tasks" class="level3">
+<h3 class="anchored" data-anchor-id="completed-tasks">Completed Tasks</h3>
+<p>Completed tasks start with <code>x</code> and may include a completion date:</p>
+<div id="20" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fu">parse_todo</span>(<span class="st">"x 2024-01-16 2024-01-15 Pay bills"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>t.completed, t.completion_date, t.creation_date</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(true, Date("2024-01-16"), Date("2024-01-15"))</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="constructing-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="constructing-tasks">Constructing Tasks</h2>
+<p>The <code>Todo</code> constructor accepts a description string and keyword arguments. Tags embedded in the description are automatically extracted:</p>
+<div id="22" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fu">Todo</span>(<span class="st">"Buy groceries @store +Errands"</span>; priority<span class="op">=</span><span class="ch">'B'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">15</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Todo: (B) 2024-01-15 Buy groceries @store +Errands</code></pre>
+</div>
+</div>
+<div id="24" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>t.description  <span class="co"># tags have been stripped</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>"Buy groceries"</code></pre>
+</div>
+</div>
+<div id="26" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>t.contexts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>1-element Vector{String}:
+ "store"</code></pre>
+</div>
+</div>
+<p>If you pass explicit <code>contexts</code>, <code>projects</code>, or <code>metadata</code> keyword arguments, they override extraction from the description:</p>
+<div id="28" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fu">Todo</span>(<span class="st">"Call Mom @phone"</span>; contexts<span class="op">=</span>[<span class="st">"work"</span>])</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>t.contexts  <span class="co"># uses the explicit value, not "phone"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>1-element Vector{String}:
+ "work"</code></pre>
+</div>
+</div>
+</section>
+<section id="writing-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="writing-tasks">Writing Tasks</h2>
+<p><code>write_todo</code> serializes a <code>Todo</code> back to a single Todo.txt line. Tags are written in canonical order: description, contexts (<code>@</code>), projects (<code>+</code>), then metadata (<code>key:value</code> sorted by key).</p>
+<div id="30" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fu">Todo</span>(<span class="st">"Call Mom @phone +Family"</span>; priority<span class="op">=</span><span class="ch">'A'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">15</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todo</span>(t)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>"(A) 2024-01-15 Call Mom @phone +Family"</code></pre>
+</div>
+</div>
+<p><code>write_todos</code> joins multiple tasks with newlines:</p>
+<div id="32" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>todos <span class="op">=</span> [</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Call Mom"</span>; priority<span class="op">=</span><span class="ch">'A'</span>),</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Buy groceries @store +Errands"</span>; priority<span class="op">=</span><span class="ch">'B'</span>),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">write_todos</span>(todos))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(A) Call Mom
+(B) Buy groceries @store +Errands</code></pre>
+</div>
+</div>
+</section>
+<section id="file-io" class="level2">
+<h2 class="anchored" data-anchor-id="file-io">File I/O</h2>
+<p>Read and write Todo.txt files directly:</p>
+<div id="34" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Write to a file</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>todos <span class="op">=</span> [</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Call Mom @phone +Family"</span>; priority<span class="op">=</span><span class="ch">'A'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">15</span>)),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Pay bills"</span>; completed<span class="op">=</span><span class="cn">true</span>, completion_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">16</span>)),</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">Todo</span>(<span class="st">"Buy groceries @store +Errands"</span>),</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> <span class="fu">tempname</span>()</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(path, todos)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Read it back</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>loaded <span class="op">=</span> <span class="fu">read_todos</span>(path)</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>loaded <span class="op">==</span> todos</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>true</code></pre>
+</div>
+</div>
+</section>
+<section id="roundtrip-fidelity" class="level2">
+<h2 class="anchored" data-anchor-id="roundtrip-fidelity">Roundtrip Fidelity</h2>
+<p>Parsing and writing are inverse operations – a roundtrip preserves all data:</p>
+<div id="36" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>line <span class="op">=</span> <span class="st">"(B) 2024-01-15 Buy groceries @store +Errands"</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todo</span>(<span class="fu">parse_todo</span>(line)) <span class="op">==</span> line</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>true</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tags in the original line may be reordered to canonical order (contexts, then projects, then sorted metadata). If the original line already follows this order, the roundtrip produces an identical string.</p>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
