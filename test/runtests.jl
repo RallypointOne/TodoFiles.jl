@@ -1,5 +1,6 @@
 using TodoFiles
 using Dates
+using Tables
 using Test
 
 @testset "TodoFiles.jl" begin
@@ -176,5 +177,116 @@ using Test
     @testset "canonical write order" begin
         t = parse_todo("(A) Call Mom +Family @phone due:2024-01-20")
         @test write_todo(t) == "(A) Call Mom @phone +Family due:2024-01-20"
+    end
+
+    @testset "TodoFile" begin
+        todos = [
+            Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15)),
+            Todo("Pay bills"; completed=true, completion_date=Date(2024, 1, 16)),
+            Todo("Buy groceries @store +Errands"),
+        ]
+
+        @testset "construction and file I/O" begin
+            mktempdir() do dir
+                filepath = joinpath(dir, "todo.txt")
+                write_todos(filepath, todos)
+
+                tf = TodoFile(filepath)
+                @test tf.filepath == filepath
+                @test length(tf) == 3
+                @test tf[1] == todos[1]
+                @test tf[2] == todos[2]
+                @test tf[3] == todos[3]
+            end
+        end
+
+        @testset "iterate" begin
+            mktempdir() do dir
+                filepath = joinpath(dir, "todo.txt")
+                write_todos(filepath, todos)
+                tf = TodoFile(filepath)
+                @test collect(tf) == todos
+                @test eltype(TodoFile) == Todo
+            end
+        end
+
+        @testset "write_todos roundtrip" begin
+            mktempdir() do dir
+                filepath = joinpath(dir, "todo.txt")
+                write_todos(filepath, todos)
+                tf = TodoFile(filepath)
+
+                # Write back to file via TodoFile method
+                write_todos(tf)
+                tf2 = TodoFile(filepath)
+                @test collect(tf2) == collect(tf)
+            end
+        end
+
+        @testset "show" begin
+            mktempdir() do dir
+                filepath = joinpath(dir, "todo.txt")
+                write_todos(filepath, todos)
+                tf = TodoFile(filepath)
+                s = sprint(show, tf)
+                @test contains(s, "TodoFile")
+                @test contains(s, "3 tasks")
+            end
+        end
+    end
+
+    @testset "Tables.jl integration" begin
+        todos = [
+            Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15)),
+            Todo("Pay bills"; completed=true, completion_date=Date(2024, 1, 16)),
+        ]
+
+        mktempdir() do dir
+            filepath = joinpath(dir, "todo.txt")
+            write_todos(filepath, todos)
+            tf = TodoFile(filepath)
+
+            @testset "istable and rowaccess" begin
+                @test Tables.istable(TodoFile)
+                @test Tables.rowaccess(TodoFile)
+            end
+
+            @testset "schema" begin
+                sch = Tables.schema(tf)
+                @test sch.names == fieldnames(Todo)
+                @test sch.types[1] == Bool
+                @test sch.types[5] == String
+            end
+
+            @testset "rows" begin
+                rows = Tables.rows(tf)
+                @test length(rows) == 2
+                @test rows[1] == todos[1]
+            end
+
+            @testset "columnnames and getcolumn on Todo" begin
+                t = tf[1]
+                @test Tables.columnnames(t) == fieldnames(Todo)
+                @test Tables.getcolumn(t, :priority) == 'A'
+                @test Tables.getcolumn(t, :description) == "Call Mom"
+                @test Tables.getcolumn(t, :contexts) == ["phone"]
+                @test Tables.getcolumn(t, 1) == false  # completed
+                @test Tables.getcolumn(t, 5) == "Call Mom"  # description
+            end
+
+            @testset "columntable roundtrip" begin
+                ct = Tables.columntable(tf)
+                @test ct.description == ["Call Mom", "Pay bills"]
+                @test ct.completed == [false, true]
+                @test ct.priority == ['A', nothing]
+            end
+
+            @testset "rowtable roundtrip" begin
+                rt = Tables.rowtable(tf)
+                @test length(rt) == 2
+                @test rt[1].description == "Call Mom"
+                @test rt[2].completed == true
+            end
+        end
     end
 end

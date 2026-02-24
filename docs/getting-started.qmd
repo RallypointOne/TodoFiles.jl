@@ -1,11 +1,154 @@
+---
+title: "Getting Started"
+engine: julia
+---
+
 # Getting Started {.unnumbered}
 
-## Basic Usage
-
-```julia
-using TodoFiles
+```{julia}
+#| echo: false
+#| output: false
+using TodoFiles, Dates
 ```
 
-## Examples
+## The Todo.txt Format
 
-*TODO: Add examples here.*
+[Todo.txt](https://github.com/todotxt/todo.txt) is a plain-text format for managing tasks. Each line represents one task with an optional structure:
+
+```
+x (A) 2024-01-16 2024-01-15 Description @context +project key:value
+│  │       │          │          │           │        │        │
+│  │       │          │          │           │        │        └─ metadata
+│  │       │          │          │           │        └─ project tag
+│  │       │          │          └─ description   └─ context tag
+│  │       │          └─ creation date
+│  │       └─ completion date
+│  └─ priority (A-Z)
+└─ completion marker
+```
+
+All parts are optional except the description.
+
+## Parsing Tasks
+
+Use `parse_todo` to parse a single line and `parse_todos` for multiple lines:
+
+```{julia}
+t = parse_todo("(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20")
+```
+
+The parser extracts each component into a dedicated field:
+
+```{julia}
+t.completed
+```
+
+```{julia}
+t.priority
+```
+
+```{julia}
+t.creation_date
+```
+
+```{julia}
+t.description
+```
+
+Note that `description` contains only the plain text -- contexts, projects, and metadata are stored separately:
+
+```{julia}
+t.contexts
+```
+
+```{julia}
+t.projects
+```
+
+```{julia}
+t.metadata
+```
+
+### Completed Tasks
+
+Completed tasks start with `x` and may include a completion date:
+
+```{julia}
+t = parse_todo("x 2024-01-16 2024-01-15 Pay bills")
+t.completed, t.completion_date, t.creation_date
+```
+
+## Constructing Tasks
+
+The `Todo` constructor accepts a description string and keyword arguments. Tags embedded in the description are automatically extracted:
+
+```{julia}
+t = Todo("Buy groceries @store +Errands"; priority='B', creation_date=Date(2024, 1, 15))
+```
+
+```{julia}
+t.description  # tags have been stripped
+```
+
+```{julia}
+t.contexts
+```
+
+If you pass explicit `contexts`, `projects`, or `metadata` keyword arguments, they override extraction from the description:
+
+```{julia}
+t = Todo("Call Mom @phone"; contexts=["work"])
+t.contexts  # uses the explicit value, not "phone"
+```
+
+## Writing Tasks
+
+`write_todo` serializes a `Todo` back to a single Todo.txt line. Tags are written in canonical order: description, contexts (`@`), projects (`+`), then metadata (`key:value` sorted by key).
+
+```{julia}
+t = Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15))
+write_todo(t)
+```
+
+`write_todos` joins multiple tasks with newlines:
+
+```{julia}
+todos = [
+    Todo("Call Mom"; priority='A'),
+    Todo("Buy groceries @store +Errands"; priority='B'),
+]
+print(write_todos(todos))
+```
+
+## File I/O
+
+Read and write Todo.txt files directly:
+
+```{julia}
+# Write to a file
+todos = [
+    Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15)),
+    Todo("Pay bills"; completed=true, completion_date=Date(2024, 1, 16)),
+    Todo("Buy groceries @store +Errands"),
+]
+
+path = tempname()
+write_todos(path, todos)
+
+# Read it back
+loaded = read_todos(path)
+loaded == todos
+```
+
+## Roundtrip Fidelity
+
+Parsing and writing are inverse operations -- a roundtrip preserves all data:
+
+```{julia}
+line = "(B) 2024-01-15 Buy groceries @store +Errands"
+write_todo(parse_todo(line)) == line
+```
+
+::: {.callout-note}
+Tags in the original line may be reordered to canonical order (contexts, then projects, then sorted metadata). If the original line already follows this order, the roundtrip produces an identical string.
+:::

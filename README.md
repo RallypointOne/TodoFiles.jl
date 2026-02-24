@@ -5,4 +5,34 @@
 
 # TodoFiles.jl
 
-A Julia package for reading and writing the [Todo.txt](https://github.com/todotxt/todo.txt) format.
+A Julia package for reading and writing the [Todo.txt](https://github.com/todotxt/todo.txt) format. Parses todo.txt lines into structured objects with direct access to priorities, dates, contexts, projects, and metadata.
+
+## Installation
+
+```julia
+using Pkg
+Pkg.add("TodoFiles")
+```
+
+## Usage
+
+```julia
+using TodoFiles, Dates
+
+# Parse a task
+t = parse_todo("(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20")
+t.priority    # 'A'
+t.contexts    # ["phone"]
+t.projects    # ["Family"]
+t.metadata    # Dict("due" => "2024-01-20")
+
+# Construct a task (tags are auto-extracted from the description)
+t = Todo("Buy groceries @store +Errands"; priority='B', creation_date=Date(2024, 1, 15))
+
+# Write back to Todo.txt format
+write_todo(t)  # "(B) 2024-01-15 Buy groceries @store +Errands"
+
+# File I/O
+write_todos("todo.txt", [t])
+todos = read_todos("todo.txt")
+```

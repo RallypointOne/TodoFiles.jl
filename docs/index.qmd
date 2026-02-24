@@ -3,11 +3,7 @@ title: "TodoFiles.jl"
 engine: julia
 ---
 
-Welcome to the documentation for **TodoFiles.jl**.
-
-## Overview
-
-TodoFiles.jl is a Julia package for reading and writing the [Todo.txt](https://github.com/todotxt/todo.txt) format.
+**TodoFiles.jl** is a Julia package for reading and writing the [Todo.txt](https://github.com/todotxt/todo.txt) format. It parses todo.txt files into structured `Todo` objects with direct access to priorities, dates, contexts (`@tag`), projects (`+tag`), and metadata (`key:value` pairs).
 
 ## Installation
 
@@ -19,5 +15,38 @@ Pkg.add("TodoFiles")
 ## Quickstart
 
 ```{julia}
-println("Hello, World!")
+using TodoFiles, Dates
+
+# Parse a single task
+t = parse_todo("(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20")
+```
+
+```{julia}
+# Access fields directly
+t.priority, t.contexts, t.projects, t.metadata
+```
+
+```{julia}
+# Construct a Todo with keyword arguments -- tags are auto-extracted from the description
+t2 = Todo("Buy groceries @store +Errands"; priority='B', creation_date=Date(2024, 1, 15))
+```
+
+```{julia}
+# Roundtrip: write back to Todo.txt format
+write_todo(t2)
+```
+
+```{julia}
+# Parse and write multiple tasks
+text = """
+(A) Call Mom @phone
+(B) 2024-01-15 Buy groceries @store +Errands
+x 2024-01-16 2024-01-15 Pay bills
+"""
+
+todos = parse_todos(text)
+```
+
+```{julia}
+print(write_todos(todos))
 ```

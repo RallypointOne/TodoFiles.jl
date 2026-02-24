@@ -1,8 +1,9 @@
 module TodoFiles
 
 using Dates
+using Tables
 
-export Todo, parse_todo, parse_todos, write_todo, write_todos, read_todos
+export Todo, TodoFile, parse_todo, parse_todos, write_todo, write_todos, read_todos
 
 #--------------------------------------------------------------------------------# Helpers
 function _extract_tags(description::AbstractString)
@@ -275,5 +276,68 @@ julia> write_todos("todo.txt", todos)
 function write_todos(filepath::AbstractString, todos::Vector{Todo})
     write(filepath, write_todos(todos))
 end
+
+#--------------------------------------------------------------------------------# TodoFile
+"""
+    TodoFile
+
+A Todo.txt file represented as a filepath and a vector of [`Todo`](@ref) items.
+Implements the [Tables.jl](https://github.com/JuliaData/Tables.jl) interface for
+interoperability with DataFrames, CSV, and other tabular data packages.
+
+### Examples
+```julia
+julia> tf = TodoFile("todo.txt")
+
+julia> length(tf)
+3
+
+julia> tf[1]
+Todo: (A) Call Mom @phone +Family
+
+julia> write_todos(tf)  # writes back to tf.filepath
+```
+"""
+struct TodoFile
+    filepath::String
+    todos::Vector{Todo}
+end
+
+"""
+    TodoFile(filepath::AbstractString)
+
+Read a Todo.txt file and return a [`TodoFile`](@ref).
+"""
+TodoFile(filepath::AbstractString) = TodoFile(String(filepath), read_todos(filepath))
+
+Base.length(tf::TodoFile) = length(tf.todos)
+Base.getindex(tf::TodoFile, i) = tf.todos[i]
+Base.iterate(tf::TodoFile, args...) = iterate(tf.todos, args...)
+Base.eltype(::Type{TodoFile}) = Todo
+
+function Base.show(io::IO, tf::TodoFile)
+    n = length(tf.todos)
+    print(io, "TodoFile(\"$(tf.filepath)\") with $n task$(n == 1 ? "" : "s")")
+end
+
+"""
+    write_todos(tf::TodoFile)
+
+Write a [`TodoFile`](@ref) back to its filepath.
+"""
+write_todos(tf::TodoFile) = write_todos(tf.filepath, tf.todos)
+
+#--------------------------------------------------------------------------------# Tables.jl
+Tables.istable(::Type{TodoFile}) = true
+Tables.rowaccess(::Type{TodoFile}) = true
+Tables.rows(tf::TodoFile) = tf.todos
+Tables.schema(::TodoFile) = Tables.Schema(
+    fieldnames(Todo),
+    (Bool, Union{Char, Nothing}, Union{Date, Nothing}, Union{Date, Nothing}, String, Vector{String}, Vector{String}, Dict{String, String})
+)
+
+Tables.columnnames(::Todo) = fieldnames(Todo)
+Tables.getcolumn(t::Todo, nm::Symbol) = getfield(t, nm)
+Tables.getcolumn(t::Todo, i::Int) = getfield(t, i)
 
 end # module
