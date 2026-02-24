@@ -11,7 +11,7 @@ engine: julia
 using TodoFiles, Dates
 ```
 
-TodoFiles provides three HTML views for rich display of todo lists in Jupyter and Pluto notebooks. Each view renders via `show(io, MIME"text/html"(), ...)`, so simply returning a view object in a notebook cell will display it.
+TodoFiles provides four HTML views for rich display of todo lists in Jupyter and Pluto notebooks. Each view renders via `show(io, MIME"text/html"(), ...)`, so simply returning a view object in a notebook cell will display it.
 
 ## Setup
 
@@ -19,11 +19,11 @@ Let's create a sample `TodoFile` to demonstrate each view:
 
 ```{julia}
 todos = [
-    Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15)),
-    Todo("Buy groceries @store +Errands"; priority='B', creation_date=Date(2024, 1, 20)),
-    Todo("Write report @computer +Work due:2024-02-01"; priority='A'),
+    Todo("Call Mom @phone +Family"; priority='A', creation_date=Date(2024, 1, 15), metadata=Dict("due" => "2024-01-20")),
+    Todo("Buy groceries @store +Errands"; priority='B', creation_date=Date(2024, 1, 20), metadata=Dict("due" => "2024-01-25")),
+    Todo("Write report @computer +Work"; priority='A', creation_date=Date(2024, 1, 10), metadata=Dict("due" => "2024-02-01")),
     Todo("Schedule dentist @phone +Health"; priority='C'),
-    Todo("Pay bills"; completed=true, completion_date=Date(2024, 1, 16)),
+    Todo("Pay bills"; completed=true, creation_date=Date(2024, 1, 10), completion_date=Date(2024, 1, 16)),
     Todo("Clean garage +Home"),
 ]
 
@@ -82,6 +82,16 @@ KanbanView(tf, :projects)
 KanbanView(tf, :contexts)
 ```
 
+## GanttView
+
+`GanttView` renders tasks as horizontal bars on a timeline. Each task needs a `creation_date` (start) and either a `due` metadata key or `completion_date` (end) to appear on the chart. Tasks without both dates are silently excluded.
+
+```{julia}
+GanttView(tf)
+```
+
+Bars are colored by priority and completed tasks are shown with reduced opacity.
+
 ## The `html_view` Convenience Function
 
 `html_view` is a single entry point that returns the appropriate view type:
@@ -96,4 +106,8 @@ html_view(tf; view=:table)
 
 ```{julia}
 html_view(tf; view=:kanban, group_by=:projects)
+```
+
+```{julia}
+html_view(tf; view=:gantt)
 ```

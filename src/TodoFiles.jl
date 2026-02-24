@@ -4,7 +4,7 @@ using Dates
 using Tables
 
 export Todo, TodoFile, parse_todo, parse_todos, write_todo, write_todos, read_todos,
-       ListView, TableView, KanbanView, html_view
+       ListView, TableView, KanbanView, GanttView, html_view
 
 #--------------------------------------------------------------------------------# Helpers
 function _extract_tags(description::AbstractString)
@@ -372,6 +372,18 @@ function _todo_css()
     .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
     .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
     .todo-kanban-col .todo-card { font-size: 13px; }
+    .todo-gantt { width: 100%; border-collapse: collapse; }
+    .todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    .todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+    .todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+    .todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+    .todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+    .todo-gantt-bar-a { background: #e53935; }
+    .todo-gantt-bar-b { background: #fb8c00; }
+    .todo-gantt-bar-c { background: #fdd835; }
+    .todo-gantt-bar-other { background: #90a4ae; }
+    .todo-gantt-bar-done { opacity: 0.4; }
+    .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
     </style>"""
 end
 
@@ -541,6 +553,88 @@ function Base.show(io::IO, ::MIME"text/html", v::KanbanView)
     print(io, "</div></div>")
 end
 
+"""
+    GanttView
+
+A Gantt chart HTML view of a [`TodoFile`](@ref). Tasks are displayed as horizontal bars
+on a timeline. A task needs a `creation_date` (start) and either a `due` metadata key or
+`completion_date` (end) to appear on the chart.
+
+### Examples
+```julia
+julia> tf = TodoFile("todo.txt")
+
+julia> GanttView(tf)
+GanttView(3 tasks)
+```
+"""
+struct GanttView
+    todofile::TodoFile
+end
+
+Base.show(io::IO, v::GanttView) = print(io, "GanttView($(length(v.todofile)) tasks)")
+
+function _gantt_dates(t::Todo)
+    start = t.creation_date
+    isnothing(start) && return nothing
+    due_str = get(t.metadata, "due", "")
+    finish = if !isempty(due_str)
+        tryparse(Date, due_str)
+    elseif t.completed && !isnothing(t.completion_date)
+        t.completion_date
+    else
+        nothing
+    end
+    isnothing(finish) && return nothing
+    finish < start && return nothing
+    return (start, finish)
+end
+
+function _gantt_bar_class(t::Todo)
+    cls = if isnothing(t.priority); "todo-gantt-bar-other"
+    elseif t.priority == 'A'; "todo-gantt-bar-a"
+    elseif t.priority == 'B'; "todo-gantt-bar-b"
+    elseif t.priority == 'C'; "todo-gantt-bar-c"
+    else; "todo-gantt-bar-other"
+    end
+    t.completed ? "$cls todo-gantt-bar-done" : cls
+end
+
+function Base.show(io::IO, ::MIME"text/html", v::GanttView)
+    # Collect plottable tasks
+    items = Tuple{Todo, Date, Date}[]
+    for t in v.todofile
+        dates = _gantt_dates(t)
+        !isnothing(dates) && push!(items, (t, dates[1], dates[2]))
+    end
+    print(io, _todo_css())
+    print(io, """<div class="todo-container">""")
+    if isempty(items)
+        print(io, """<p style="color:#888;font-style:italic;">No tasks with both a creation date and a due/completion date to display.</p>""")
+    else
+        min_date = minimum(x[2] for x in items)
+        max_date = maximum(x[3] for x in items)
+        span = max(Dates.value(max_date - min_date), 1)
+        print(io, """<table class="todo-gantt">""")
+        print(io, """<thead><tr><th class="todo-gantt-label">Task</th><th>Timeline</th></tr></thead><tbody>""")
+        for (t, s, f) in items
+            left_pct = round(100.0 * Dates.value(s - min_date) / span, digits=2)
+            width_pct = round(100.0 * max(Dates.value(f - s), 1) / span, digits=2)
+            width_pct = min(width_pct, 100.0 - left_pct)
+            label = _html_escape(t.description)
+            bar_cls = _gantt_bar_class(t)
+            pri = _priority_html(t.priority)
+            print(io, "<tr>")
+            print(io, """<td class="todo-gantt-label">$pri $label</td>""")
+            print(io, """<td><div class="todo-gantt-track"><div class="todo-gantt-bar $bar_cls" style="left:$(left_pct)%;width:$(width_pct)%" title="$(s) → $(f)"></div></div></td>""")
+            print(io, "</tr>")
+        end
+        print(io, "</tbody></table>")
+        print(io, """<div class="todo-gantt-dates"><span>$min_date</span><span>$max_date</span></div>""")
+    end
+    print(io, "</div>")
+end
+
 # Default HTML for TodoFile delegates to ListView
 function Base.show(io::IO, mime::MIME"text/html", tf::TodoFile)
     show(io, mime, ListView(tf))
@@ -551,7 +645,7 @@ end
 
 Create an HTML view of a [`TodoFile`](@ref) for rich display in notebooks.
 
-Returns a [`ListView`](@ref), [`TableView`](@ref), or [`KanbanView`](@ref).
+Returns a [`ListView`](@ref), [`TableView`](@ref), [`KanbanView`](@ref), or [`GanttView`](@ref).
 
 ### Examples
 ```julia
@@ -565,6 +659,9 @@ TableView(3 tasks)
 
 julia> html_view(tf; view=:kanban, group_by=:projects)
 KanbanView(3 tasks, group_by=:projects)
+
+julia> html_view(tf; view=:gantt)
+GanttView(3 tasks)
 ```
 """
 function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)
@@ -574,8 +671,10 @@ function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)
         return TableView(tf)
     elseif view == :kanban
         return KanbanView(tf, group_by)
+    elseif view == :gantt
+        return GanttView(tf)
     else
-        error("Invalid view: $view. Use :list, :table, or :kanban.")
+        error("Invalid view: $view. Use :list, :table, :kanban, or :gantt.")
     end
 end
 

@@ -362,6 +362,45 @@ using Test
                 @test html_tf == html_lv
             end
 
+            @testset "GanttView" begin
+                gantt_todos = [
+                    Todo("Build feature"; priority='A', creation_date=Date(2024, 1, 1), metadata=Dict("due" => "2024-01-15")),
+                    Todo("Write tests"; priority='B', creation_date=Date(2024, 1, 10), metadata=Dict("due" => "2024-01-20")),
+                    Todo("Deploy"; completed=true, creation_date=Date(2024, 1, 5), completion_date=Date(2024, 1, 12)),
+                    Todo("No dates task"),
+                    Todo("Only start"; creation_date=Date(2024, 1, 1)),
+                ]
+                write_todos(filepath, gantt_todos)
+                gtf = TodoFile(filepath)
+
+                gv = GanttView(gtf)
+                @test sprint(show, gv) == "GanttView(5 tasks)"
+
+                html = sprint(show, MIME("text/html"), gv)
+                @test contains(html, "todo-gantt")
+                @test contains(html, "Build feature")
+                @test contains(html, "Write tests")
+                @test contains(html, "Deploy")
+                # Tasks without both dates are excluded from bars
+                @test !contains(html, "No dates task")
+                @test !contains(html, "Only start")
+                # Check date range labels
+                @test contains(html, "2024-01-01")
+                @test contains(html, "2024-01-20")
+                # Check priority colors
+                @test contains(html, "todo-gantt-bar-a")
+                @test contains(html, "todo-gantt-bar-b")
+                # Completed task has done class
+                @test contains(html, "todo-gantt-bar-done")
+
+                # Empty gantt (no plottable tasks)
+                empty_todos = [Todo("No dates")]
+                write_todos(filepath, empty_todos)
+                etf = TodoFile(filepath)
+                empty_html = sprint(show, MIME("text/html"), GanttView(etf))
+                @test contains(empty_html, "No tasks with both")
+            end
+
             @testset "html_view convenience function" begin
                 @test html_view(tf) isa ListView
                 @test html_view(tf; view=:list) isa ListView
@@ -369,6 +408,7 @@ using Test
                 @test html_view(tf; view=:kanban) isa KanbanView
                 @test html_view(tf; view=:kanban).group_by == :priority
                 @test html_view(tf; view=:kanban, group_by=:projects).group_by == :projects
+                @test html_view(tf; view=:gantt) isa GanttView
                 @test_throws ErrorException html_view(tf; view=:invalid)
             end
 
