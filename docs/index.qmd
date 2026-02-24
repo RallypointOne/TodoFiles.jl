@@ -1,19 +1,19 @@
 ---
-title: "JuliaPackageTemplate.jl"
+title: "TodoFiles.jl"
 engine: julia
 ---
 
-Welcome to the documentation for **JuliaPackageTemplate.jl**.
+Welcome to the documentation for **TodoFiles.jl**.
 
 ## Overview
 
-JuliaPackageTemplate.jl is a Julia package that ...
+TodoFiles.jl is a Julia package for reading and writing the [Todo.txt](https://github.com/todotxt/todo.txt) format.
 
 ## Installation
 
 ```julia
 using Pkg
-Pkg.add("JuliaPackageTemplate")
+Pkg.add("TodoFiles")
 ```
 
 ## Quickstart

@@ -7,7 +7,7 @@ julia:
   project: "."
 
 book:
-  title: "JuliaPackageTemplate.jl"
+  title: "TodoFiles.jl"
   search:
     location: sidebar
     keyboard-shortcut:
@@ -17,10 +17,10 @@ book:
     logo-href: https://rallypoint1.com
     right:
       - icon: star
-        href: https://github.com/RallypointOne/JuliaPackageTemplate.jl/stargazers
+        href: https://github.com/RallypointOne/TodoFiles.jl/stargazers
         text: "Star"
       - icon: github
-        href: https://github.com/RallypointOne/JuliaPackageTemplate.jl
+        href: https://github.com/RallypointOne/TodoFiles.jl
   chapters:
     - part: "Docs"
       chapters:

@@ -19,20 +19,6 @@
   ```
 
 - This package was generated from https://github.com/RallypointOne/JuliaPackageTemplate.jl
-- Replace all instances of `JuliaPackageTemplate` to the name set by the user
-- Use Julia to create a new UUID
-- Enable GitHub Pages deployment from the `gh-pages` branch:
-  ```
-  gh api repos/{owner}/{repo}/pages -X POST -f source.branch=gh-pages -f source.path=/
-  ```
-  If Pages is already enabled, update it:
-  ```
-  gh api repos/{owner}/{repo}/pages -X PUT -f source.branch=gh-pages -f source.path=/
-  ```
-- Set the repository website URL to the GitHub Pages site:
-  ```
-  gh repo edit {owner}/{repo} --homepage https://{owner}.github.io/{repo}/
-  ```
 
 # Development
 

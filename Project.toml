@@ -1,7 +1,7 @@
-name = "JuliaPackageTemplate"
-uuid = "7adf5606-a580-4ec5-b7a7-75603f58a1cf"
+name = "TodoFiles"
+uuid = "358ed29a-d93c-4fe8-8ea3-c6948dc61de3"
 version = "0.1.0"
-authors = ["author <author@email.com>"]
+authors = ["Josh Day <emailjoshday@gmail.com>"]
 
 [compat]
 julia = "1"

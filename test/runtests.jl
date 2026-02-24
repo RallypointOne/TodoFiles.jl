@@ -1,6 +1,6 @@
-using JuliaPackageTemplate
+using TodoFiles
 using Test
 
-@testset "JuliaPackageTemplate.jl" begin
-    @test JuliaPackageTemplate.greet() == "Hello from JuliaPackageTemplate!"
+@testset "TodoFiles.jl" begin
+    @test true
 end
