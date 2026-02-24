@@ -2,34 +2,34 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "JuliaPackageTemplate.jl",
+    "title": "TodoFiles.jl",
     "section": "",
-    "text": "Overview\nWelcome to the documentation for JuliaPackageTemplate.jl.\nJuliaPackageTemplate.jl is a Julia package that …",
+    "text": "Overview\nWelcome to the documentation for TodoFiles.jl.\nTodoFiles.jl is a Julia package for reading and writing the Todo.txt format.",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>JuliaPackageTemplate.jl</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>TodoFiles.jl</span>"
     ]
   },
   {
     "objectID": "index.html#installation",
     "href": "index.html#installation",
-    "title": "JuliaPackageTemplate.jl",
+    "title": "TodoFiles.jl",
     "section": "Installation",
-    "text": "Installation\nusing Pkg\nPkg.add(\"JuliaPackageTemplate\")",
+    "text": "Installation\nusing Pkg\nPkg.add(\"TodoFiles\")",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>JuliaPackageTemplate.jl</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>TodoFiles.jl</span>"
     ]
   },
   {
     "objectID": "index.html#quickstart",
     "href": "index.html#quickstart",
-    "title": "JuliaPackageTemplate.jl",
+    "title": "TodoFiles.jl",
     "section": "Quickstart",
     "text": "Quickstart\n\nprintln(\"Hello, World!\")\n\nHello, World!",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>JuliaPackageTemplate.jl</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>TodoFiles.jl</span>"
     ]
   },
   {
@@ -48,7 +48,7 @@
     "href": "getting-started.html#basic-usage",
     "title": "Getting Started",
     "section": "",
-    "text": "using JuliaPackageTemplate",
+    "text": "using TodoFiles",
     "crumbs": [
       "Docs",
       "Getting Started"
@@ -81,7 +81,7 @@
     "href": "api.html#types",
     "title": "API",
     "section": "",
-    "text": "Config\n\n\nConfig\nConfiguration for the package.\n\nFields\n\nname::String: The name to use in greetings.\nverbose::Bool: Whether to print extra information.",
+    "text": "Todo\n\n\nTodo\nA single task in the Todo.txt format.\n\nFields\n\ncompleted::Bool: Whether the task is marked complete (x).\npriority::Union{Char, Nothing}: Priority letter 'A'–'Z', or nothing.\ncompletion_date::Union{Date, Nothing}: Date the task was completed.\ncreation_date::Union{Date, Nothing}: Date the task was created.\ndescription::String: The task description text (including contexts, projects, and metadata).\n\n\n\nAccessors\n\ncontexts: Extract @context tags.\nprojects: Extract +project tags.\nmetadata: Extract key:value pairs.\n\n\nExamples\njulia&gt; t = parse_todo(\"(A) 2024-01-15 Call Mom +Family @phone due:2024-01-20\")\nTodo: (A) 2024-01-15 Call Mom +Family @phone due:2024-01-20\n\njulia&gt; t.priority\n'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)\n\njulia&gt; contexts(t)\n[\"phone\"]\n\njulia&gt; projects(t)\n[\"Family\"]\n\njulia&gt; metadata(t)\nDict{String, String} with 1 entry:\n  \"due\" =&gt; \"2024-01-20\"",
     "crumbs": [
       "API",
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
@@ -92,18 +92,7 @@
     "href": "api.html#functions",
     "title": "API",
     "section": "Functions",
-    "text": "Functions\n\n\ngreet\n\n\ngreet()\ngreet(name::String)\nReturn a greeting string. If name is provided, greet that person.\n\nExamples\njulia&gt; greet()\n\"Hello from JuliaPackageTemplate!\"\n\njulia&gt; greet(\"Julia\")\n\"Hello, Julia!\"\n\n\n\n\n\ntransform\n\n\ntransform(x::AbstractVector; scale=1.0)\nApply a transformation to x, scaling each element by scale.\n\nExamples\njulia&gt; transform([1, 2, 3]; scale=2.0)\n3-element Vector{Float64}:\n 2.0\n 4.0\n 6.0",
-    "crumbs": [
-      "API",
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
-    ]
-  },
-  {
-    "objectID": "api.html#constants",
-    "href": "api.html#constants",
-    "title": "API",
-    "section": "Constants",
-    "text": "Constants\n\n\nDEFAULT_GREETING\n\n\nString(s::AbstractString)\nCreate a new String from an existing AbstractString.\nString(v::AbstractVector{UInt8})\nCreate a new String object using the data buffer from byte vector v. If v is a Vector{UInt8} it will be truncated to zero length and future modification of v cannot affect the contents of the resulting string. To avoid truncation of Vector{UInt8} data, use String(copy(v)); for other AbstractVector types, String(v) already makes a copy.\nWhen possible, the memory of v will be used without copying when the String object is created. This is guaranteed to be the case for byte vectors returned by take! on a writable IOBuffer and by calls to read(io, nb). This allows zero-copy conversion of I/O data to strings. In other cases, Vector{UInt8} data may be copied, but v is truncated anyway to guarantee consistent behavior.\nString &lt;: AbstractString\nThe default string type in Julia, used by e.g. string literals.\nStrings are immutable sequences of Chars. A String is stored internally as a contiguous byte array, and while they are interpreted as being UTF-8 encoded, they can be composed of any byte sequence. Use isvalid to validate that the underlying byte sequence is valid as UTF-8.",
+    "text": "Functions\n\n\ncontexts\n\n\ncontexts(t::Todo) -&gt; Vector{String}\nExtract all @context tags from the task description.\n\nExamples\njulia&gt; t = parse_todo(\"Call Mom @phone @home\")\nTodo: Call Mom @phone @home\n\njulia&gt; contexts(t)\n[\"phone\", \"home\"]\n\n\n\n\n\nmetadata\n\n\nmetadata(t::Todo) -&gt; Dict{String, String}\nExtract all key:value metadata pairs from the task description.\n\nExamples\njulia&gt; t = parse_todo(\"Call Mom due:2024-01-20 effort:low\")\nTodo: Call Mom due:2024-01-20 effort:low\n\njulia&gt; metadata(t)\nDict{String, String} with 2 entries:\n  \"due\"    =&gt; \"2024-01-20\"\n  \"effort\" =&gt; \"low\"\n\n\n\n\n\nparse_todo\n\n\nparse_todo(line::AbstractString) -&gt; Todo\nParse a single line of Todo.txt format into a Todo.\n\nExamples\njulia&gt; parse_todo(\"(A) 2024-01-15 Call Mom +Family @phone\")\nTodo: (A) 2024-01-15 Call Mom +Family @phone\n\njulia&gt; parse_todo(\"x 2024-01-16 2024-01-15 Call Mom +Family @phone\")\nTodo: x 2024-01-16 2024-01-15 Call Mom +Family @phone\n\n\n\n\n\nparse_todos\n\n\nparse_todos(text::AbstractString) -&gt; Vector{Todo}\nParse multiple lines of Todo.txt format into a vector of Todo items. Blank lines are skipped.\n\nExamples\njulia&gt; todos = parse_todos(\"\"\"\n       (A) Call Mom @phone\n       (B) Buy groceries @store +Errands\n       x 2024-01-15 Pay bills\n       \"\"\")\n3-element Vector{Todo}:\n Todo: (A) Call Mom @phone\n Todo: (B) Buy groceries @store +Errands\n Todo: x 2024-01-15 Pay bills\n\n\n\n\n\nprojects\n\n\nprojects(t::Todo) -&gt; Vector{String}\nExtract all +project tags from the task description.\n\nExamples\njulia&gt; t = parse_todo(\"Call Mom +Family +Health\")\nTodo: Call Mom +Family +Health\n\njulia&gt; projects(t)\n[\"Family\", \"Health\"]\n\n\n\n\n\nread_todos\n\n\nread_todos(filepath::AbstractString) -&gt; Vector{Todo}\nRead a Todo.txt file and return a vector of Todo items.\n\nExamples\njulia&gt; todos = read_todos(\"todo.txt\")\n\n\n\n\n\nwrite_todo\n\n\nwrite_todo(t::Todo) -&gt; String\nSerialize a Todo back to a single Todo.txt formatted line.\n\nExamples\njulia&gt; t = Todo(\"Call Mom +Family @phone\"; priority='A', creation_date=Date(2024, 1, 15))\nTodo: (A) 2024-01-15 Call Mom +Family @phone\n\njulia&gt; write_todo(t)\n\"(A) 2024-01-15 Call Mom +Family @phone\"\n\n\n\n\n\nwrite_todos\n\n\nwrite_todos(todos::Vector{Todo}) -&gt; String\nSerialize a vector of Todo items into a Todo.txt formatted string.\nwrite_todos(filepath::AbstractString, todos::Vector{Todo})\nWrite a vector of Todo items to a file in Todo.txt format.\n\nExamples\njulia&gt; write_todos(\"todo.txt\", todos)",
     "crumbs": [
       "API",
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>API</span>"
@@ -114,7 +103,7 @@
     "href": "resources/benchmarks.html",
     "title": "Benchmarks",
     "section": "",
-    "text": "\u001b[32m\u001b[1mPrecompiling\u001b[22m\u001b[39m packages… 1128.3 ms\u001b[32m ✓ \u001b[39mQuartoNotebookWorkerJSON3Ext\u001b[90m (serial)\u001b[39m 1 dependency successfully precompiled in 1 seconds ::: {.callout-note} ## No benchmark results available\nBenchmarks have not been set up for this package yet. See the CLAUDE.md for instructions on how to set up benchmarks. :::",
+    "text": "NoteNo benchmark results available\n\n\n\nBenchmarks have not been set up for this package yet. See the CLAUDE.md for instructions on how to set up benchmarks.",
     "crumbs": [
       "Resources",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Benchmarks</span>"
