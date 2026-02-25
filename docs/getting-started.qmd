@@ -20,7 +20,8 @@ x (A) 2024-01-16 2024-01-15 Description @context +project key:value
 │  │       │          │          │           │        │        │
 │  │       │          │          │           │        │        └─ metadata
 │  │       │          │          │           │        └─ project tag
-│  │       │          │          └─ description   └─ context tag
+│  │       │          │          │           └─ context tag
+│  │       │          │          └─ description
 │  │       │          └─ creation date
 │  │       └─ completion date
 │  └─ priority (A-Z)
