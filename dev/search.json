@@ -224,7 +224,7 @@
     "href": "resources/benchmarks.html",
     "title": "Benchmarks",
     "section": "",
-    "text": "NoteNo benchmark results available\n\n\n\nBenchmarks have not been set up for this package yet. See the CLAUDE.md for instructions on how to set up benchmarks.",
+    "text": "\u001b[32m\u001b[1mPrecompiling\u001b[22m\u001b[39m packages… 1127.1 ms\u001b[32m ✓ \u001b[39mQuartoNotebookWorkerJSON3Ext\u001b[90m (serial)\u001b[39m 1 dependency successfully precompiled in 1 seconds ::: {.callout-note} ## No benchmark results available\nBenchmarks have not been set up for this package yet. See the CLAUDE.md for instructions on how to set up benchmarks. :::",
     "crumbs": [
       "Resources",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Benchmarks</span>"
