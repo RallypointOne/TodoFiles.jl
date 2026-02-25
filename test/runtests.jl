@@ -321,10 +321,14 @@ using Test
                 @test sprint(show, tv) == "TableView(3 tasks)"
                 html = sprint(show, MIME("text/html"), tv)
                 @test contains(html, "todo-table")
-                @test contains(html, "<th>Description</th>")
+                @test contains(html, "Description")
                 @test contains(html, "Call Mom")
                 @test contains(html, "2024-01-15")
                 @test contains(html, "2024-01-16")
+                # Sortable columns
+                @test contains(html, "data-sort-value")
+                @test contains(html, "todoSort_")
+                @test contains(html, "todo-sort-arrow")
             end
 
             @testset "KanbanView" begin
@@ -401,6 +405,56 @@ using Test
                 @test contains(empty_html, "No tasks with both")
             end
 
+            @testset "DueView" begin
+                today = Date(2024, 1, 15)
+                due_todos = [
+                    Todo("Overdue task"; priority='A', metadata=Dict("due" => "2024-01-10")),
+                    Todo("Due today"; priority='B', metadata=Dict("due" => "2024-01-15")),
+                    Todo("Due soon"; metadata=Dict("due" => "2024-01-17")),
+                    Todo("Due later"; metadata=Dict("due" => "2024-02-01")),
+                    Todo("No due date"),
+                    Todo("Completed"; completed=true, metadata=Dict("due" => "2024-01-20")),
+                ]
+                write_todos(filepath, due_todos)
+                dtf = TodoFile(filepath)
+
+                dv = DueView(dtf, today)
+                @test sprint(show, dv) == "DueView(6 tasks)"
+
+                html = sprint(show, MIME("text/html"), dv)
+                @test contains(html, "todo-due-track")
+                @test contains(html, "Overdue task")
+                @test contains(html, "Due today")
+                @test contains(html, "Due soon")
+                @test contains(html, "Due later")
+                # No due date excluded
+                @test !contains(html, "No due date")
+                # Completed tasks excluded
+                @test !contains(html, "Completed")
+                # Urgency classes
+                @test contains(html, "todo-due-overdue")
+                @test contains(html, "todo-due-urgent")
+                @test contains(html, "todo-due-plenty")
+                # Status labels
+                @test contains(html, "5d overdue")
+                @test contains(html, "due today")
+                @test contains(html, "2 days left")
+                @test contains(html, "17 days left")
+                # Today marker
+                @test contains(html, "todo-due-today")
+
+                # Default constructor uses Dates.today()
+                dv2 = DueView(dtf)
+                @test dv2.today == Dates.today()
+
+                # Empty (no pending tasks with due dates)
+                empty_todos = [Todo("No dates")]
+                write_todos(filepath, empty_todos)
+                etf = TodoFile(filepath)
+                empty_html = sprint(show, MIME("text/html"), DueView(etf, today))
+                @test contains(empty_html, "No pending tasks with a due date")
+            end
+
             @testset "html_view convenience function" begin
                 @test html_view(tf) isa ListView
                 @test html_view(tf; view=:list) isa ListView
@@ -409,6 +463,7 @@ using Test
                 @test html_view(tf; view=:kanban).group_by == :priority
                 @test html_view(tf; view=:kanban, group_by=:projects).group_by == :projects
                 @test html_view(tf; view=:gantt) isa GanttView
+                @test html_view(tf; view=:due) isa DueView
                 @test_throws ErrorException html_view(tf; view=:invalid)
             end
 

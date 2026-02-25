@@ -4,7 +4,7 @@ using Dates
 using Tables
 
 export Todo, TodoFile, parse_todo, parse_todos, write_todo, write_todos, read_todos,
-       ListView, TableView, KanbanView, GanttView, html_view
+       ListView, TableView, KanbanView, GanttView, DueView, html_view
 
 #--------------------------------------------------------------------------------# Helpers
 function _extract_tags(description::AbstractString)
@@ -366,7 +366,8 @@ function _todo_css()
     .todo-meta { background: #f3e5f5; color: #6a1b9a; }
     .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
     .todo-table { border-collapse: collapse; width: 100%; }
-    .todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+    .todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+    .todo-sort-arrow { font-size: 10px; color: #666; }
     .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
     .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
     .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -384,6 +385,15 @@ function _todo_css()
     .todo-gantt-bar-other { background: #90a4ae; }
     .todo-gantt-bar-done { opacity: 0.4; }
     .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+    .todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+    .todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+    .todo-due-overdue { background: #e53935; }
+    .todo-due-urgent { background: #fb8c00; }
+    .todo-due-soon { background: #fdd835; }
+    .todo-due-ok { background: #66bb6a; }
+    .todo-due-plenty { background: #42a5f5; }
+    .todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
     </style>"""
 end
 
@@ -520,23 +530,71 @@ function Base.show(io::IO, ::MIME"text/html", v::ListView)
 end
 
 # HTML show — TableView
+function _sort_value(t::Todo, col::Symbol)
+    if col == :completed
+        t.completed ? "1" : "0"
+    elseif col == :priority
+        isnothing(t.priority) ? "ZZ" : string(t.priority)
+    elseif col == :description
+        t.description
+    elseif col == :tags
+        join(t.contexts, ",") * ";" * join(t.projects, ",")
+    elseif col == :creation_date
+        _date_str(t.creation_date)
+    elseif col == :completion_date
+        _date_str(t.completion_date)
+    else
+        ""
+    end
+end
+
 function Base.show(io::IO, ::MIME"text/html", v::TableView)
+    tid = "todo-table-" * string(hash(v), base=16)
     print(io, _todo_css())
-    print(io, """<div class="todo-container"><table class="todo-table">""")
-    print(io, "<thead><tr><th>Done</th><th>Priority</th><th>Description</th><th>Tags</th><th>Created</th><th>Completed</th></tr></thead><tbody>")
+    print(io, """<div class="todo-container"><table class="todo-table" id="$tid">""")
+    print(io, "<thead><tr>")
+    for (i, (label, col)) in enumerate([
+        ("Done", :completed), ("Priority", :priority), ("Description", :description),
+        ("Tags", :tags), ("Created", :creation_date), ("Completed", :completion_date)
+    ])
+        print(io, """<th style="cursor:pointer;user-select:none;" onclick="todoSort_$tid($i)">$label <span class="todo-sort-arrow" id="$(tid)_arrow_$i"></span></th>""")
+    end
+    print(io, "</tr></thead><tbody>")
+    cols = [:completed, :priority, :description, :tags, :creation_date, :completion_date]
     for t in v.todofile
         check = t.completed ? "&#10003;" : ""
         pri = isnothing(t.priority) ? "" : _priority_html(t.priority)
         print(io, "<tr>")
-        print(io, "<td>$check</td>")
-        print(io, "<td>$pri</td>")
-        print(io, "<td>$(_html_escape(t.description))</td>")
-        print(io, "<td>$(_tags_html(t))</td>")
-        print(io, """<td class="todo-date">$(_date_str(t.creation_date))</td>""")
-        print(io, """<td class="todo-date">$(_date_str(t.completion_date))</td>""")
+        print(io, """<td data-sort-value="$(_html_escape(_sort_value(t, :completed)))">$check</td>""")
+        print(io, """<td data-sort-value="$(_html_escape(_sort_value(t, :priority)))">$pri</td>""")
+        print(io, """<td data-sort-value="$(_html_escape(_sort_value(t, :description)))">$(_html_escape(t.description))</td>""")
+        print(io, """<td data-sort-value="$(_html_escape(_sort_value(t, :tags)))">$(_tags_html(t))</td>""")
+        print(io, """<td class="todo-date" data-sort-value="$(_html_escape(_sort_value(t, :creation_date)))">$(_date_str(t.creation_date))</td>""")
+        print(io, """<td class="todo-date" data-sort-value="$(_html_escape(_sort_value(t, :completion_date)))">$(_date_str(t.completion_date))</td>""")
         print(io, "</tr>")
     end
     print(io, "</tbody></table></div>")
+    print(io, """
+    <script>
+    (function(){
+      var sortCol=null, sortAsc=true;
+      window.todoSort_$tid=function(col){
+        var table=document.getElementById("$tid");
+        var tbody=table.querySelector("tbody");
+        var rows=Array.from(tbody.querySelectorAll("tr"));
+        if(sortCol===col){sortAsc=!sortAsc}else{sortCol=col;sortAsc=true}
+        rows.sort(function(a,b){
+          var av=a.cells[col-1].getAttribute("data-sort-value")||"";
+          var bv=b.cells[col-1].getAttribute("data-sort-value")||"";
+          return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
+        });
+        rows.forEach(function(r){tbody.appendChild(r)});
+        table.querySelectorAll(".todo-sort-arrow").forEach(function(el){el.textContent=""});
+        var arrow=document.getElementById("$(tid)_arrow_"+col);
+        if(arrow)arrow.textContent=sortAsc?"\\u25B2":"\\u25BC";
+      };
+    })();
+    </script>""")
 end
 
 # HTML show — KanbanView
@@ -635,6 +693,120 @@ function Base.show(io::IO, ::MIME"text/html", v::GanttView)
     print(io, "</div>")
 end
 
+"""
+    DueView
+
+A timeline HTML view of a [`TodoFile`](@ref) showing time remaining until each task is due.
+Tasks need a `due` metadata key (e.g. `due:2024-02-01`) to appear. Bars are colored by
+urgency: overdue (red), ≤3 days (orange), ≤7 days (yellow), ≤14 days (green), >14 days (blue).
+
+The `today` field defaults to `Dates.today()` but can be overridden for testing.
+
+### Examples
+```julia
+julia> tf = TodoFile("todo.txt")
+
+julia> DueView(tf)
+DueView(3 tasks)
+```
+"""
+struct DueView
+    todofile::TodoFile
+    today::Date
+end
+DueView(tf::TodoFile) = DueView(tf, Dates.today())
+
+Base.show(io::IO, v::DueView) = print(io, "DueView($(length(v.todofile)) tasks)")
+
+function _due_date(t::Todo)
+    due_str = get(t.metadata, "due", "")
+    isempty(due_str) && return nothing
+    return tryparse(Date, due_str)
+end
+
+function _due_urgency_class(days_remaining::Int)
+    if days_remaining < 0
+        "todo-due-overdue"
+    elseif days_remaining <= 3
+        "todo-due-urgent"
+    elseif days_remaining <= 7
+        "todo-due-soon"
+    elseif days_remaining <= 14
+        "todo-due-ok"
+    else
+        "todo-due-plenty"
+    end
+end
+
+function _due_label(days_remaining::Int)
+    if days_remaining < 0
+        "$(abs(days_remaining))d overdue"
+    elseif days_remaining == 0
+        "due today"
+    elseif days_remaining == 1
+        "1 day left"
+    else
+        "$days_remaining days left"
+    end
+end
+
+function Base.show(io::IO, ::MIME"text/html", v::DueView)
+    today = v.today
+    items = Tuple{Todo, Date, Int}[]
+    for t in v.todofile
+        t.completed && continue
+        due = _due_date(t)
+        isnothing(due) && continue
+        days = Dates.value(due - today)
+        push!(items, (t, due, days))
+    end
+    sort!(items, by = x -> x[3])
+    print(io, _todo_css())
+    print(io, """<div class="todo-container">""")
+    if isempty(items)
+        print(io, """<p style="color:#888;font-style:italic;">No pending tasks with a due date to display.</p>""")
+    else
+        min_days = minimum(x[3] for x in items)
+        max_days = maximum(x[3] for x in items)
+        range_start = min(min_days, 0)
+        range_end = max(max_days, 1)
+        span = range_end - range_start
+        span = max(span, 1)
+        today_pct = round(100.0 * (0 - range_start) / span, digits=2)
+        print(io, """<table class="todo-gantt">""")
+        print(io, """<thead><tr><th class="todo-gantt-label">Task</th><th>Time to Due Date</th><th class="todo-due-label" style="text-align:right;">Status</th></tr></thead><tbody>""")
+        for (t, due, days) in items
+            cls = _due_urgency_class(days)
+            label = _html_escape(t.description)
+            pri = _priority_html(t.priority)
+            status = _due_label(days)
+            if days < 0
+                bar_end = 0 - range_start
+                bar_start = days - range_start
+                left_pct = round(100.0 * bar_start / span, digits=2)
+                width_pct = round(100.0 * (bar_end - bar_start) / span, digits=2)
+            else
+                bar_start = 0 - range_start
+                bar_end = days - range_start
+                left_pct = round(100.0 * bar_start / span, digits=2)
+                width_pct = round(100.0 * max(bar_end - bar_start, 0.5) / span, digits=2)
+            end
+            width_pct = min(width_pct, 100.0 - left_pct)
+            print(io, "<tr>")
+            print(io, """<td class="todo-gantt-label">$pri $label</td>""")
+            print(io, """<td><div class="todo-due-track">""")
+            print(io, """<div class="todo-due-today" style="left:$(today_pct)%" title="today"></div>""")
+            print(io, """<div class="todo-due-bar $cls" style="left:$(left_pct)%;width:$(width_pct)%" title="due: $due ($status)"></div>""")
+            print(io, """</div></td>""")
+            print(io, """<td class="todo-due-label" style="text-align:right;color:$(days < 0 ? "#e53935" : days <= 3 ? "#e65100" : "#333")">$status</td>""")
+            print(io, "</tr>")
+        end
+        print(io, "</tbody></table>")
+        print(io, """<div class="todo-gantt-dates"><span>$(today + Day(range_start))</span><span style="font-weight:600;">today ($today)</span><span>$(today + Day(range_end))</span></div>""")
+    end
+    print(io, "</div>")
+end
+
 # Default HTML for TodoFile delegates to ListView
 function Base.show(io::IO, mime::MIME"text/html", tf::TodoFile)
     show(io, mime, ListView(tf))
@@ -645,7 +817,7 @@ end
 
 Create an HTML view of a [`TodoFile`](@ref) for rich display in notebooks.
 
-Returns a [`ListView`](@ref), [`TableView`](@ref), [`KanbanView`](@ref), or [`GanttView`](@ref).
+Returns a [`ListView`](@ref), [`TableView`](@ref), [`KanbanView`](@ref), [`GanttView`](@ref), or [`DueView`](@ref).
 
 ### Examples
 ```julia
@@ -662,6 +834,9 @@ KanbanView(3 tasks, group_by=:projects)
 
 julia> html_view(tf; view=:gantt)
 GanttView(3 tasks)
+
+julia> html_view(tf; view=:due)
+DueView(3 tasks)
 ```
 """
 function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)
@@ -673,8 +848,10 @@ function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)
         return KanbanView(tf, group_by)
     elseif view == :gantt
         return GanttView(tf)
+    elseif view == :due
+        return DueView(tf)
     else
-        error("Invalid view: $view. Use :list, :table, :kanban, or :gantt.")
+        error("Invalid view: $view. Use :list, :table, :kanban, :gantt, or :due.")
     end
 end
 
