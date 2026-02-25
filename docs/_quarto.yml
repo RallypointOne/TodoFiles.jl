@@ -26,13 +26,13 @@ book:
       chapters:
         - index.qmd
         - getting-started.qmd
+        - markdown-todos.qmd
         - html-views.qmd
     - part: "API"
       chapters:
         - api.qmd
     - part: "Resources"
       chapters:
-        - resources/benchmarks.qmd
         - resources/changelog.qmd
         - resources/coverage.qmd
 

@@ -1,0 +1,136 @@
+---
+title: "Markdown Todos"
+engine: julia
+---
+
+```{julia}
+#| echo: false
+#| output: false
+using TodoFiles, Dates
+```
+
+## The Markdown Format
+
+In addition to flat Todo.txt files, TodoFiles.jl can parse markdown files where `#`-headings define sections and `- ` list items are todo entries:
+
+```markdown
+# Work
+- (A) Finish report @office +ClientProject
+- Email client @office
+
+## Personal
+- Buy groceries @store +Errands
+- (B) Call Mom @phone +Family due:2024-02-01
+```
+
+Each list item is parsed using the same Todo.txt rules as `parse_todo`.
+
+## Parsing
+
+`parse_markdown_todos` returns a vector of `TodoSection`s, each with a heading, level, and todos:
+
+```{julia}
+text = """
+# Work
+- (A) Finish report @office +ClientProject
+- Email client @office
+
+## Personal
+- Buy groceries @store +Errands
+- (B) Call Mom @phone +Family due:2024-02-01
+"""
+
+sections = parse_markdown_todos(text)
+```
+
+```{julia}
+sections[1].heading, sections[1].level
+```
+
+```{julia}
+sections[1].todos
+```
+
+```{julia}
+sections[2].heading, sections[2].level
+```
+
+Todos appearing before any heading are placed in a section with `heading=""` and `level=0`:
+
+```{julia}
+sections = parse_markdown_todos("""
+- Orphan task
+# Section
+- Task in section
+""")
+
+sections[1].heading, sections[1].level, sections[1].todos
+```
+
+## Writing
+
+`write_markdown_todos` serializes sections back to markdown with blank lines between sections:
+
+```{julia}
+sections = parse_markdown_todos(text)
+print(write_markdown_todos(sections))
+```
+
+## MarkdownTodoFile
+
+`MarkdownTodoFile` is the section-aware counterpart to `TodoFile`. It reads a markdown file, provides iteration over all todos (flattened across sections), and can write back to disk:
+
+```{julia}
+path = tempname() * ".md"
+write_markdown_todos(path, parse_markdown_todos(text))
+
+mf = MarkdownTodoFile(path)
+```
+
+```{julia}
+length(mf)
+```
+
+```{julia}
+mf[1]
+```
+
+```{julia}
+collect(mf)
+```
+
+Write back to disk with `write_todos`:
+
+```{julia}
+write_todos(mf)  # writes to mf.filepath
+```
+
+## HTML Views
+
+All existing views work with `MarkdownTodoFile` -- todos are flattened automatically:
+
+```{julia}
+ListView(mf)
+```
+
+```{julia}
+TableView(mf)
+```
+
+```{julia}
+KanbanView(mf)
+```
+
+### Group by section
+
+`KanbanView` supports `:section` as a `group_by` option, which groups todos by their markdown heading:
+
+```{julia}
+KanbanView(mf, :section)
+```
+
+The `html_view` convenience function also accepts `MarkdownTodoFile`:
+
+```{julia}
+html_view(mf; view=:kanban, group_by=:section)
+```

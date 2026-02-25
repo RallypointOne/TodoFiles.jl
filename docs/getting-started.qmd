@@ -3,8 +3,6 @@ title: "Getting Started"
 engine: julia
 ---
 
-# Getting Started {.unnumbered}
-
 ```{julia}
 #| echo: false
 #| output: false

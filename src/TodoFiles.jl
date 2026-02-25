@@ -3,7 +3,10 @@ module TodoFiles
 using Dates
 using Tables
 
-export Todo, TodoFile, parse_todo, parse_todos, write_todo, write_todos, read_todos,
+export Todo, TodoFile, TodoSection, MarkdownTodoFile,
+       parse_todo, parse_todos, parse_markdown_todos,
+       write_todo, write_todos, write_markdown_todos,
+       read_todos, read_markdown_todos,
        ListView, TableView, KanbanView, GanttView, DueView, html_view
 
 #--------------------------------------------------------------------------------# Helpers
@@ -328,6 +331,201 @@ Write a [`TodoFile`](@ref) back to its filepath.
 """
 write_todos(tf::TodoFile) = write_todos(tf.filepath, tf.todos)
 
+#--------------------------------------------------------------------------------# MarkdownTodoFile
+"""
+    TodoSection
+
+A group of [`Todo`](@ref) items under a markdown heading.
+
+# Fields
+- `heading::String`: The heading text (empty string for todos before any heading).
+- `level::Int`: The heading level (1 for `#`, 2 for `##`, etc.; 0 for no heading).
+- `todos::Vector{Todo}`: The tasks in this section.
+"""
+struct TodoSection
+    heading::String
+    level::Int
+    todos::Vector{Todo}
+end
+
+function Base.show(io::IO, s::TodoSection)
+    n = length(s.todos)
+    h = isempty(s.heading) ? "(no heading)" : s.heading
+    print(io, "TodoSection(\"$h\", $n task$(n == 1 ? "" : "s"))")
+end
+
+"""
+    MarkdownTodoFile
+
+A markdown file with [`TodoSection`](@ref)s, where `#`-headings define sections and
+`- ` list items are todo entries in [Todo.txt](https://github.com/todotxt/todo.txt) format.
+Existing HTML views work via automatic flattening of all todos.
+
+### Examples
+```julia
+julia> mf = MarkdownTodoFile("todos.md")
+
+julia> length(mf)
+5
+
+julia> mf[1]
+Todo: (A) Call Mom @phone +Family
+```
+"""
+struct MarkdownTodoFile
+    filepath::String
+    sections::Vector{TodoSection}
+end
+
+function Base.show(io::IO, mf::MarkdownTodoFile)
+    n = sum(length(s.todos) for s in mf.sections; init=0)
+    ns = length(mf.sections)
+    print(io, "MarkdownTodoFile(\"$(mf.filepath)\") with $ns section$(ns == 1 ? "" : "s"), $n task$(n == 1 ? "" : "s")")
+end
+
+Base.length(mf::MarkdownTodoFile) = sum(length(s.todos) for s in mf.sections; init=0)
+Base.eltype(::Type{MarkdownTodoFile}) = Todo
+
+function Base.iterate(mf::MarkdownTodoFile)
+    for (si, s) in enumerate(mf.sections)
+        if !isempty(s.todos)
+            return (s.todos[1], (si, 1))
+        end
+    end
+    return nothing
+end
+
+function Base.iterate(mf::MarkdownTodoFile, state)
+    si, ti = state
+    ti += 1
+    while si <= length(mf.sections)
+        if ti <= length(mf.sections[si].todos)
+            return (mf.sections[si].todos[ti], (si, ti))
+        end
+        si += 1
+        ti = 1
+    end
+    return nothing
+end
+
+function Base.getindex(mf::MarkdownTodoFile, i::Int)
+    idx = i
+    for s in mf.sections
+        if idx <= length(s.todos)
+            return s.todos[idx]
+        end
+        idx -= length(s.todos)
+    end
+    throw(BoundsError(mf, i))
+end
+
+"""
+    parse_markdown_todos(text::AbstractString) -> Vector{TodoSection}
+
+Parse markdown text with `#`-headings as sections and `- ` list items as
+[`Todo`](@ref) entries. Blank lines and non-todo content are skipped.
+
+### Examples
+```julia
+julia> sections = parse_markdown_todos(\"\"\"
+       # Work
+       - (A) Finish report @office
+       - Email client @office +ClientProject
+       ## Personal
+       - Buy groceries @store +Errands
+       \"\"\")
+2-element Vector{TodoSection}:
+ TodoSection("Work", 2 tasks)
+ TodoSection("Personal", 1 task)
+```
+"""
+function parse_markdown_todos(text::AbstractString)
+    sections = TodoSection[]
+    current_heading = ""
+    current_level = 0
+    current_todos = Todo[]
+
+    for line in split(text, r"\r?\n")
+        stripped = strip(line)
+        isempty(stripped) && continue
+        m = match(r"^(#{1,6})\s+(.+)$", stripped)
+        if !isnothing(m)
+            if !isempty(current_todos) || current_level > 0
+                push!(sections, TodoSection(current_heading, current_level, current_todos))
+            end
+            current_level = length(m.captures[1])
+            current_heading = strip(String(m.captures[2]))
+            current_todos = Todo[]
+        elseif startswith(stripped, "- ")
+            todo_text = strip(stripped[3:end])
+            !isempty(todo_text) && push!(current_todos, parse_todo(todo_text))
+        end
+    end
+
+    if !isempty(current_todos) || current_level > 0
+        push!(sections, TodoSection(current_heading, current_level, current_todos))
+    end
+
+    return sections
+end
+
+"""
+    read_markdown_todos(filepath::AbstractString) -> Vector{TodoSection}
+
+Read a markdown file and parse it into [`TodoSection`](@ref)s.
+
+### Examples
+```julia
+julia> sections = read_markdown_todos("todos.md")
+```
+"""
+function read_markdown_todos(filepath::AbstractString)
+    parse_markdown_todos(read(filepath, String))
+end
+
+"""
+    write_markdown_todos(sections::Vector{TodoSection}) -> String
+
+Serialize [`TodoSection`](@ref)s to a markdown string with `#`-headings and `- ` list items.
+"""
+function write_markdown_todos(sections::Vector{TodoSection})
+    parts = String[]
+    for s in sections
+        section_lines = String[]
+        if s.level > 0 && !isempty(s.heading)
+            push!(section_lines, "#"^s.level * " " * s.heading)
+        end
+        for t in s.todos
+            push!(section_lines, "- " * write_todo(t))
+        end
+        !isempty(section_lines) && push!(parts, join(section_lines, "\n"))
+    end
+    return join(parts, "\n\n") * "\n"
+end
+
+"""
+    write_markdown_todos(filepath::AbstractString, sections::Vector{TodoSection})
+
+Write [`TodoSection`](@ref)s to a markdown file.
+"""
+function write_markdown_todos(filepath::AbstractString, sections::Vector{TodoSection})
+    write(filepath, write_markdown_todos(sections))
+end
+
+"""
+    MarkdownTodoFile(filepath::AbstractString)
+
+Read a markdown file and return a [`MarkdownTodoFile`](@ref).
+"""
+MarkdownTodoFile(filepath::AbstractString) = MarkdownTodoFile(String(filepath), read_markdown_todos(filepath))
+
+"""
+    write_todos(mf::MarkdownTodoFile)
+
+Write a [`MarkdownTodoFile`](@ref) back to its filepath.
+"""
+write_todos(mf::MarkdownTodoFile) = write_markdown_todos(mf.filepath, mf.sections)
+
 #--------------------------------------------------------------------------------# Tables.jl
 Tables.istable(::Type{TodoFile}) = true
 Tables.rowaccess(::Type{TodoFile}) = true
@@ -416,6 +614,7 @@ function _tags_html(t::Todo)
         push!(parts, """<span class="todo-pill todo-prj">+$(_html_escape(p))</span>""")
     end
     for (k, v) in sort(collect(t.metadata))
+        startswith(k, "_") && continue
         push!(parts, """<span class="todo-pill todo-meta">$(_html_escape(k)):$(_html_escape(v))</span>""")
     end
     join(parts)
@@ -438,8 +637,11 @@ function _group_keys(t::Todo, group_by::Symbol)
         return isempty(t.projects) ? ["(no project)"] : t.projects
     elseif group_by == :contexts
         return isempty(t.contexts) ? ["(no context)"] : t.contexts
+    elseif group_by == :section
+        sec = get(t.metadata, "_section", "(no section)")
+        return [sec]
     else
-        error("Invalid group_by: $group_by. Use :priority, :completed, :projects, or :contexts.")
+        error("Invalid group_by: $group_by. Use :priority, :completed, :projects, :contexts, or :section.")
     end
 end
 
@@ -853,6 +1055,61 @@ function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)
     else
         error("Invalid view: $view. Use :list, :table, :kanban, :gantt, or :due.")
     end
+end
+
+#--------------------------------------------------------------------------------# MarkdownTodoFile Views
+_to_todofile(mf::MarkdownTodoFile) = TodoFile(mf.filepath, collect(mf))
+
+function _with_section_metadata(mf::MarkdownTodoFile)
+    todos = Todo[]
+    for s in mf.sections
+        section_name = isempty(s.heading) ? "(no section)" : s.heading
+        for t in s.todos
+            meta = copy(t.metadata)
+            meta["_section"] = section_name
+            push!(todos, Todo(t.completed, t.priority, t.completion_date, t.creation_date, t.description, copy(t.contexts), copy(t.projects), meta))
+        end
+    end
+    TodoFile(mf.filepath, todos)
+end
+
+ListView(mf::MarkdownTodoFile) = ListView(_to_todofile(mf))
+TableView(mf::MarkdownTodoFile) = TableView(_to_todofile(mf))
+GanttView(mf::MarkdownTodoFile) = GanttView(_to_todofile(mf))
+DueView(mf::MarkdownTodoFile) = DueView(_to_todofile(mf))
+DueView(mf::MarkdownTodoFile, today::Date) = DueView(_to_todofile(mf), today)
+
+function KanbanView(mf::MarkdownTodoFile, group_by::Symbol=:priority)
+    if group_by == :section
+        KanbanView(_with_section_metadata(mf), group_by)
+    else
+        KanbanView(_to_todofile(mf), group_by)
+    end
+end
+
+"""
+    html_view(mf::MarkdownTodoFile; view::Symbol=:list, group_by::Symbol=:priority)
+
+Create an HTML view of a [`MarkdownTodoFile`](@ref). See [`html_view(::TodoFile)`](@ref) for options.
+"""
+function html_view(mf::MarkdownTodoFile; view::Symbol=:list, group_by::Symbol=:priority)
+    if view == :list
+        return ListView(mf)
+    elseif view == :table
+        return TableView(mf)
+    elseif view == :kanban
+        return KanbanView(mf, group_by)
+    elseif view == :gantt
+        return GanttView(mf)
+    elseif view == :due
+        return DueView(mf)
+    else
+        error("Invalid view: $view. Use :list, :table, :kanban, :gantt, or :due.")
+    end
+end
+
+function Base.show(io::IO, mime::MIME"text/html", mf::MarkdownTodoFile)
+    show(io, mime, ListView(mf))
 end
 
 end # module
