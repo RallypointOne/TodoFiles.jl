@@ -37,7 +37,7 @@
     "href": "getting-started.html",
     "title": "Getting Started",
     "section": "",
-    "text": "Getting Started",
+    "text": "The Todo.txt Format\nTodo.txt is a plain-text format for managing tasks. Each line represents one task with an optional structure:\nAll parts are optional except the description.",
     "crumbs": [
       "Docs",
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
@@ -47,8 +47,8 @@
     "objectID": "getting-started.html#the-todo.txt-format",
     "href": "getting-started.html#the-todo.txt-format",
     "title": "Getting Started",
-    "section": "The Todo.txt Format",
-    "text": "The Todo.txt Format\nTodo.txt is a plain-text format for managing tasks. Each line represents one task with an optional structure:\nx (A) 2024-01-16 2024-01-15 Description @context +project key:value\n│  │       │          │          │           │        │        │\n│  │       │          │          │           │        │        └─ metadata\n│  │       │          │          │           │        └─ project tag\n│  │       │          │          └─ description   └─ context tag\n│  │       │          └─ creation date\n│  │       └─ completion date\n│  └─ priority (A-Z)\n└─ completion marker\nAll parts are optional except the description.",
+    "section": "",
+    "text": "x (A) 2024-01-16 2024-01-15 Description @context +project key:value\n│  │       │          │          │           │        │        │\n│  │       │          │          │           │        │        └─ metadata\n│  │       │          │          │           │        └─ project tag\n│  │       │          │          │           └─ context tag\n│  │       │          │          └─ description\n│  │       │          └─ creation date\n│  │       └─ completion date\n│  └─ priority (A-Z)\n└─ completion marker",
     "crumbs": [
       "Docs",
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Getting Started</span>"
@@ -110,6 +110,72 @@
     ]
   },
   {
+    "objectID": "markdown-todos.html",
+    "href": "markdown-todos.html",
+    "title": "Markdown Todos",
+    "section": "",
+    "text": "The Markdown Format\nIn addition to flat Todo.txt files, TodoFiles.jl can parse markdown files where #-headings define sections and - list items are todo entries:\nEach list item is parsed using the same Todo.txt rules as parse_todo.",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Markdown Todos</span>"
+    ]
+  },
+  {
+    "objectID": "markdown-todos.html#the-markdown-format",
+    "href": "markdown-todos.html#the-markdown-format",
+    "title": "Markdown Todos",
+    "section": "",
+    "text": "# Work\n- (A) Finish report @office +ClientProject\n- Email client @office\n\n## Personal\n- Buy groceries @store +Errands\n- (B) Call Mom @phone +Family due:2024-02-01",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Markdown Todos</span>"
+    ]
+  },
+  {
+    "objectID": "markdown-todos.html#parsing",
+    "href": "markdown-todos.html#parsing",
+    "title": "Markdown Todos",
+    "section": "Parsing",
+    "text": "Parsing\nparse_markdown_todos returns a vector of TodoSections, each with a heading, level, and todos:\n\ntext = \"\"\"\n# Work\n- (A) Finish report @office +ClientProject\n- Email client @office\n\n## Personal\n- Buy groceries @store +Errands\n- (B) Call Mom @phone +Family due:2024-02-01\n\"\"\"\n\nsections = parse_markdown_todos(text)\n\n2-element Vector{TodoSection}:\n TodoSection(\"Work\", 2 tasks)\n TodoSection(\"Personal\", 2 tasks)\n\n\n\nsections[1].heading, sections[1].level\n\n(\"Work\", 1)\n\n\n\nsections[1].todos\n\n2-element Vector{Todo}:\n Todo: (A) Finish report @office +ClientProject\n Todo: Email client @office\n\n\n\nsections[2].heading, sections[2].level\n\n(\"Personal\", 2)\n\n\nTodos appearing before any heading are placed in a section with heading=\"\" and level=0:\n\nsections = parse_markdown_todos(\"\"\"\n- Orphan task\n# Section\n- Task in section\n\"\"\")\n\nsections[1].heading, sections[1].level, sections[1].todos\n\n(\"\", 0, Todo[Todo: Orphan task])",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Markdown Todos</span>"
+    ]
+  },
+  {
+    "objectID": "markdown-todos.html#writing",
+    "href": "markdown-todos.html#writing",
+    "title": "Markdown Todos",
+    "section": "Writing",
+    "text": "Writing\nwrite_markdown_todos serializes sections back to markdown with blank lines between sections:\n\nsections = parse_markdown_todos(text)\nprint(write_markdown_todos(sections))\n\n# Work\n- (A) Finish report @office +ClientProject\n- Email client @office\n\n## Personal\n- Buy groceries @store +Errands\n- (B) Call Mom @phone +Family due:2024-02-01",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Markdown Todos</span>"
+    ]
+  },
+  {
+    "objectID": "markdown-todos.html#markdowntodofile",
+    "href": "markdown-todos.html#markdowntodofile",
+    "title": "Markdown Todos",
+    "section": "MarkdownTodoFile",
+    "text": "MarkdownTodoFile\nMarkdownTodoFile is the section-aware counterpart to TodoFile. It reads a markdown file, provides iteration over all todos (flattened across sections), and can write back to disk:\n\npath = tempname() * \".md\"\nwrite_markdown_todos(path, parse_markdown_todos(text))\n\nmf = MarkdownTodoFile(path)\n\nFinish reportA@office+ClientProjectEmail client@officeBuy groceries@store+ErrandsCall MomB@phone+Familydue:2024-02-01\n\n\n\nlength(mf)\n\n4\n\n\n\nmf[1]\n\nTodo: (A) Finish report @office +ClientProject\n\n\n\ncollect(mf)\n\n4-element Vector{Todo}:\n Todo: (A) Finish report @office +ClientProject\n Todo: Email client @office\n Todo: Buy groceries @store +Errands\n Todo: (B) Call Mom @phone +Family due:2024-02-01\n\n\nWrite back to disk with write_todos:\n\nwrite_todos(mf)  # writes to mf.filepath\n\n163",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Markdown Todos</span>"
+    ]
+  },
+  {
+    "objectID": "markdown-todos.html#html-views",
+    "href": "markdown-todos.html#html-views",
+    "title": "Markdown Todos",
+    "section": "HTML Views",
+    "text": "HTML Views\nAll existing views work with MarkdownTodoFile – todos are flattened automatically:\n\nListView(mf)\n\nFinish reportA@office+ClientProjectEmail client@officeBuy groceries@store+ErrandsCall MomB@phone+Familydue:2024-02-01\n\n\n\nTableView(mf)\n\n\n\n\n\nDone \nPriority \nDescription \nTags \nCreated \nCompleted \n\n\n\n\n\nA\nFinish report\n@office+ClientProject\n\n\n\n\n\n\nEmail client\n@office\n\n\n\n\n\n\nBuy groceries\n@store+Errands\n\n\n\n\n\nB\nCall Mom\n@phone+Familydue:2024-02-01\n\n\n\n\n\n\n\n\n\nKanbanView(mf)\n\nAFinish reportA@office+ClientProjectBCall MomB@phone+Familydue:2024-02-01(none)Email client@officeBuy groceries@store+Errands\n\n\n\nGroup by section\nKanbanView supports :section as a group_by option, which groups todos by their markdown heading:\n\nKanbanView(mf, :section)\n\nPersonalBuy groceries@store+ErrandsCall MomB@phone+Familydue:2024-02-01WorkFinish reportA@office+ClientProjectEmail client@office\n\n\nThe html_view convenience function also accepts MarkdownTodoFile:\n\nhtml_view(mf; view=:kanban, group_by=:section)\n\nPersonalBuy groceries@store+ErrandsCall MomB@phone+Familydue:2024-02-01WorkFinish reportA@office+ClientProjectEmail client@office",
+    "crumbs": [
+      "Docs",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Markdown Todos</span>"
+    ]
+  },
+  {
     "objectID": "html-views.html",
     "href": "html-views.html",
     "title": "HTML Views",
@@ -117,7 +183,7 @@
     "text": "HTML Views\nTodoFiles provides four HTML views for rich display of todo lists in Jupyter and Pluto notebooks. Each view renders via show(io, MIME\"text/html\"(), ...), so simply returning a view object in a notebook cell will display it.",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>HTML Views</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>HTML Views</span>"
     ]
   },
   {
@@ -128,7 +194,7 @@
     "text": "Setup\nLet’s create a sample TodoFile to demonstrate each view:\n\ntodos = [\n    Todo(\"Call Mom @phone +Family\"; priority='A', creation_date=Date(2024, 1, 15), metadata=Dict(\"due\" =&gt; \"2024-01-20\")),\n    Todo(\"Buy groceries @store +Errands\"; priority='B', creation_date=Date(2024, 1, 20), metadata=Dict(\"due\" =&gt; \"2024-01-25\")),\n    Todo(\"Write report @computer +Work\"; priority='A', creation_date=Date(2024, 1, 10), metadata=Dict(\"due\" =&gt; \"2024-02-01\")),\n    Todo(\"Schedule dentist @phone +Health\"; priority='C'),\n    Todo(\"Pay bills\"; completed=true, creation_date=Date(2024, 1, 10), completion_date=Date(2024, 1, 16)),\n    Todo(\"Clean garage +Home\"),\n]\n\npath = tempname()\nwrite_todos(path, todos)\ntf = TodoFile(path)\n\nCall MomA@phone+Familydue:2024-01-20Buy groceriesB@store+Errandsdue:2024-01-25Write reportA@computer+Workdue:2024-02-01Schedule dentistC@phone+Health✓Pay billsClean garage+Home",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>HTML Views</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>HTML Views</span>"
     ]
   },
   {
@@ -139,7 +205,7 @@
     "text": "ListView\nListView renders each task as a card with checkboxes, priority badges, and colored tag pills:\n\nListView(tf)\n\nCall MomA@phone+Familydue:2024-01-20Buy groceriesB@store+Errandsdue:2024-01-25Write reportA@computer+Workdue:2024-02-01Schedule dentistC@phone+Health✓Pay billsClean garage+Home\n\n\nThis is also the default HTML display for any TodoFile:\n\ntf  # same as ListView(tf)\n\nCall MomA@phone+Familydue:2024-01-20Buy groceriesB@store+Errandsdue:2024-01-25Write reportA@computer+Workdue:2024-02-01Schedule dentistC@phone+Health✓Pay billsClean garage+Home",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>HTML Views</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>HTML Views</span>"
     ]
   },
   {
@@ -150,7 +216,7 @@
     "text": "TableView\nTableView renders tasks as a data table with columns for status, priority, description, tags, and dates:\n\nTableView(tf)\n\n\n\n\n\nDone \nPriority \nDescription \nTags \nCreated \nCompleted \n\n\n\n\n\nA\nCall Mom\n@phone+Familydue:2024-01-20\n2024-01-15\n\n\n\n\nB\nBuy groceries\n@store+Errandsdue:2024-01-25\n2024-01-20\n\n\n\n\nA\nWrite report\n@computer+Workdue:2024-02-01\n2024-01-10\n\n\n\n\nC\nSchedule dentist\n@phone+Health\n\n\n\n\n✓\n\nPay bills\n\n2024-01-10\n2024-01-16\n\n\n\n\nClean garage\n+Home",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>HTML Views</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>HTML Views</span>"
     ]
   },
   {
@@ -161,7 +227,7 @@
     "text": "KanbanView\nKanbanView displays tasks grouped into columns. The default grouping is by :priority:\n\nKanbanView(tf)\n\nACall MomA@phone+Familydue:2024-01-20Write reportA@computer+Workdue:2024-02-01BBuy groceriesB@store+Errandsdue:2024-01-25CSchedule dentistC@phone+Health(none)✓Pay billsClean garage+Home\n\n\n\nGroup by completion status\n\nKanbanView(tf, :completed)\n\nDone✓Pay billsPendingCall MomA@phone+Familydue:2024-01-20Buy groceriesB@store+Errandsdue:2024-01-25Write reportA@computer+Workdue:2024-02-01Schedule dentistC@phone+HealthClean garage+Home\n\n\n\n\nGroup by project\nTasks with multiple projects appear in each relevant column:\n\nKanbanView(tf, :projects)\n\nErrandsBuy groceriesB@store+Errandsdue:2024-01-25FamilyCall MomA@phone+Familydue:2024-01-20HealthSchedule dentistC@phone+HealthHomeClean garage+HomeWorkWrite reportA@computer+Workdue:2024-02-01(no project)✓Pay bills\n\n\n\n\nGroup by context\n\nKanbanView(tf, :contexts)\n\ncomputerWrite reportA@computer+Workdue:2024-02-01phoneCall MomA@phone+Familydue:2024-01-20Schedule dentistC@phone+HealthstoreBuy groceriesB@store+Errandsdue:2024-01-25(no context)✓Pay billsClean garage+Home",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>HTML Views</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>HTML Views</span>"
     ]
   },
   {
@@ -172,7 +238,7 @@
     "text": "GanttView\nGanttView renders tasks as horizontal bars on a timeline. Each task needs a creation_date (start) and either a due metadata key or completion_date (end) to appear on the chart. Tasks without both dates are silently excluded.\n\nGanttView(tf)\n\n\n\n\n\n\n\n\n\nTask\nTimeline\n\n\n\n\nA Call Mom\n\n\n\n\n\n\n\nB Buy groceries\n\n\n\n\n\n\n\nA Write report\n\n\n\n\n\n\n\nPay bills\n\n\n\n\n\n\n\n\n2024-01-102024-02-01\n\n\nBars are colored by priority and completed tasks are shown with reduced opacity.",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>HTML Views</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>HTML Views</span>"
     ]
   },
   {
@@ -183,7 +249,7 @@
     "text": "The html_view Convenience Function\nhtml_view is a single entry point that returns the appropriate view type:\n\nhtml_view(tf)  # ListView (default)\n\nCall MomA@phone+Familydue:2024-01-20Buy groceriesB@store+Errandsdue:2024-01-25Write reportA@computer+Workdue:2024-02-01Schedule dentistC@phone+Health✓Pay billsClean garage+Home\n\n\n\nhtml_view(tf; view=:table)\n\n\n\n\n\nDone \nPriority \nDescription \nTags \nCreated \nCompleted \n\n\n\n\n\nA\nCall Mom\n@phone+Familydue:2024-01-20\n2024-01-15\n\n\n\n\nB\nBuy groceries\n@store+Errandsdue:2024-01-25\n2024-01-20\n\n\n\n\nA\nWrite report\n@computer+Workdue:2024-02-01\n2024-01-10\n\n\n\n\nC\nSchedule dentist\n@phone+Health\n\n\n\n\n✓\n\nPay bills\n\n2024-01-10\n2024-01-16\n\n\n\n\nClean garage\n+Home\n\n\n\n\n\n\n\n\n\nhtml_view(tf; view=:kanban, group_by=:projects)\n\nErrandsBuy groceriesB@store+Errandsdue:2024-01-25FamilyCall MomA@phone+Familydue:2024-01-20HealthSchedule dentistC@phone+HealthHomeClean garage+HomeWorkWrite reportA@computer+Workdue:2024-02-01(no project)✓Pay bills\n\n\n\nhtml_view(tf; view=:gantt)\n\n\n\n\n\n\n\n\n\nTask\nTimeline\n\n\n\n\nA Call Mom\n\n\n\n\n\n\n\nB Buy groceries\n\n\n\n\n\n\n\nA Write report\n\n\n\n\n\n\n\nPay bills\n\n\n\n\n\n\n\n\n2024-01-102024-02-01",
     "crumbs": [
       "Docs",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>HTML Views</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>HTML Views</span>"
     ]
   },
   {
@@ -194,7 +260,7 @@
     "text": "Types",
     "crumbs": [
       "API",
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>API</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>API</span>"
     ]
   },
   {
@@ -202,10 +268,10 @@
     "href": "api.html#types",
     "title": "API",
     "section": "",
-    "text": "DueView\n\n\nDueView\nA timeline HTML view of a TodoFile showing time remaining until each task is due. Tasks need a due metadata key (e.g. due:2024-02-01) to appear. Bars are colored by urgency: overdue (red), ≤3 days (orange), ≤7 days (yellow), ≤14 days (green), &gt;14 days (blue).\nThe today field defaults to Dates.today() but can be overridden for testing.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; DueView(tf)\nDueView(3 tasks)\n\n\n\n\n\nGanttView\n\n\nGanttView\nA Gantt chart HTML view of a TodoFile. Tasks are displayed as horizontal bars on a timeline. A task needs a creation_date (start) and either a due metadata key or completion_date (end) to appear on the chart.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; GanttView(tf)\nGanttView(3 tasks)\n\n\n\n\n\nKanbanView\n\n\nKanbanView\nA kanban board HTML view of a TodoFile, grouped by a specified field.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; KanbanView(tf, :priority)\nKanbanView(3 tasks, group_by=:priority)\n\njulia&gt; KanbanView(tf)  # defaults to :priority\nKanbanView(3 tasks, group_by=:priority)\n\n\n\n\n\nListView\n\n\nListView\nA card-style HTML list view of a TodoFile. Display in Jupyter/Pluto notebooks via their rich HTML rendering.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; ListView(tf)\nListView(3 tasks)\n\n\n\n\n\nTableView\n\n\nTableView\nA tabular HTML view of a TodoFile.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; TableView(tf)\nTableView(3 tasks)\n\n\n\n\n\nTodo\n\n\nTodo\nA single task in the Todo.txt format.\n\nFields\n\ncompleted::Bool: Whether the task is marked complete (x).\npriority::Union{Char, Nothing}: Priority letter 'A'–'Z', or nothing.\ncompletion_date::Union{Date, Nothing}: Date the task was completed.\ncreation_date::Union{Date, Nothing}: Date the task was created.\ndescription::String: The task description text (tags are stored separately).\ncontexts::Vector{String}: @context tags.\nprojects::Vector{String}: +project tags.\nmetadata::Dict{String, String}: key:value pairs.\n\n\nExamples\njulia&gt; t = parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\n\njulia&gt; t.priority\n'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)\n\njulia&gt; t.contexts\n[\"phone\"]\n\njulia&gt; t.projects\n[\"Family\"]\n\njulia&gt; t.metadata\nDict{String, String} with 1 entry:\n  \"due\" =&gt; \"2024-01-20\"\n\n\n\n\n\n\nTodoFile\n\n\nTodoFile\nA Todo.txt file represented as a filepath and a vector of Todo items. Implements the Tables.jl interface for interoperability with DataFrames, CSV, and other tabular data packages.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; length(tf)\n3\n\njulia&gt; tf[1]\nTodo: (A) Call Mom @phone +Family\n\njulia&gt; write_todos(tf)  # writes back to tf.filepath\nTodoFile(filepath::AbstractString)\nRead a Todo.txt file and return a TodoFile.",
+    "text": "DueView\n\n\nDueView\nA timeline HTML view of a TodoFile showing time remaining until each task is due. Tasks need a due metadata key (e.g. due:2024-02-01) to appear. Bars are colored by urgency: overdue (red), ≤3 days (orange), ≤7 days (yellow), ≤14 days (green), &gt;14 days (blue).\nThe today field defaults to Dates.today() but can be overridden for testing.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; DueView(tf)\nDueView(3 tasks)\n\n\n\n\n\nGanttView\n\n\nGanttView\nA Gantt chart HTML view of a TodoFile. Tasks are displayed as horizontal bars on a timeline. A task needs a creation_date (start) and either a due metadata key or completion_date (end) to appear on the chart.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; GanttView(tf)\nGanttView(3 tasks)\n\n\n\n\n\nKanbanView\n\n\nKanbanView\nA kanban board HTML view of a TodoFile, grouped by a specified field.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; KanbanView(tf, :priority)\nKanbanView(3 tasks, group_by=:priority)\n\njulia&gt; KanbanView(tf)  # defaults to :priority\nKanbanView(3 tasks, group_by=:priority)\n\n\n\n\n\nListView\n\n\nListView\nA card-style HTML list view of a TodoFile. Display in Jupyter/Pluto notebooks via their rich HTML rendering.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; ListView(tf)\nListView(3 tasks)\n\n\n\n\n\nMarkdownTodoFile\n\n\nMarkdownTodoFile\nA markdown file with TodoSections, where #-headings define sections and - list items are todo entries in Todo.txt format. Existing HTML views work via automatic flattening of all todos.\n\nExamples\njulia&gt; mf = MarkdownTodoFile(\"todos.md\")\n\njulia&gt; length(mf)\n5\n\njulia&gt; mf[1]\nTodo: (A) Call Mom @phone +Family\nMarkdownTodoFile(filepath::AbstractString)\nRead a markdown file and return a MarkdownTodoFile.\n\n\n\n\n\nTableView\n\n\nTableView\nA tabular HTML view of a TodoFile.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; TableView(tf)\nTableView(3 tasks)\n\n\n\n\n\nTodo\n\n\nTodo\nA single task in the Todo.txt format.\n\nFields\n\ncompleted::Bool: Whether the task is marked complete (x).\npriority::Union{Char, Nothing}: Priority letter 'A'–'Z', or nothing.\ncompletion_date::Union{Date, Nothing}: Date the task was completed.\ncreation_date::Union{Date, Nothing}: Date the task was created.\ndescription::String: The task description text (tags are stored separately).\ncontexts::Vector{String}: @context tags.\nprojects::Vector{String}: +project tags.\nmetadata::Dict{String, String}: key:value pairs.\n\n\nExamples\njulia&gt; t = parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family due:2024-01-20\n\njulia&gt; t.priority\n'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)\n\njulia&gt; t.contexts\n[\"phone\"]\n\njulia&gt; t.projects\n[\"Family\"]\n\njulia&gt; t.metadata\nDict{String, String} with 1 entry:\n  \"due\" =&gt; \"2024-01-20\"\n\n\n\n\n\n\nTodoFile\n\n\nTodoFile\nA Todo.txt file represented as a filepath and a vector of Todo items. Implements the Tables.jl interface for interoperability with DataFrames, CSV, and other tabular data packages.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; length(tf)\n3\n\njulia&gt; tf[1]\nTodo: (A) Call Mom @phone +Family\n\njulia&gt; write_todos(tf)  # writes back to tf.filepath\nTodoFile(filepath::AbstractString)\nRead a Todo.txt file and return a TodoFile.\n\n\n\n\n\nTodoSection\n\n\nTodoSection\nA group of Todo items under a markdown heading.\n\nFields\n\nheading::String: The heading text (empty string for todos before any heading).\nlevel::Int: The heading level (1 for #, 2 for ##, etc.; 0 for no heading).\ntodos::Vector{Todo}: The tasks in this section.",
     "crumbs": [
       "API",
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>API</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>API</span>"
     ]
   },
   {
@@ -213,21 +279,10 @@
     "href": "api.html#functions",
     "title": "API",
     "section": "Functions",
-    "text": "Functions\n\n\nhtml_view\n\n\nhtml_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)\nCreate an HTML view of a TodoFile for rich display in notebooks.\nReturns a ListView, TableView, KanbanView, GanttView, or DueView.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; html_view(tf)\nListView(3 tasks)\n\njulia&gt; html_view(tf; view=:table)\nTableView(3 tasks)\n\njulia&gt; html_view(tf; view=:kanban, group_by=:projects)\nKanbanView(3 tasks, group_by=:projects)\n\njulia&gt; html_view(tf; view=:gantt)\nGanttView(3 tasks)\n\njulia&gt; html_view(tf; view=:due)\nDueView(3 tasks)\n\n\n\n\n\nparse_todo\n\n\nparse_todo(line::AbstractString) -&gt; Todo\nParse a single line of Todo.txt format into a Todo.\n\nExamples\njulia&gt; parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; parse_todo(\"x 2024-01-16 2024-01-15 Call Mom @phone +Family\")\nTodo: x 2024-01-16 2024-01-15 Call Mom @phone +Family\n\n\n\n\n\nparse_todos\n\n\nparse_todos(text::AbstractString) -&gt; Vector{Todo}\nParse multiple lines of Todo.txt format into a vector of Todo items. Blank lines are skipped.\n\nExamples\njulia&gt; todos = parse_todos(\"\"\"\n       (A) Call Mom @phone\n       (B) Buy groceries @store +Errands\n\n       x 2024-01-15 Pay bills\n       \"\"\")\n3-element Vector{Todo}:\n Todo: (A) Call Mom @phone\n Todo: (B) Buy groceries @store +Errands\n Todo: x 2024-01-15 Pay bills\n\n\n\n\n\nread_todos\n\n\nread_todos(filepath::AbstractString) -&gt; Vector{Todo}\nRead a Todo.txt file and return a vector of Todo items.\n\nExamples\njulia&gt; todos = read_todos(\"todo.txt\")\n\n\n\n\n\nwrite_todo\n\n\nwrite_todo(t::Todo) -&gt; String\nSerialize a Todo back to a single Todo.txt formatted line.\n\nExamples\njulia&gt; t = Todo(\"Call Mom @phone +Family\"; priority='A', creation_date=Date(2024, 1, 15))\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; write_todo(t)\n\"(A) 2024-01-15 Call Mom @phone +Family\"\n\n\n\n\n\nwrite_todos\n\n\nwrite_todos(todos::Vector{Todo}) -&gt; String\nSerialize a vector of Todo items into a Todo.txt formatted string.\nwrite_todos(filepath::AbstractString, todos::Vector{Todo})\nWrite a vector of Todo items to a file in Todo.txt format.\n\nExamples\njulia&gt; write_todos(\"todo.txt\", todos)\nwrite_todos(tf::TodoFile)\nWrite a TodoFile back to its filepath.",
+    "text": "Functions\n\n\nhtml_view\n\n\nhtml_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)\nCreate an HTML view of a TodoFile for rich display in notebooks.\nReturns a ListView, TableView, KanbanView, GanttView, or DueView.\n\nExamples\njulia&gt; tf = TodoFile(\"todo.txt\")\n\njulia&gt; html_view(tf)\nListView(3 tasks)\n\njulia&gt; html_view(tf; view=:table)\nTableView(3 tasks)\n\njulia&gt; html_view(tf; view=:kanban, group_by=:projects)\nKanbanView(3 tasks, group_by=:projects)\n\njulia&gt; html_view(tf; view=:gantt)\nGanttView(3 tasks)\n\njulia&gt; html_view(tf; view=:due)\nDueView(3 tasks)\nhtml_view(mf::MarkdownTodoFile; view::Symbol=:list, group_by::Symbol=:priority)\nCreate an HTML view of a MarkdownTodoFile. See html_view(::TodoFile) for options.\n\n\n\n\n\nparse_markdown_todos\n\n\nparse_markdown_todos(text::AbstractString) -&gt; Vector{TodoSection}\nParse markdown text with #-headings as sections and - list items as Todo entries. Blank lines and non-todo content are skipped.\n\nExamples\njulia&gt; sections = parse_markdown_todos(\"\"\"\n       # Work\n       - (A) Finish report @office\n       - Email client @office +ClientProject\n       ## Personal\n       - Buy groceries @store +Errands\n       \"\"\")\n2-element Vector{TodoSection}:\n TodoSection(\"Work\", 2 tasks)\n TodoSection(\"Personal\", 1 task)\n\n\n\n\n\nparse_todo\n\n\nparse_todo(line::AbstractString) -&gt; Todo\nParse a single line of Todo.txt format into a Todo.\n\nExamples\njulia&gt; parse_todo(\"(A) 2024-01-15 Call Mom @phone +Family\")\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; parse_todo(\"x 2024-01-16 2024-01-15 Call Mom @phone +Family\")\nTodo: x 2024-01-16 2024-01-15 Call Mom @phone +Family\n\n\n\n\n\nparse_todos\n\n\nparse_todos(text::AbstractString) -&gt; Vector{Todo}\nParse multiple lines of Todo.txt format into a vector of Todo items. Blank lines are skipped.\n\nExamples\njulia&gt; todos = parse_todos(\"\"\"\n       (A) Call Mom @phone\n       (B) Buy groceries @store +Errands\n\n       x 2024-01-15 Pay bills\n       \"\"\")\n3-element Vector{Todo}:\n Todo: (A) Call Mom @phone\n Todo: (B) Buy groceries @store +Errands\n Todo: x 2024-01-15 Pay bills\n\n\n\n\n\nread_markdown_todos\n\n\nread_markdown_todos(filepath::AbstractString) -&gt; Vector{TodoSection}\nRead a markdown file and parse it into TodoSections.\n\nExamples\njulia&gt; sections = read_markdown_todos(\"todos.md\")\n\n\n\n\n\nread_todos\n\n\nread_todos(filepath::AbstractString) -&gt; Vector{Todo}\nRead a Todo.txt file and return a vector of Todo items.\n\nExamples\njulia&gt; todos = read_todos(\"todo.txt\")\n\n\n\n\n\nwrite_markdown_todos\n\n\nwrite_markdown_todos(sections::Vector{TodoSection}) -&gt; String\nSerialize TodoSections to a markdown string with #-headings and - list items.\nwrite_markdown_todos(filepath::AbstractString, sections::Vector{TodoSection})\nWrite TodoSections to a markdown file.\n\n\n\n\nwrite_todo\n\n\nwrite_todo(t::Todo) -&gt; String\nSerialize a Todo back to a single Todo.txt formatted line.\n\nExamples\njulia&gt; t = Todo(\"Call Mom @phone +Family\"; priority='A', creation_date=Date(2024, 1, 15))\nTodo: (A) 2024-01-15 Call Mom @phone +Family\n\njulia&gt; write_todo(t)\n\"(A) 2024-01-15 Call Mom @phone +Family\"\n\n\n\n\n\nwrite_todos\n\n\nwrite_todos(todos::Vector{Todo}) -&gt; String\nSerialize a vector of Todo items into a Todo.txt formatted string.\nwrite_todos(filepath::AbstractString, todos::Vector{Todo})\nWrite a vector of Todo items to a file in Todo.txt format.\n\nExamples\njulia&gt; write_todos(\"todo.txt\", todos)\nwrite_todos(tf::TodoFile)\nWrite a TodoFile back to its filepath.\nwrite_todos(mf::MarkdownTodoFile)\nWrite a MarkdownTodoFile back to its filepath.",
     "crumbs": [
       "API",
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>API</span>"
-    ]
-  },
-  {
-    "objectID": "resources/benchmarks.html",
-    "href": "resources/benchmarks.html",
-    "title": "Benchmarks",
-    "section": "",
-    "text": "NoteNo benchmark results available\n\n\n\nBenchmarks have not been set up for this package yet. See the CLAUDE.md for instructions on how to set up benchmarks.",
-    "crumbs": [
-      "Resources",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Benchmarks</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>API</span>"
     ]
   },
   {

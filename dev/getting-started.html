@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./html-views.html" rel="next">
+<link href="./markdown-todos.html" rel="next">
 <link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -189,6 +189,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./markdown-todos.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Markdown Todos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./html-views.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">HTML Views</span></a>
   </div>
 </li>
@@ -221,11 +226,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./resources/benchmarks.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Benchmarks</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./resources/changelog.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Changelog</span></a>
   </div>
 </li>
@@ -246,9 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting Started</a>
-  <ul class="collapse">
-  <li><a href="#the-todo.txt-format" id="toc-the-todo.txt-format" class="nav-link" data-scroll-target="#the-todo.txt-format">The Todo.txt Format</a></li>
+  <li><a href="#the-todo.txt-format" id="toc-the-todo.txt-format" class="nav-link active" data-scroll-target="#the-todo.txt-format">The Todo.txt Format</a></li>
   <li><a href="#parsing-tasks" id="toc-parsing-tasks" class="nav-link" data-scroll-target="#parsing-tasks">Parsing Tasks</a>
   <ul class="collapse">
   <li><a href="#completed-tasks" id="toc-completed-tasks" class="nav-link" data-scroll-target="#completed-tasks">Completed Tasks</a></li>
@@ -257,7 +255,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#writing-tasks" id="toc-writing-tasks" class="nav-link" data-scroll-target="#writing-tasks">Writing Tasks</a></li>
   <li><a href="#file-io" id="toc-file-io" class="nav-link" data-scroll-target="#file-io">File I/O</a></li>
   <li><a href="#roundtrip-fidelity" id="toc-roundtrip-fidelity" class="nav-link" data-scroll-target="#roundtrip-fidelity">Roundtrip Fidelity</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -283,8 +280,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="getting-started" class="level1 unnumbered">
-<h1 class="unnumbered">Getting Started</h1>
 <section id="the-todo.txt-format" class="level2">
 <h2 class="anchored" data-anchor-id="the-todo.txt-format">The Todo.txt Format</h2>
 <p><a href="https://github.com/todotxt/todo.txt">Todo.txt</a> is a plain-text format for managing tasks. Each line represents one task with an optional structure:</p>
@@ -292,7 +287,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 │  │       │          │          │           │        │        │
 │  │       │          │          │           │        │        └─ metadata
 │  │       │          │          │           │        └─ project tag
-│  │       │          │          └─ description   └─ context tag
+│  │       │          │          │           └─ context tag
+│  │       │          │          └─ description
 │  │       │          └─ creation date
 │  │       └─ completion date
 │  └─ priority (A-Z)
@@ -469,7 +465,6 @@ Note
 </div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -880,8 +875,8 @@ Note
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./html-views.html" class="pagination-link" aria-label="HTML Views">
-        <span class="nav-page-text"><span class="chapter-title">HTML Views</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./markdown-todos.html" class="pagination-link" aria-label="Markdown Todos">
+        <span class="nav-page-text"><span class="chapter-title">Markdown Todos</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
