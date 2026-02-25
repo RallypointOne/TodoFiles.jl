@@ -31,13 +31,13 @@
             <td class="headerValue">on branch main</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryHi">95.3&nbsp;%</td>
-            <td class="headerCovTableEntry">253</td>
-            <td class="headerCovTableEntry">241</td>
+            <td class="headerCovTableEntryHi">96.5&nbsp;%</td>
+            <td class="headerCovTableEntry">341</td>
+            <td class="headerCovTableEntry">329</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-02-25 17:03:32</td>
+            <td class="headerValue">2026-02-25 18:13:01</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -66,32 +66,32 @@
 <span id="L4"><span class="lineNum">       4</span>              : using Tables</span>
 <span id="L5"><span class="lineNum">       5</span>              : </span>
 <span id="L6"><span class="lineNum">       6</span>              : export Todo, TodoFile, parse_todo, parse_todos, write_todo, write_todos, read_todos,</span>
-<span id="L7"><span class="lineNum">       7</span>              :        ListView, TableView, KanbanView, GanttView, html_view</span>
+<span id="L7"><span class="lineNum">       7</span>              :        ListView, TableView, KanbanView, GanttView, DueView, html_view</span>
 <span id="L8"><span class="lineNum">       8</span>              : </span>
 <span id="L9"><span class="lineNum">       9</span>              : #--------------------------------------------------------------------------------# Helpers</span>
-<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC tlaBgGNC">          77 : function _extract_tags(description::AbstractString)</span></span>
-<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">          77 :     words = split(description)</span></span>
-<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC">          77 :     plain = String[]</span></span>
-<span id="L13"><span class="lineNum">      13</span> <span class="tlaGNC">          77 :     ctx = String[]</span></span>
-<span id="L14"><span class="lineNum">      14</span> <span class="tlaGNC">          77 :     prj = String[]</span></span>
-<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">          77 :     meta = Dict{String, String}()</span></span>
-<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">          77 :     for word in words</span></span>
-<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">         226 :         if startswith(word, &quot;@&quot;) &amp;&amp; length(word) &gt; 1</span></span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC tlaBgGNC">          91 : function _extract_tags(description::AbstractString)</span></span>
+<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">          91 :     words = split(description)</span></span>
+<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC">          91 :     plain = String[]</span></span>
+<span id="L13"><span class="lineNum">      13</span> <span class="tlaGNC">          91 :     ctx = String[]</span></span>
+<span id="L14"><span class="lineNum">      14</span> <span class="tlaGNC">          91 :     prj = String[]</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">          91 :     meta = Dict{String, String}()</span></span>
+<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">          91 :     for word in words</span></span>
+<span id="L17"><span class="lineNum">      17</span> <span class="tlaGNC">         259 :         if startswith(word, &quot;@&quot;) &amp;&amp; length(word) &gt; 1</span></span>
 <span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">          31 :             push!(ctx, String(word[2:end]))</span></span>
-<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">         195 :         elseif startswith(word, &quot;+&quot;) &amp;&amp; length(word) &gt; 1</span></span>
+<span id="L19"><span class="lineNum">      19</span> <span class="tlaGNC">         228 :         elseif startswith(word, &quot;+&quot;) &amp;&amp; length(word) &gt; 1</span></span>
 <span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">          29 :             push!(prj, String(word[2:end]))</span></span>
-<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">         166 :         elseif contains(word, &quot;:&quot;) &amp;&amp; !startswith(word, &quot;@&quot;) &amp;&amp; !startswith(word, &quot;+&quot;)</span></span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">           7 :             parts = split(word, &quot;:&quot;, limit=2)</span></span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">           7 :             if length(parts) == 2 &amp;&amp; !isempty(parts[1]) &amp;&amp; !isempty(parts[2])</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           7 :                 meta[String(parts[1])] = String(parts[2])</span></span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">         199 :         elseif contains(word, &quot;:&quot;) &amp;&amp; !startswith(word, &quot;@&quot;) &amp;&amp; !startswith(word, &quot;+&quot;)</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          12 :             parts = split(word, &quot;:&quot;, limit=2)</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">          12 :             if length(parts) == 2 &amp;&amp; !isempty(parts[1]) &amp;&amp; !isempty(parts[2])</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          12 :                 meta[String(parts[1])] = String(parts[2])</span></span>
 <span id="L25"><span class="lineNum">      25</span>              :             else</span>
 <span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC tlaBgUNC">           0 :                 push!(plain, String(word))</span></span>
 <span id="L27"><span class="lineNum">      27</span>              :             end</span>
 <span id="L28"><span class="lineNum">      28</span>              :         else</span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC tlaBgGNC">         159 :             push!(plain, String(word))</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC tlaBgGNC">         187 :             push!(plain, String(word))</span></span>
 <span id="L30"><span class="lineNum">      30</span>              :         end</span>
-<span id="L31"><span class="lineNum">      31</span> <span class="tlaGNC">         226 :     end</span></span>
-<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">          77 :     return (join(plain, &quot; &quot;), ctx, prj, meta)</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaGNC">         259 :     end</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">          91 :     return (join(plain, &quot; &quot;), ctx, prj, meta)</span></span>
 <span id="L33"><span class="lineNum">      33</span>              : end</span>
 <span id="L34"><span class="lineNum">      34</span>              : </span>
 <span id="L35"><span class="lineNum">      35</span>              : #--------------------------------------------------------------------------------# Todo</span>
@@ -130,7 +130,7 @@
 <span id="L68"><span class="lineNum">      68</span>              : ```</span>
 <span id="L69"><span class="lineNum">      69</span>              : &quot;&quot;&quot;</span>
 <span id="L70"><span class="lineNum">      70</span>              : struct Todo</span>
-<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">          77 :     completed::Bool</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">          91 :     completed::Bool</span></span>
 <span id="L72"><span class="lineNum">      72</span>              :     priority::Union{Char, Nothing}</span>
 <span id="L73"><span class="lineNum">      73</span>              :     completion_date::Union{Date, Nothing}</span>
 <span id="L74"><span class="lineNum">      74</span>              :     creation_date::Union{Date, Nothing}</span>
@@ -140,7 +140,7 @@
 <span id="L78"><span class="lineNum">      78</span>              :     metadata::Dict{String, String}</span>
 <span id="L79"><span class="lineNum">      79</span>              : end</span>
 <span id="L80"><span class="lineNum">      80</span>              : </span>
-<span id="L81"><span class="lineNum">      81</span> <span class="tlaGNC">          23 : function Todo(description::String;</span></span>
+<span id="L81"><span class="lineNum">      81</span> <span class="tlaGNC">          30 : function Todo(description::String;</span></span>
 <span id="L82"><span class="lineNum">      82</span>              :               completed::Bool=false,</span>
 <span id="L83"><span class="lineNum">      83</span>              :               priority::Union{Char, Nothing}=nothing,</span>
 <span id="L84"><span class="lineNum">      84</span>              :               completion_date::Union{Date, Nothing}=nothing,</span>
@@ -148,8 +148,8 @@
 <span id="L86"><span class="lineNum">      86</span>              :               contexts::Vector{String}=String[],</span>
 <span id="L87"><span class="lineNum">      87</span>              :               projects::Vector{String}=String[],</span>
 <span id="L88"><span class="lineNum">      88</span>              :               metadata::Dict{String, String}=Dict{String, String}())</span>
-<span id="L89"><span class="lineNum">      89</span> <span class="tlaGNC">          23 :     desc, parsed_ctx, parsed_prj, parsed_meta = _extract_tags(description)</span></span>
-<span id="L90"><span class="lineNum">      90</span> <span class="tlaGNC">          23 :     Todo(completed, priority, completion_date, creation_date, desc,</span></span>
+<span id="L89"><span class="lineNum">      89</span> <span class="tlaGNC">          30 :     desc, parsed_ctx, parsed_prj, parsed_meta = _extract_tags(description)</span></span>
+<span id="L90"><span class="lineNum">      90</span> <span class="tlaGNC">          30 :     Todo(completed, priority, completion_date, creation_date, desc,</span></span>
 <span id="L91"><span class="lineNum">      91</span>              :          isempty(contexts) ? parsed_ctx : contexts,</span>
 <span id="L92"><span class="lineNum">      92</span>              :          isempty(projects) ? parsed_prj : projects,</span>
 <span id="L93"><span class="lineNum">      93</span>              :          isempty(metadata) ? parsed_meta : metadata)</span>
@@ -173,9 +173,9 @@
 <span id="L111"><span class="lineNum">     111</span>              : #--------------------------------------------------------------------------------# Parsing</span>
 <span id="L112"><span class="lineNum">     112</span>              : const DATE_REGEX = r&quot;^(\d{4}-\d{2}-\d{2})\s&quot;</span>
 <span id="L113"><span class="lineNum">     113</span>              : </span>
-<span id="L114"><span class="lineNum">     114</span> <span class="tlaGNC tlaBgGNC">          69 : function tryparse_date(s::AbstractString)</span></span>
-<span id="L115"><span class="lineNum">     115</span> <span class="tlaGNC">          69 :     m = match(DATE_REGEX, s)</span></span>
-<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">         101 :     isnothing(m) &amp;&amp; return (nothing, s)</span></span>
+<span id="L114"><span class="lineNum">     114</span> <span class="tlaGNC tlaBgGNC">          77 : function tryparse_date(s::AbstractString)</span></span>
+<span id="L115"><span class="lineNum">     115</span> <span class="tlaGNC">          77 :     m = match(DATE_REGEX, s)</span></span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">         109 :     isnothing(m) &amp;&amp; return (nothing, s)</span></span>
 <span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">          32 :     d = tryparse(Date, m.captures[1])</span></span>
 <span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">          64 :     isnothing(d) &amp;&amp; return (nothing, s)</span></span>
 <span id="L119"><span class="lineNum">     119</span> <span class="tlaGNC">          32 :     return (d, s[length(m.match)+1:end])</span></span>
@@ -195,44 +195,44 @@
 <span id="L133"><span class="lineNum">     133</span>              : Todo: x 2024-01-16 2024-01-15 Call Mom @phone +Family</span>
 <span id="L134"><span class="lineNum">     134</span>              : ```</span>
 <span id="L135"><span class="lineNum">     135</span>              : &quot;&quot;&quot;</span>
-<span id="L136"><span class="lineNum">     136</span> <span class="tlaGNC">          54 : function parse_todo(line::AbstractString)</span></span>
-<span id="L137"><span class="lineNum">     137</span> <span class="tlaGNC">          54 :     s = strip(String(line))</span></span>
-<span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">          54 :     completed = false</span></span>
-<span id="L139"><span class="lineNum">     139</span> <span class="tlaGNC">          54 :     priority = nothing</span></span>
-<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC">          54 :     completion_date = nothing</span></span>
-<span id="L141"><span class="lineNum">     141</span> <span class="tlaGNC">          54 :     creation_date = nothing</span></span>
+<span id="L136"><span class="lineNum">     136</span> <span class="tlaGNC">          61 : function parse_todo(line::AbstractString)</span></span>
+<span id="L137"><span class="lineNum">     137</span> <span class="tlaGNC">          61 :     s = strip(String(line))</span></span>
+<span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">          61 :     completed = false</span></span>
+<span id="L139"><span class="lineNum">     139</span> <span class="tlaGNC">          61 :     priority = nothing</span></span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC">          61 :     completion_date = nothing</span></span>
+<span id="L141"><span class="lineNum">     141</span> <span class="tlaGNC">          61 :     creation_date = nothing</span></span>
 <span id="L142"><span class="lineNum">     142</span>              : </span>
 <span id="L143"><span class="lineNum">     143</span>              :     # Check for completion marker: &quot;x &quot;</span>
-<span id="L144"><span class="lineNum">     144</span> <span class="tlaGNC">          54 :     if startswith(s, &quot;x &quot;)</span></span>
-<span id="L145"><span class="lineNum">     145</span> <span class="tlaGNC">          15 :         completed = true</span></span>
-<span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">          15 :         s = s[3:end]</span></span>
+<span id="L144"><span class="lineNum">     144</span> <span class="tlaGNC">          61 :     if startswith(s, &quot;x &quot;)</span></span>
+<span id="L145"><span class="lineNum">     145</span> <span class="tlaGNC">          16 :         completed = true</span></span>
+<span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">          16 :         s = s[3:end]</span></span>
 <span id="L147"><span class="lineNum">     147</span>              : </span>
 <span id="L148"><span class="lineNum">     148</span>              :         # Completion date (required for completed tasks per spec, but be lenient)</span>
-<span id="L149"><span class="lineNum">     149</span> <span class="tlaGNC">          29 :         (completion_date, s) = tryparse_date(s)</span></span>
+<span id="L149"><span class="lineNum">     149</span> <span class="tlaGNC">          30 :         (completion_date, s) = tryparse_date(s)</span></span>
 <span id="L150"><span class="lineNum">     150</span>              :     end</span>
 <span id="L151"><span class="lineNum">     151</span>              : </span>
 <span id="L152"><span class="lineNum">     152</span>              :     # Check for priority: &quot;(A) &quot;</span>
-<span id="L153"><span class="lineNum">     153</span> <span class="tlaGNC">          54 :     m = match(r&quot;^\(([A-Z])\)\s&quot;, s)</span></span>
-<span id="L154"><span class="lineNum">     154</span> <span class="tlaGNC">          76 :     if !isnothing(m)</span></span>
-<span id="L155"><span class="lineNum">     155</span> <span class="tlaGNC">          44 :         priority = m.captures[1][1]</span></span>
-<span id="L156"><span class="lineNum">     156</span> <span class="tlaGNC">          22 :         s = s[length(m.match)+1:end]</span></span>
+<span id="L153"><span class="lineNum">     153</span> <span class="tlaGNC">          61 :     m = match(r&quot;^\(([A-Z])\)\s&quot;, s)</span></span>
+<span id="L154"><span class="lineNum">     154</span> <span class="tlaGNC">          85 :     if !isnothing(m)</span></span>
+<span id="L155"><span class="lineNum">     155</span> <span class="tlaGNC">          48 :         priority = m.captures[1][1]</span></span>
+<span id="L156"><span class="lineNum">     156</span> <span class="tlaGNC">          24 :         s = s[length(m.match)+1:end]</span></span>
 <span id="L157"><span class="lineNum">     157</span>              :     end</span>
 <span id="L158"><span class="lineNum">     158</span>              : </span>
 <span id="L159"><span class="lineNum">     159</span>              :     # Creation date (or second date for completed tasks)</span>
-<span id="L160"><span class="lineNum">     160</span> <span class="tlaGNC">          72 :     (d, s) = tryparse_date(s)</span></span>
-<span id="L161"><span class="lineNum">     161</span> <span class="tlaGNC">          68 :     if completed &amp;&amp; !isnothing(completion_date)</span></span>
+<span id="L160"><span class="lineNum">     160</span> <span class="tlaGNC">          79 :     (d, s) = tryparse_date(s)</span></span>
+<span id="L161"><span class="lineNum">     161</span> <span class="tlaGNC">          75 :     if completed &amp;&amp; !isnothing(completion_date)</span></span>
 <span id="L162"><span class="lineNum">     162</span> <span class="tlaGNC">          14 :         creation_date = d</span></span>
-<span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">          40 :     elseif !completed</span></span>
-<span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">          39 :         creation_date = d</span></span>
-<span id="L165"><span class="lineNum">     165</span> <span class="tlaGNC">           1 :     elseif completed &amp;&amp; isnothing(completion_date)</span></span>
+<span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">          47 :     elseif !completed</span></span>
+<span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">          45 :         creation_date = d</span></span>
+<span id="L165"><span class="lineNum">     165</span> <span class="tlaGNC">           2 :     elseif completed &amp;&amp; isnothing(completion_date)</span></span>
 <span id="L166"><span class="lineNum">     166</span>              :         # &quot;x&quot; with one date: treat as completion date</span>
-<span id="L167"><span class="lineNum">     167</span> <span class="tlaGNC">           1 :         completion_date = d</span></span>
+<span id="L167"><span class="lineNum">     167</span> <span class="tlaGNC">           2 :         completion_date = d</span></span>
 <span id="L168"><span class="lineNum">     168</span>              :     end</span>
 <span id="L169"><span class="lineNum">     169</span>              : </span>
-<span id="L170"><span class="lineNum">     170</span> <span class="tlaGNC">          54 :     desc_str = strip(s)</span></span>
-<span id="L171"><span class="lineNum">     171</span> <span class="tlaGNC">          54 :     desc, ctx, prj, meta = _extract_tags(desc_str)</span></span>
+<span id="L170"><span class="lineNum">     170</span> <span class="tlaGNC">          61 :     desc_str = strip(s)</span></span>
+<span id="L171"><span class="lineNum">     171</span> <span class="tlaGNC">          61 :     desc, ctx, prj, meta = _extract_tags(desc_str)</span></span>
 <span id="L172"><span class="lineNum">     172</span>              : </span>
-<span id="L173"><span class="lineNum">     173</span> <span class="tlaGNC">          54 :     Todo(completed, priority, completion_date, creation_date, String(desc), ctx, prj, meta)</span></span>
+<span id="L173"><span class="lineNum">     173</span> <span class="tlaGNC">          61 :     Todo(completed, priority, completion_date, creation_date, String(desc), ctx, prj, meta)</span></span>
 <span id="L174"><span class="lineNum">     174</span>              : end</span>
 <span id="L175"><span class="lineNum">     175</span>              : </span>
 <span id="L176"><span class="lineNum">     176</span>              : &quot;&quot;&quot;</span>
@@ -255,15 +255,15 @@
 <span id="L193"><span class="lineNum">     193</span>              :  Todo: x 2024-01-15 Pay bills</span>
 <span id="L194"><span class="lineNum">     194</span>              : ```</span>
 <span id="L195"><span class="lineNum">     195</span>              : &quot;&quot;&quot;</span>
-<span id="L196"><span class="lineNum">     196</span> <span class="tlaGNC">          12 : function parse_todos(text::AbstractString)</span></span>
-<span id="L197"><span class="lineNum">     197</span> <span class="tlaGNC">          12 :     lines = split(text, r&quot;\r?\n&quot;)</span></span>
-<span id="L198"><span class="lineNum">     198</span> <span class="tlaGNC">          12 :     todos = Todo[]</span></span>
-<span id="L199"><span class="lineNum">     199</span> <span class="tlaGNC">          12 :     for line in lines</span></span>
-<span id="L200"><span class="lineNum">     200</span> <span class="tlaGNC">          46 :         stripped = strip(line)</span></span>
-<span id="L201"><span class="lineNum">     201</span> <span class="tlaGNC">          46 :         isempty(stripped) &amp;&amp; continue</span></span>
-<span id="L202"><span class="lineNum">     202</span> <span class="tlaGNC">          33 :         push!(todos, parse_todo(stripped))</span></span>
-<span id="L203"><span class="lineNum">     203</span> <span class="tlaGNC">          46 :     end</span></span>
-<span id="L204"><span class="lineNum">     204</span> <span class="tlaGNC">          12 :     return todos</span></span>
+<span id="L196"><span class="lineNum">     196</span> <span class="tlaGNC">          14 : function parse_todos(text::AbstractString)</span></span>
+<span id="L197"><span class="lineNum">     197</span> <span class="tlaGNC">          14 :     lines = split(text, r&quot;\r?\n&quot;)</span></span>
+<span id="L198"><span class="lineNum">     198</span> <span class="tlaGNC">          14 :     todos = Todo[]</span></span>
+<span id="L199"><span class="lineNum">     199</span> <span class="tlaGNC">          14 :     for line in lines</span></span>
+<span id="L200"><span class="lineNum">     200</span> <span class="tlaGNC">          55 :         stripped = strip(line)</span></span>
+<span id="L201"><span class="lineNum">     201</span> <span class="tlaGNC">          55 :         isempty(stripped) &amp;&amp; continue</span></span>
+<span id="L202"><span class="lineNum">     202</span> <span class="tlaGNC">          40 :         push!(todos, parse_todo(stripped))</span></span>
+<span id="L203"><span class="lineNum">     203</span> <span class="tlaGNC">          55 :     end</span></span>
+<span id="L204"><span class="lineNum">     204</span> <span class="tlaGNC">          14 :     return todos</span></span>
 <span id="L205"><span class="lineNum">     205</span>              : end</span>
 <span id="L206"><span class="lineNum">     206</span>              : </span>
 <span id="L207"><span class="lineNum">     207</span>              : #--------------------------------------------------------------------------------# Writing</span>
@@ -281,25 +281,25 @@
 <span id="L219"><span class="lineNum">     219</span>              : &quot;(A) 2024-01-15 Call Mom @phone +Family&quot;</span>
 <span id="L220"><span class="lineNum">     220</span>              : ```</span>
 <span id="L221"><span class="lineNum">     221</span>              : &quot;&quot;&quot;</span>
-<span id="L222"><span class="lineNum">     222</span> <span class="tlaGNC">          38 : function write_todo(t::Todo)</span></span>
-<span id="L223"><span class="lineNum">     223</span> <span class="tlaGNC">          38 :     parts = String[]</span></span>
-<span id="L224"><span class="lineNum">     224</span> <span class="tlaGNC">          38 :     if t.completed</span></span>
-<span id="L225"><span class="lineNum">     225</span> <span class="tlaGNC">          11 :         push!(parts, &quot;x&quot;)</span></span>
-<span id="L226"><span class="lineNum">     226</span> <span class="tlaGNC">          22 :         !isnothing(t.completion_date) &amp;&amp; push!(parts, string(t.completion_date))</span></span>
+<span id="L222"><span class="lineNum">     222</span> <span class="tlaGNC">          45 : function write_todo(t::Todo)</span></span>
+<span id="L223"><span class="lineNum">     223</span> <span class="tlaGNC">          45 :     parts = String[]</span></span>
+<span id="L224"><span class="lineNum">     224</span> <span class="tlaGNC">          45 :     if t.completed</span></span>
+<span id="L225"><span class="lineNum">     225</span> <span class="tlaGNC">          12 :         push!(parts, &quot;x&quot;)</span></span>
+<span id="L226"><span class="lineNum">     226</span> <span class="tlaGNC">          23 :         !isnothing(t.completion_date) &amp;&amp; push!(parts, string(t.completion_date))</span></span>
 <span id="L227"><span class="lineNum">     227</span>              :     end</span>
-<span id="L228"><span class="lineNum">     228</span> <span class="tlaGNC">          53 :     !isnothing(t.priority) &amp;&amp; push!(parts, &quot;($(t.priority))&quot;)</span></span>
-<span id="L229"><span class="lineNum">     229</span> <span class="tlaGNC">          52 :     !isnothing(t.creation_date) &amp;&amp; push!(parts, string(t.creation_date))</span></span>
-<span id="L230"><span class="lineNum">     230</span> <span class="tlaGNC">          38 :     push!(parts, t.description)</span></span>
-<span id="L231"><span class="lineNum">     231</span> <span class="tlaGNC">          38 :     for c in t.contexts</span></span>
+<span id="L228"><span class="lineNum">     228</span> <span class="tlaGNC">          62 :     !isnothing(t.priority) &amp;&amp; push!(parts, &quot;($(t.priority))&quot;)</span></span>
+<span id="L229"><span class="lineNum">     229</span> <span class="tlaGNC">          59 :     !isnothing(t.creation_date) &amp;&amp; push!(parts, string(t.creation_date))</span></span>
+<span id="L230"><span class="lineNum">     230</span> <span class="tlaGNC">          45 :     push!(parts, t.description)</span></span>
+<span id="L231"><span class="lineNum">     231</span> <span class="tlaGNC">          45 :     for c in t.contexts</span></span>
 <span id="L232"><span class="lineNum">     232</span> <span class="tlaGNC">          17 :         push!(parts, &quot;@$c&quot;)</span></span>
 <span id="L233"><span class="lineNum">     233</span> <span class="tlaGNC">          17 :     end</span></span>
-<span id="L234"><span class="lineNum">     234</span> <span class="tlaGNC">          38 :     for p in t.projects</span></span>
+<span id="L234"><span class="lineNum">     234</span> <span class="tlaGNC">          45 :     for p in t.projects</span></span>
 <span id="L235"><span class="lineNum">     235</span> <span class="tlaGNC">          17 :         push!(parts, &quot;+$p&quot;)</span></span>
 <span id="L236"><span class="lineNum">     236</span> <span class="tlaGNC">          17 :     end</span></span>
-<span id="L237"><span class="lineNum">     237</span> <span class="tlaGNC">          38 :     for (k, v) in sort(collect(t.metadata))</span></span>
-<span id="L238"><span class="lineNum">     238</span> <span class="tlaGNC">           3 :         push!(parts, &quot;$k:$v&quot;)</span></span>
-<span id="L239"><span class="lineNum">     239</span> <span class="tlaGNC">           3 :     end</span></span>
-<span id="L240"><span class="lineNum">     240</span> <span class="tlaGNC">          38 :     return join(parts, &quot; &quot;)</span></span>
+<span id="L237"><span class="lineNum">     237</span> <span class="tlaGNC">          45 :     for (k, v) in sort(collect(t.metadata))</span></span>
+<span id="L238"><span class="lineNum">     238</span> <span class="tlaGNC">           8 :         push!(parts, &quot;$k:$v&quot;)</span></span>
+<span id="L239"><span class="lineNum">     239</span> <span class="tlaGNC">           8 :     end</span></span>
+<span id="L240"><span class="lineNum">     240</span> <span class="tlaGNC">          45 :     return join(parts, &quot; &quot;)</span></span>
 <span id="L241"><span class="lineNum">     241</span>              : end</span>
 <span id="L242"><span class="lineNum">     242</span>              : </span>
 <span id="L243"><span class="lineNum">     243</span>              : &quot;&quot;&quot;</span>
@@ -307,8 +307,8 @@
 <span id="L245"><span class="lineNum">     245</span>              : </span>
 <span id="L246"><span class="lineNum">     246</span>              : Serialize a vector of [`Todo`](@ref) items into a Todo.txt formatted string.</span>
 <span id="L247"><span class="lineNum">     247</span>              : &quot;&quot;&quot;</span>
-<span id="L248"><span class="lineNum">     248</span> <span class="tlaGNC">          12 : function write_todos(todos::Vector{Todo})</span></span>
-<span id="L249"><span class="lineNum">     249</span> <span class="tlaGNC">          12 :     return join(write_todo.(todos), &quot;\n&quot;) * &quot;\n&quot;</span></span>
+<span id="L248"><span class="lineNum">     248</span> <span class="tlaGNC">          14 : function write_todos(todos::Vector{Todo})</span></span>
+<span id="L249"><span class="lineNum">     249</span> <span class="tlaGNC">          14 :     return join(write_todo.(todos), &quot;\n&quot;) * &quot;\n&quot;</span></span>
 <span id="L250"><span class="lineNum">     250</span>              : end</span>
 <span id="L251"><span class="lineNum">     251</span>              : </span>
 <span id="L252"><span class="lineNum">     252</span>              : #--------------------------------------------------------------------------------# File I/O</span>
@@ -323,7 +323,7 @@
 <span id="L261"><span class="lineNum">     261</span>              : ```</span>
 <span id="L262"><span class="lineNum">     262</span>              : &quot;&quot;&quot;</span>
 <span id="L263"><span class="lineNum">     263</span>              : function read_todos(filepath::AbstractString)</span>
-<span id="L264"><span class="lineNum">     264</span> <span class="tlaGNC">          11 :     parse_todos(read(filepath, String))</span></span>
+<span id="L264"><span class="lineNum">     264</span> <span class="tlaGNC">          13 :     parse_todos(read(filepath, String))</span></span>
 <span id="L265"><span class="lineNum">     265</span>              : end</span>
 <span id="L266"><span class="lineNum">     266</span>              : </span>
 <span id="L267"><span class="lineNum">     267</span>              : &quot;&quot;&quot;</span>
@@ -337,7 +337,7 @@
 <span id="L275"><span class="lineNum">     275</span>              : ```</span>
 <span id="L276"><span class="lineNum">     276</span>              : &quot;&quot;&quot;</span>
 <span id="L277"><span class="lineNum">     277</span>              : function write_todos(filepath::AbstractString, todos::Vector{Todo})</span>
-<span id="L278"><span class="lineNum">     278</span> <span class="tlaGNC">          11 :     write(filepath, write_todos(todos))</span></span>
+<span id="L278"><span class="lineNum">     278</span> <span class="tlaGNC">          13 :     write(filepath, write_todos(todos))</span></span>
 <span id="L279"><span class="lineNum">     279</span>              : end</span>
 <span id="L280"><span class="lineNum">     280</span>              : </span>
 <span id="L281"><span class="lineNum">     281</span>              : #--------------------------------------------------------------------------------# TodoFile</span>
@@ -362,7 +362,7 @@
 <span id="L300"><span class="lineNum">     300</span>              : ```</span>
 <span id="L301"><span class="lineNum">     301</span>              : &quot;&quot;&quot;</span>
 <span id="L302"><span class="lineNum">     302</span>              : struct TodoFile</span>
-<span id="L303"><span class="lineNum">     303</span> <span class="tlaGNC">          10 :     filepath::String</span></span>
+<span id="L303"><span class="lineNum">     303</span> <span class="tlaGNC">          12 :     filepath::String</span></span>
 <span id="L304"><span class="lineNum">     304</span>              :     todos::Vector{Todo}</span>
 <span id="L305"><span class="lineNum">     305</span>              : end</span>
 <span id="L306"><span class="lineNum">     306</span>              : </span>
@@ -371,11 +371,11 @@
 <span id="L309"><span class="lineNum">     309</span>              : </span>
 <span id="L310"><span class="lineNum">     310</span>              : Read a Todo.txt file and return a [`TodoFile`](@ref).</span>
 <span id="L311"><span class="lineNum">     311</span>              : &quot;&quot;&quot;</span>
-<span id="L312"><span class="lineNum">     312</span> <span class="tlaGNC">          10 : TodoFile(filepath::AbstractString) = TodoFile(String(filepath), read_todos(filepath))</span></span>
+<span id="L312"><span class="lineNum">     312</span> <span class="tlaGNC">          12 : TodoFile(filepath::AbstractString) = TodoFile(String(filepath), read_todos(filepath))</span></span>
 <span id="L313"><span class="lineNum">     313</span>              : </span>
-<span id="L314"><span class="lineNum">     314</span> <span class="tlaGNC">           8 : Base.length(tf::TodoFile) = length(tf.todos)</span></span>
+<span id="L314"><span class="lineNum">     314</span> <span class="tlaGNC">           9 : Base.length(tf::TodoFile) = length(tf.todos)</span></span>
 <span id="L315"><span class="lineNum">     315</span> <span class="tlaGNC">           4 : Base.getindex(tf::TodoFile, i) = tf.todos[i]</span></span>
-<span id="L316"><span class="lineNum">     316</span> <span class="tlaGNC">          54 : Base.iterate(tf::TodoFile, args...) = iterate(tf.todos, args...)</span></span>
+<span id="L316"><span class="lineNum">     316</span> <span class="tlaGNC">          63 : Base.iterate(tf::TodoFile, args...) = iterate(tf.todos, args...)</span></span>
 <span id="L317"><span class="lineNum">     317</span> <span class="tlaGNC">           4 : Base.eltype(::Type{TodoFile}) = Todo</span></span>
 <span id="L318"><span class="lineNum">     318</span>              : </span>
 <span id="L319"><span class="lineNum">     319</span>              : function Base.show(io::IO, tf::TodoFile)</span>
@@ -404,7 +404,7 @@
 <span id="L342"><span class="lineNum">     342</span> <span class="tlaGNC">           2 : Tables.getcolumn(t::Todo, i::Int) = getfield(t, i)</span></span>
 <span id="L343"><span class="lineNum">     343</span>              : </span>
 <span id="L344"><span class="lineNum">     344</span>              : #--------------------------------------------------------------------------------# HTML Helpers</span>
-<span id="L345"><span class="lineNum">     345</span> <span class="tlaGNC">          80 : _html_escape(s::AbstractString) = replace(s, &quot;&amp;&quot; =&gt; &quot;&amp;amp;&quot;, &quot;&lt;&quot; =&gt; &quot;&amp;lt;&quot;, &quot;&gt;&quot; =&gt; &quot;&amp;gt;&quot;, &quot;\&quot;&quot; =&gt; &quot;&amp;quot;&quot;)</span></span>
+<span id="L345"><span class="lineNum">     345</span> <span class="tlaGNC">         104 : _html_escape(s::AbstractString) = replace(s, &quot;&amp;&quot; =&gt; &quot;&amp;amp;&quot;, &quot;&lt;&quot; =&gt; &quot;&amp;lt;&quot;, &quot;&gt;&quot; =&gt; &quot;&amp;gt;&quot;, &quot;\&quot;&quot; =&gt; &quot;&amp;quot;&quot;)</span></span>
 <span id="L346"><span class="lineNum">     346</span>              : </span>
 <span id="L347"><span class="lineNum">     347</span> <span class="tlaUNC tlaBgUNC">           0 : function _todo_css()</span></span>
 <span id="L348"><span class="lineNum">     348</span> <span class="tlaUNC">           0 :     &quot;&quot;&quot;</span></span>
@@ -428,319 +428,496 @@
 <span id="L366"><span class="lineNum">     366</span>              :     .todo-meta { background: #f3e5f5; color: #6a1b9a; }</span>
 <span id="L367"><span class="lineNum">     367</span>              :     .todo-date { color: #888; font-size: 12px; white-space: nowrap; }</span>
 <span id="L368"><span class="lineNum">     368</span>              :     .todo-table { border-collapse: collapse; width: 100%; }</span>
-<span id="L369"><span class="lineNum">     369</span>              :     .todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }</span>
-<span id="L370"><span class="lineNum">     370</span>              :     .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }</span>
-<span id="L371"><span class="lineNum">     371</span>              :     .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }</span>
-<span id="L372"><span class="lineNum">     372</span>              :     .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }</span>
-<span id="L373"><span class="lineNum">     373</span>              :     .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }</span>
-<span id="L374"><span class="lineNum">     374</span>              :     .todo-kanban-col .todo-card { font-size: 13px; }</span>
-<span id="L375"><span class="lineNum">     375</span>              :     .todo-gantt { width: 100%; border-collapse: collapse; }</span>
-<span id="L376"><span class="lineNum">     376</span>              :     .todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }</span>
-<span id="L377"><span class="lineNum">     377</span>              :     .todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }</span>
-<span id="L378"><span class="lineNum">     378</span>              :     .todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }</span>
-<span id="L379"><span class="lineNum">     379</span>              :     .todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }</span>
-<span id="L380"><span class="lineNum">     380</span>              :     .todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }</span>
-<span id="L381"><span class="lineNum">     381</span>              :     .todo-gantt-bar-a { background: #e53935; }</span>
-<span id="L382"><span class="lineNum">     382</span>              :     .todo-gantt-bar-b { background: #fb8c00; }</span>
-<span id="L383"><span class="lineNum">     383</span>              :     .todo-gantt-bar-c { background: #fdd835; }</span>
-<span id="L384"><span class="lineNum">     384</span>              :     .todo-gantt-bar-other { background: #90a4ae; }</span>
-<span id="L385"><span class="lineNum">     385</span>              :     .todo-gantt-bar-done { opacity: 0.4; }</span>
-<span id="L386"><span class="lineNum">     386</span>              :     .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }</span>
-<span id="L387"><span class="lineNum">     387</span>              :     &lt;/style&gt;&quot;&quot;&quot;</span>
-<span id="L388"><span class="lineNum">     388</span>              : end</span>
-<span id="L389"><span class="lineNum">     389</span>              : </span>
-<span id="L390"><span class="lineNum">     390</span>              : function _priority_html(p::Union{Char, Nothing})</span>
-<span id="L391"><span class="lineNum">     391</span> <span class="tlaGNC tlaBgGNC">          26 :     isnothing(p) &amp;&amp; return &quot;&quot;</span></span>
-<span id="L392"><span class="lineNum">     392</span> <span class="tlaGNC">          10 :     cls = if p == 'A'; &quot;todo-priority-a&quot;</span></span>
-<span id="L393"><span class="lineNum">     393</span> <span class="tlaGNC">           1 :     elseif p == 'B'; &quot;todo-priority-b&quot;</span></span>
-<span id="L394"><span class="lineNum">     394</span> <span class="tlaUNC tlaBgUNC">           0 :     elseif p == 'C'; &quot;todo-priority-c&quot;</span></span>
-<span id="L395"><span class="lineNum">     395</span> <span class="tlaGNC tlaBgGNC">          11 :     else; &quot;todo-priority-other&quot;</span></span>
-<span id="L396"><span class="lineNum">     396</span>              :     end</span>
-<span id="L397"><span class="lineNum">     397</span> <span class="tlaGNC">          10 :     &quot;&quot;&quot;&lt;span class=&quot;todo-priority $cls&quot;&gt;$(_html_escape(string(p)))&lt;/span&gt;&quot;&quot;&quot;</span></span>
+<span id="L369"><span class="lineNum">     369</span>              :     .todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }</span>
+<span id="L370"><span class="lineNum">     370</span>              :     .todo-sort-arrow { font-size: 10px; color: #666; }</span>
+<span id="L371"><span class="lineNum">     371</span>              :     .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }</span>
+<span id="L372"><span class="lineNum">     372</span>              :     .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }</span>
+<span id="L373"><span class="lineNum">     373</span>              :     .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }</span>
+<span id="L374"><span class="lineNum">     374</span>              :     .todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }</span>
+<span id="L375"><span class="lineNum">     375</span>              :     .todo-kanban-col .todo-card { font-size: 13px; }</span>
+<span id="L376"><span class="lineNum">     376</span>              :     .todo-gantt { width: 100%; border-collapse: collapse; }</span>
+<span id="L377"><span class="lineNum">     377</span>              :     .todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }</span>
+<span id="L378"><span class="lineNum">     378</span>              :     .todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }</span>
+<span id="L379"><span class="lineNum">     379</span>              :     .todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }</span>
+<span id="L380"><span class="lineNum">     380</span>              :     .todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }</span>
+<span id="L381"><span class="lineNum">     381</span>              :     .todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }</span>
+<span id="L382"><span class="lineNum">     382</span>              :     .todo-gantt-bar-a { background: #e53935; }</span>
+<span id="L383"><span class="lineNum">     383</span>              :     .todo-gantt-bar-b { background: #fb8c00; }</span>
+<span id="L384"><span class="lineNum">     384</span>              :     .todo-gantt-bar-c { background: #fdd835; }</span>
+<span id="L385"><span class="lineNum">     385</span>              :     .todo-gantt-bar-other { background: #90a4ae; }</span>
+<span id="L386"><span class="lineNum">     386</span>              :     .todo-gantt-bar-done { opacity: 0.4; }</span>
+<span id="L387"><span class="lineNum">     387</span>              :     .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }</span>
+<span id="L388"><span class="lineNum">     388</span>              :     .todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }</span>
+<span id="L389"><span class="lineNum">     389</span>              :     .todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }</span>
+<span id="L390"><span class="lineNum">     390</span>              :     .todo-due-overdue { background: #e53935; }</span>
+<span id="L391"><span class="lineNum">     391</span>              :     .todo-due-urgent { background: #fb8c00; }</span>
+<span id="L392"><span class="lineNum">     392</span>              :     .todo-due-soon { background: #fdd835; }</span>
+<span id="L393"><span class="lineNum">     393</span>              :     .todo-due-ok { background: #66bb6a; }</span>
+<span id="L394"><span class="lineNum">     394</span>              :     .todo-due-plenty { background: #42a5f5; }</span>
+<span id="L395"><span class="lineNum">     395</span>              :     .todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }</span>
+<span id="L396"><span class="lineNum">     396</span>              :     .todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }</span>
+<span id="L397"><span class="lineNum">     397</span>              :     &lt;/style&gt;&quot;&quot;&quot;</span>
 <span id="L398"><span class="lineNum">     398</span>              : end</span>
 <span id="L399"><span class="lineNum">     399</span>              : </span>
-<span id="L400"><span class="lineNum">     400</span> <span class="tlaGNC">          25 : function _tags_html(t::Todo)</span></span>
-<span id="L401"><span class="lineNum">     401</span> <span class="tlaGNC">          25 :     parts = String[]</span></span>
-<span id="L402"><span class="lineNum">     402</span> <span class="tlaGNC">          25 :     for c in t.contexts</span></span>
-<span id="L403"><span class="lineNum">     403</span> <span class="tlaGNC">          16 :         push!(parts, &quot;&quot;&quot;&lt;span class=&quot;todo-pill todo-ctx&quot;&gt;@$(_html_escape(c))&lt;/span&gt;&quot;&quot;&quot;)</span></span>
-<span id="L404"><span class="lineNum">     404</span> <span class="tlaGNC">          16 :     end</span></span>
-<span id="L405"><span class="lineNum">     405</span> <span class="tlaGNC">          25 :     for p in t.projects</span></span>
-<span id="L406"><span class="lineNum">     406</span> <span class="tlaGNC">          16 :         push!(parts, &quot;&quot;&quot;&lt;span class=&quot;todo-pill todo-prj&quot;&gt;+$(_html_escape(p))&lt;/span&gt;&quot;&quot;&quot;)</span></span>
-<span id="L407"><span class="lineNum">     407</span> <span class="tlaGNC">          16 :     end</span></span>
-<span id="L408"><span class="lineNum">     408</span> <span class="tlaGNC">          25 :     for (k, v) in sort(collect(t.metadata))</span></span>
-<span id="L409"><span class="lineNum">     409</span> <span class="tlaUNC tlaBgUNC">           0 :         push!(parts, &quot;&quot;&quot;&lt;span class=&quot;todo-pill todo-meta&quot;&gt;$(_html_escape(k)):$(_html_escape(v))&lt;/span&gt;&quot;&quot;&quot;)</span></span>
-<span id="L410"><span class="lineNum">     410</span> <span class="tlaUNC">           0 :     end</span></span>
-<span id="L411"><span class="lineNum">     411</span> <span class="tlaGNC tlaBgGNC">          25 :     join(parts)</span></span>
-<span id="L412"><span class="lineNum">     412</span>              : end</span>
-<span id="L413"><span class="lineNum">     413</span>              : </span>
-<span id="L414"><span class="lineNum">     414</span> <span class="tlaGNC">          22 : function _description_html(t::Todo)</span></span>
-<span id="L415"><span class="lineNum">     415</span> <span class="tlaGNC">          22 :     done_cls = t.completed ? &quot; todo-done&quot; : &quot;&quot;</span></span>
-<span id="L416"><span class="lineNum">     416</span> <span class="tlaGNC">          22 :     check = t.completed ? &quot;&amp;#10003;&quot; : &quot;&quot;</span></span>
-<span id="L417"><span class="lineNum">     417</span> <span class="tlaGNC">          22 :     &quot;&quot;&quot;&lt;div class=&quot;todo-card$done_cls&quot;&gt;&lt;span class=&quot;todo-checkbox&quot;&gt;$check&lt;/span&gt;&lt;span class=&quot;todo-desc&quot;&gt;$(_html_escape(t.description))&lt;/span&gt;$(_priority_html(t.priority))$(_tags_html(t))&lt;/div&gt;&quot;&quot;&quot;</span></span>
-<span id="L418"><span class="lineNum">     418</span>              : end</span>
-<span id="L419"><span class="lineNum">     419</span>              : </span>
-<span id="L420"><span class="lineNum">     420</span> <span class="tlaGNC">           6 : _date_str(d::Union{Date, Nothing}) = isnothing(d) ? &quot;&quot; : string(d)</span></span>
-<span id="L421"><span class="lineNum">     421</span>              : </span>
-<span id="L422"><span class="lineNum">     422</span> <span class="tlaGNC">          12 : function _group_keys(t::Todo, group_by::Symbol)</span></span>
-<span id="L423"><span class="lineNum">     423</span> <span class="tlaGNC">          12 :     if group_by == :priority</span></span>
-<span id="L424"><span class="lineNum">     424</span> <span class="tlaGNC">           3 :         return isnothing(t.priority) ? [&quot;(none)&quot;] : [string(t.priority)]</span></span>
-<span id="L425"><span class="lineNum">     425</span> <span class="tlaGNC">           9 :     elseif group_by == :completed</span></span>
-<span id="L426"><span class="lineNum">     426</span> <span class="tlaGNC">           3 :         return t.completed ? [&quot;Done&quot;] : [&quot;Pending&quot;]</span></span>
-<span id="L427"><span class="lineNum">     427</span> <span class="tlaGNC">           6 :     elseif group_by == :projects</span></span>
-<span id="L428"><span class="lineNum">     428</span> <span class="tlaGNC">           3 :         return isempty(t.projects) ? [&quot;(no project)&quot;] : t.projects</span></span>
-<span id="L429"><span class="lineNum">     429</span> <span class="tlaGNC">           3 :     elseif group_by == :contexts</span></span>
-<span id="L430"><span class="lineNum">     430</span> <span class="tlaGNC">           3 :         return isempty(t.contexts) ? [&quot;(no context)&quot;] : t.contexts</span></span>
-<span id="L431"><span class="lineNum">     431</span>              :     else</span>
-<span id="L432"><span class="lineNum">     432</span> <span class="tlaUNC tlaBgUNC">           0 :         error(&quot;Invalid group_by: $group_by. Use :priority, :completed, :projects, or :contexts.&quot;)</span></span>
-<span id="L433"><span class="lineNum">     433</span>              :     end</span>
-<span id="L434"><span class="lineNum">     434</span>              : end</span>
-<span id="L435"><span class="lineNum">     435</span>              : </span>
-<span id="L436"><span class="lineNum">     436</span> <span class="tlaGNC tlaBgGNC">           4 : function _kanban_groups(tf::TodoFile, group_by::Symbol)</span></span>
-<span id="L437"><span class="lineNum">     437</span> <span class="tlaGNC">           4 :     groups = Dict{String, Vector{Todo}}()</span></span>
-<span id="L438"><span class="lineNum">     438</span> <span class="tlaGNC">           4 :     for t in tf</span></span>
-<span id="L439"><span class="lineNum">     439</span> <span class="tlaGNC">          12 :         for key in _group_keys(t, group_by)</span></span>
-<span id="L440"><span class="lineNum">     440</span> <span class="tlaGNC">          12 :             push!(get!(Vector{Todo}, groups, key), t)</span></span>
-<span id="L441"><span class="lineNum">     441</span> <span class="tlaGNC">          12 :         end</span></span>
-<span id="L442"><span class="lineNum">     442</span> <span class="tlaGNC">          12 :     end</span></span>
-<span id="L443"><span class="lineNum">     443</span>              :     # Sort: special &quot;(none)&quot;/&quot;(no ...)&quot; keys go last</span>
-<span id="L444"><span class="lineNum">     444</span> <span class="tlaGNC">           4 :     pairs = collect(groups)</span></span>
-<span id="L445"><span class="lineNum">     445</span> <span class="tlaGNC">          11 :     sort!(pairs, by = p -&gt; (startswith(p.first, &quot;(&quot;) ? 1 : 0, p.first))</span></span>
-<span id="L446"><span class="lineNum">     446</span> <span class="tlaGNC">           4 :     return pairs</span></span>
-<span id="L447"><span class="lineNum">     447</span>              : end</span>
-<span id="L448"><span class="lineNum">     448</span>              : </span>
-<span id="L449"><span class="lineNum">     449</span>              : #--------------------------------------------------------------------------------# HTML Views</span>
-<span id="L450"><span class="lineNum">     450</span>              : &quot;&quot;&quot;</span>
-<span id="L451"><span class="lineNum">     451</span>              :     ListView</span>
-<span id="L452"><span class="lineNum">     452</span>              : </span>
-<span id="L453"><span class="lineNum">     453</span>              : A card-style HTML list view of a [`TodoFile`](@ref). Display in Jupyter/Pluto notebooks</span>
-<span id="L454"><span class="lineNum">     454</span>              : via their rich HTML rendering.</span>
-<span id="L455"><span class="lineNum">     455</span>              : </span>
-<span id="L456"><span class="lineNum">     456</span>              : ### Examples</span>
-<span id="L457"><span class="lineNum">     457</span>              : ```julia</span>
-<span id="L458"><span class="lineNum">     458</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
-<span id="L459"><span class="lineNum">     459</span>              : </span>
-<span id="L460"><span class="lineNum">     460</span>              : julia&gt; ListView(tf)</span>
-<span id="L461"><span class="lineNum">     461</span>              : ListView(3 tasks)</span>
-<span id="L462"><span class="lineNum">     462</span>              : ```</span>
-<span id="L463"><span class="lineNum">     463</span>              : &quot;&quot;&quot;</span>
-<span id="L464"><span class="lineNum">     464</span>              : struct ListView</span>
-<span id="L465"><span class="lineNum">     465</span> <span class="tlaGNC">           6 :     todofile::TodoFile</span></span>
-<span id="L466"><span class="lineNum">     466</span>              : end</span>
-<span id="L467"><span class="lineNum">     467</span>              : </span>
-<span id="L468"><span class="lineNum">     468</span>              : &quot;&quot;&quot;</span>
-<span id="L469"><span class="lineNum">     469</span>              :     TableView</span>
-<span id="L470"><span class="lineNum">     470</span>              : </span>
-<span id="L471"><span class="lineNum">     471</span>              : A tabular HTML view of a [`TodoFile`](@ref).</span>
-<span id="L472"><span class="lineNum">     472</span>              : </span>
-<span id="L473"><span class="lineNum">     473</span>              : ### Examples</span>
-<span id="L474"><span class="lineNum">     474</span>              : ```julia</span>
-<span id="L475"><span class="lineNum">     475</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
-<span id="L476"><span class="lineNum">     476</span>              : </span>
-<span id="L477"><span class="lineNum">     477</span>              : julia&gt; TableView(tf)</span>
-<span id="L478"><span class="lineNum">     478</span>              : TableView(3 tasks)</span>
-<span id="L479"><span class="lineNum">     479</span>              : ```</span>
-<span id="L480"><span class="lineNum">     480</span>              : &quot;&quot;&quot;</span>
-<span id="L481"><span class="lineNum">     481</span>              : struct TableView</span>
-<span id="L482"><span class="lineNum">     482</span> <span class="tlaGNC">           2 :     todofile::TodoFile</span></span>
-<span id="L483"><span class="lineNum">     483</span>              : end</span>
-<span id="L484"><span class="lineNum">     484</span>              : </span>
-<span id="L485"><span class="lineNum">     485</span>              : &quot;&quot;&quot;</span>
-<span id="L486"><span class="lineNum">     486</span>              :     KanbanView</span>
-<span id="L487"><span class="lineNum">     487</span>              : </span>
-<span id="L488"><span class="lineNum">     488</span>              : A kanban board HTML view of a [`TodoFile`](@ref), grouped by a specified field.</span>
-<span id="L489"><span class="lineNum">     489</span>              : </span>
-<span id="L490"><span class="lineNum">     490</span>              : ### Examples</span>
-<span id="L491"><span class="lineNum">     491</span>              : ```julia</span>
-<span id="L492"><span class="lineNum">     492</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
-<span id="L493"><span class="lineNum">     493</span>              : </span>
-<span id="L494"><span class="lineNum">     494</span>              : julia&gt; KanbanView(tf, :priority)</span>
-<span id="L495"><span class="lineNum">     495</span>              : KanbanView(3 tasks, group_by=:priority)</span>
-<span id="L496"><span class="lineNum">     496</span>              : </span>
-<span id="L497"><span class="lineNum">     497</span>              : julia&gt; KanbanView(tf)  # defaults to :priority</span>
-<span id="L498"><span class="lineNum">     498</span>              : KanbanView(3 tasks, group_by=:priority)</span>
-<span id="L499"><span class="lineNum">     499</span>              : ```</span>
-<span id="L500"><span class="lineNum">     500</span>              : &quot;&quot;&quot;</span>
-<span id="L501"><span class="lineNum">     501</span>              : struct KanbanView</span>
-<span id="L502"><span class="lineNum">     502</span> <span class="tlaGNC">           8 :     todofile::TodoFile</span></span>
-<span id="L503"><span class="lineNum">     503</span>              :     group_by::Symbol</span>
-<span id="L504"><span class="lineNum">     504</span>              : end</span>
-<span id="L505"><span class="lineNum">     505</span> <span class="tlaGNC">           1 : KanbanView(tf::TodoFile) = KanbanView(tf, :priority)</span></span>
+<span id="L400"><span class="lineNum">     400</span>              : function _priority_html(p::Union{Char, Nothing})</span>
+<span id="L401"><span class="lineNum">     401</span> <span class="tlaGNC tlaBgGNC">          30 :     isnothing(p) &amp;&amp; return &quot;&quot;</span></span>
+<span id="L402"><span class="lineNum">     402</span> <span class="tlaGNC">          12 :     cls = if p == 'A'; &quot;todo-priority-a&quot;</span></span>
+<span id="L403"><span class="lineNum">     403</span> <span class="tlaGNC">           2 :     elseif p == 'B'; &quot;todo-priority-b&quot;</span></span>
+<span id="L404"><span class="lineNum">     404</span> <span class="tlaUNC tlaBgUNC">           0 :     elseif p == 'C'; &quot;todo-priority-c&quot;</span></span>
+<span id="L405"><span class="lineNum">     405</span> <span class="tlaGNC tlaBgGNC">          14 :     else; &quot;todo-priority-other&quot;</span></span>
+<span id="L406"><span class="lineNum">     406</span>              :     end</span>
+<span id="L407"><span class="lineNum">     407</span> <span class="tlaGNC">          12 :     &quot;&quot;&quot;&lt;span class=&quot;todo-priority $cls&quot;&gt;$(_html_escape(string(p)))&lt;/span&gt;&quot;&quot;&quot;</span></span>
+<span id="L408"><span class="lineNum">     408</span>              : end</span>
+<span id="L409"><span class="lineNum">     409</span>              : </span>
+<span id="L410"><span class="lineNum">     410</span> <span class="tlaGNC">          25 : function _tags_html(t::Todo)</span></span>
+<span id="L411"><span class="lineNum">     411</span> <span class="tlaGNC">          25 :     parts = String[]</span></span>
+<span id="L412"><span class="lineNum">     412</span> <span class="tlaGNC">          25 :     for c in t.contexts</span></span>
+<span id="L413"><span class="lineNum">     413</span> <span class="tlaGNC">          16 :         push!(parts, &quot;&quot;&quot;&lt;span class=&quot;todo-pill todo-ctx&quot;&gt;@$(_html_escape(c))&lt;/span&gt;&quot;&quot;&quot;)</span></span>
+<span id="L414"><span class="lineNum">     414</span> <span class="tlaGNC">          16 :     end</span></span>
+<span id="L415"><span class="lineNum">     415</span> <span class="tlaGNC">          25 :     for p in t.projects</span></span>
+<span id="L416"><span class="lineNum">     416</span> <span class="tlaGNC">          16 :         push!(parts, &quot;&quot;&quot;&lt;span class=&quot;todo-pill todo-prj&quot;&gt;+$(_html_escape(p))&lt;/span&gt;&quot;&quot;&quot;)</span></span>
+<span id="L417"><span class="lineNum">     417</span> <span class="tlaGNC">          16 :     end</span></span>
+<span id="L418"><span class="lineNum">     418</span> <span class="tlaGNC">          25 :     for (k, v) in sort(collect(t.metadata))</span></span>
+<span id="L419"><span class="lineNum">     419</span> <span class="tlaUNC tlaBgUNC">           0 :         push!(parts, &quot;&quot;&quot;&lt;span class=&quot;todo-pill todo-meta&quot;&gt;$(_html_escape(k)):$(_html_escape(v))&lt;/span&gt;&quot;&quot;&quot;)</span></span>
+<span id="L420"><span class="lineNum">     420</span> <span class="tlaUNC">           0 :     end</span></span>
+<span id="L421"><span class="lineNum">     421</span> <span class="tlaGNC tlaBgGNC">          25 :     join(parts)</span></span>
+<span id="L422"><span class="lineNum">     422</span>              : end</span>
+<span id="L423"><span class="lineNum">     423</span>              : </span>
+<span id="L424"><span class="lineNum">     424</span> <span class="tlaGNC">          22 : function _description_html(t::Todo)</span></span>
+<span id="L425"><span class="lineNum">     425</span> <span class="tlaGNC">          22 :     done_cls = t.completed ? &quot; todo-done&quot; : &quot;&quot;</span></span>
+<span id="L426"><span class="lineNum">     426</span> <span class="tlaGNC">          22 :     check = t.completed ? &quot;&amp;#10003;&quot; : &quot;&quot;</span></span>
+<span id="L427"><span class="lineNum">     427</span> <span class="tlaGNC">          22 :     &quot;&quot;&quot;&lt;div class=&quot;todo-card$done_cls&quot;&gt;&lt;span class=&quot;todo-checkbox&quot;&gt;$check&lt;/span&gt;&lt;span class=&quot;todo-desc&quot;&gt;$(_html_escape(t.description))&lt;/span&gt;$(_priority_html(t.priority))$(_tags_html(t))&lt;/div&gt;&quot;&quot;&quot;</span></span>
+<span id="L428"><span class="lineNum">     428</span>              : end</span>
+<span id="L429"><span class="lineNum">     429</span>              : </span>
+<span id="L430"><span class="lineNum">     430</span> <span class="tlaGNC">          12 : _date_str(d::Union{Date, Nothing}) = isnothing(d) ? &quot;&quot; : string(d)</span></span>
+<span id="L431"><span class="lineNum">     431</span>              : </span>
+<span id="L432"><span class="lineNum">     432</span> <span class="tlaGNC">          12 : function _group_keys(t::Todo, group_by::Symbol)</span></span>
+<span id="L433"><span class="lineNum">     433</span> <span class="tlaGNC">          12 :     if group_by == :priority</span></span>
+<span id="L434"><span class="lineNum">     434</span> <span class="tlaGNC">           3 :         return isnothing(t.priority) ? [&quot;(none)&quot;] : [string(t.priority)]</span></span>
+<span id="L435"><span class="lineNum">     435</span> <span class="tlaGNC">           9 :     elseif group_by == :completed</span></span>
+<span id="L436"><span class="lineNum">     436</span> <span class="tlaGNC">           3 :         return t.completed ? [&quot;Done&quot;] : [&quot;Pending&quot;]</span></span>
+<span id="L437"><span class="lineNum">     437</span> <span class="tlaGNC">           6 :     elseif group_by == :projects</span></span>
+<span id="L438"><span class="lineNum">     438</span> <span class="tlaGNC">           3 :         return isempty(t.projects) ? [&quot;(no project)&quot;] : t.projects</span></span>
+<span id="L439"><span class="lineNum">     439</span> <span class="tlaGNC">           3 :     elseif group_by == :contexts</span></span>
+<span id="L440"><span class="lineNum">     440</span> <span class="tlaGNC">           3 :         return isempty(t.contexts) ? [&quot;(no context)&quot;] : t.contexts</span></span>
+<span id="L441"><span class="lineNum">     441</span>              :     else</span>
+<span id="L442"><span class="lineNum">     442</span> <span class="tlaUNC tlaBgUNC">           0 :         error(&quot;Invalid group_by: $group_by. Use :priority, :completed, :projects, or :contexts.&quot;)</span></span>
+<span id="L443"><span class="lineNum">     443</span>              :     end</span>
+<span id="L444"><span class="lineNum">     444</span>              : end</span>
+<span id="L445"><span class="lineNum">     445</span>              : </span>
+<span id="L446"><span class="lineNum">     446</span> <span class="tlaGNC tlaBgGNC">           4 : function _kanban_groups(tf::TodoFile, group_by::Symbol)</span></span>
+<span id="L447"><span class="lineNum">     447</span> <span class="tlaGNC">           4 :     groups = Dict{String, Vector{Todo}}()</span></span>
+<span id="L448"><span class="lineNum">     448</span> <span class="tlaGNC">           4 :     for t in tf</span></span>
+<span id="L449"><span class="lineNum">     449</span> <span class="tlaGNC">          12 :         for key in _group_keys(t, group_by)</span></span>
+<span id="L450"><span class="lineNum">     450</span> <span class="tlaGNC">          12 :             push!(get!(Vector{Todo}, groups, key), t)</span></span>
+<span id="L451"><span class="lineNum">     451</span> <span class="tlaGNC">          12 :         end</span></span>
+<span id="L452"><span class="lineNum">     452</span> <span class="tlaGNC">          12 :     end</span></span>
+<span id="L453"><span class="lineNum">     453</span>              :     # Sort: special &quot;(none)&quot;/&quot;(no ...)&quot; keys go last</span>
+<span id="L454"><span class="lineNum">     454</span> <span class="tlaGNC">           4 :     pairs = collect(groups)</span></span>
+<span id="L455"><span class="lineNum">     455</span> <span class="tlaGNC">          11 :     sort!(pairs, by = p -&gt; (startswith(p.first, &quot;(&quot;) ? 1 : 0, p.first))</span></span>
+<span id="L456"><span class="lineNum">     456</span> <span class="tlaGNC">           4 :     return pairs</span></span>
+<span id="L457"><span class="lineNum">     457</span>              : end</span>
+<span id="L458"><span class="lineNum">     458</span>              : </span>
+<span id="L459"><span class="lineNum">     459</span>              : #--------------------------------------------------------------------------------# HTML Views</span>
+<span id="L460"><span class="lineNum">     460</span>              : &quot;&quot;&quot;</span>
+<span id="L461"><span class="lineNum">     461</span>              :     ListView</span>
+<span id="L462"><span class="lineNum">     462</span>              : </span>
+<span id="L463"><span class="lineNum">     463</span>              : A card-style HTML list view of a [`TodoFile`](@ref). Display in Jupyter/Pluto notebooks</span>
+<span id="L464"><span class="lineNum">     464</span>              : via their rich HTML rendering.</span>
+<span id="L465"><span class="lineNum">     465</span>              : </span>
+<span id="L466"><span class="lineNum">     466</span>              : ### Examples</span>
+<span id="L467"><span class="lineNum">     467</span>              : ```julia</span>
+<span id="L468"><span class="lineNum">     468</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
+<span id="L469"><span class="lineNum">     469</span>              : </span>
+<span id="L470"><span class="lineNum">     470</span>              : julia&gt; ListView(tf)</span>
+<span id="L471"><span class="lineNum">     471</span>              : ListView(3 tasks)</span>
+<span id="L472"><span class="lineNum">     472</span>              : ```</span>
+<span id="L473"><span class="lineNum">     473</span>              : &quot;&quot;&quot;</span>
+<span id="L474"><span class="lineNum">     474</span>              : struct ListView</span>
+<span id="L475"><span class="lineNum">     475</span> <span class="tlaGNC">           6 :     todofile::TodoFile</span></span>
+<span id="L476"><span class="lineNum">     476</span>              : end</span>
+<span id="L477"><span class="lineNum">     477</span>              : </span>
+<span id="L478"><span class="lineNum">     478</span>              : &quot;&quot;&quot;</span>
+<span id="L479"><span class="lineNum">     479</span>              :     TableView</span>
+<span id="L480"><span class="lineNum">     480</span>              : </span>
+<span id="L481"><span class="lineNum">     481</span>              : A tabular HTML view of a [`TodoFile`](@ref).</span>
+<span id="L482"><span class="lineNum">     482</span>              : </span>
+<span id="L483"><span class="lineNum">     483</span>              : ### Examples</span>
+<span id="L484"><span class="lineNum">     484</span>              : ```julia</span>
+<span id="L485"><span class="lineNum">     485</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
+<span id="L486"><span class="lineNum">     486</span>              : </span>
+<span id="L487"><span class="lineNum">     487</span>              : julia&gt; TableView(tf)</span>
+<span id="L488"><span class="lineNum">     488</span>              : TableView(3 tasks)</span>
+<span id="L489"><span class="lineNum">     489</span>              : ```</span>
+<span id="L490"><span class="lineNum">     490</span>              : &quot;&quot;&quot;</span>
+<span id="L491"><span class="lineNum">     491</span>              : struct TableView</span>
+<span id="L492"><span class="lineNum">     492</span> <span class="tlaGNC">           2 :     todofile::TodoFile</span></span>
+<span id="L493"><span class="lineNum">     493</span>              : end</span>
+<span id="L494"><span class="lineNum">     494</span>              : </span>
+<span id="L495"><span class="lineNum">     495</span>              : &quot;&quot;&quot;</span>
+<span id="L496"><span class="lineNum">     496</span>              :     KanbanView</span>
+<span id="L497"><span class="lineNum">     497</span>              : </span>
+<span id="L498"><span class="lineNum">     498</span>              : A kanban board HTML view of a [`TodoFile`](@ref), grouped by a specified field.</span>
+<span id="L499"><span class="lineNum">     499</span>              : </span>
+<span id="L500"><span class="lineNum">     500</span>              : ### Examples</span>
+<span id="L501"><span class="lineNum">     501</span>              : ```julia</span>
+<span id="L502"><span class="lineNum">     502</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
+<span id="L503"><span class="lineNum">     503</span>              : </span>
+<span id="L504"><span class="lineNum">     504</span>              : julia&gt; KanbanView(tf, :priority)</span>
+<span id="L505"><span class="lineNum">     505</span>              : KanbanView(3 tasks, group_by=:priority)</span>
 <span id="L506"><span class="lineNum">     506</span>              : </span>
-<span id="L507"><span class="lineNum">     507</span>              : # Plain-text show</span>
-<span id="L508"><span class="lineNum">     508</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::ListView) = print(io, &quot;ListView($(length(v.todofile)) tasks)&quot;)</span></span>
-<span id="L509"><span class="lineNum">     509</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::TableView) = print(io, &quot;TableView($(length(v.todofile)) tasks)&quot;)</span></span>
-<span id="L510"><span class="lineNum">     510</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::KanbanView) = print(io, &quot;KanbanView($(length(v.todofile)) tasks, group_by=:$(v.group_by))&quot;)</span></span>
-<span id="L511"><span class="lineNum">     511</span>              : </span>
-<span id="L512"><span class="lineNum">     512</span>              : # HTML show — ListView</span>
-<span id="L513"><span class="lineNum">     513</span> <span class="tlaGNC">           4 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::ListView)</span></span>
-<span id="L514"><span class="lineNum">     514</span> <span class="tlaGNC">           4 :     print(io, _todo_css())</span></span>
-<span id="L515"><span class="lineNum">     515</span> <span class="tlaGNC">           4 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&lt;div class=&quot;todo-list&quot;&gt;&quot;&quot;&quot;)</span></span>
-<span id="L516"><span class="lineNum">     516</span> <span class="tlaGNC">           4 :     for t in v.todofile</span></span>
-<span id="L517"><span class="lineNum">     517</span> <span class="tlaGNC">          10 :         print(io, _description_html(t))</span></span>
-<span id="L518"><span class="lineNum">     518</span> <span class="tlaGNC">          10 :     end</span></span>
-<span id="L519"><span class="lineNum">     519</span> <span class="tlaGNC">           4 :     print(io, &quot;&lt;/div&gt;&lt;/div&gt;&quot;)</span></span>
-<span id="L520"><span class="lineNum">     520</span>              : end</span>
+<span id="L507"><span class="lineNum">     507</span>              : julia&gt; KanbanView(tf)  # defaults to :priority</span>
+<span id="L508"><span class="lineNum">     508</span>              : KanbanView(3 tasks, group_by=:priority)</span>
+<span id="L509"><span class="lineNum">     509</span>              : ```</span>
+<span id="L510"><span class="lineNum">     510</span>              : &quot;&quot;&quot;</span>
+<span id="L511"><span class="lineNum">     511</span>              : struct KanbanView</span>
+<span id="L512"><span class="lineNum">     512</span> <span class="tlaGNC">           8 :     todofile::TodoFile</span></span>
+<span id="L513"><span class="lineNum">     513</span>              :     group_by::Symbol</span>
+<span id="L514"><span class="lineNum">     514</span>              : end</span>
+<span id="L515"><span class="lineNum">     515</span> <span class="tlaGNC">           1 : KanbanView(tf::TodoFile) = KanbanView(tf, :priority)</span></span>
+<span id="L516"><span class="lineNum">     516</span>              : </span>
+<span id="L517"><span class="lineNum">     517</span>              : # Plain-text show</span>
+<span id="L518"><span class="lineNum">     518</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::ListView) = print(io, &quot;ListView($(length(v.todofile)) tasks)&quot;)</span></span>
+<span id="L519"><span class="lineNum">     519</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::TableView) = print(io, &quot;TableView($(length(v.todofile)) tasks)&quot;)</span></span>
+<span id="L520"><span class="lineNum">     520</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::KanbanView) = print(io, &quot;KanbanView($(length(v.todofile)) tasks, group_by=:$(v.group_by))&quot;)</span></span>
 <span id="L521"><span class="lineNum">     521</span>              : </span>
-<span id="L522"><span class="lineNum">     522</span>              : # HTML show — TableView</span>
-<span id="L523"><span class="lineNum">     523</span> <span class="tlaGNC">           1 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::TableView)</span></span>
-<span id="L524"><span class="lineNum">     524</span> <span class="tlaGNC">           1 :     print(io, _todo_css())</span></span>
-<span id="L525"><span class="lineNum">     525</span> <span class="tlaGNC">           1 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&lt;table class=&quot;todo-table&quot;&gt;&quot;&quot;&quot;)</span></span>
-<span id="L526"><span class="lineNum">     526</span> <span class="tlaGNC">           1 :     print(io, &quot;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Done&lt;/th&gt;&lt;th&gt;Priority&lt;/th&gt;&lt;th&gt;Description&lt;/th&gt;&lt;th&gt;Tags&lt;/th&gt;&lt;th&gt;Created&lt;/th&gt;&lt;th&gt;Completed&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&quot;)</span></span>
-<span id="L527"><span class="lineNum">     527</span> <span class="tlaGNC">           1 :     for t in v.todofile</span></span>
-<span id="L528"><span class="lineNum">     528</span> <span class="tlaGNC">           3 :         check = t.completed ? &quot;&amp;#10003;&quot; : &quot;&quot;</span></span>
-<span id="L529"><span class="lineNum">     529</span> <span class="tlaGNC">           4 :         pri = isnothing(t.priority) ? &quot;&quot; : _priority_html(t.priority)</span></span>
-<span id="L530"><span class="lineNum">     530</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;tr&gt;&quot;)</span></span>
-<span id="L531"><span class="lineNum">     531</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;td&gt;$check&lt;/td&gt;&quot;)</span></span>
-<span id="L532"><span class="lineNum">     532</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;td&gt;$pri&lt;/td&gt;&quot;)</span></span>
-<span id="L533"><span class="lineNum">     533</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;td&gt;$(_html_escape(t.description))&lt;/td&gt;&quot;)</span></span>
-<span id="L534"><span class="lineNum">     534</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;td&gt;$(_tags_html(t))&lt;/td&gt;&quot;)</span></span>
-<span id="L535"><span class="lineNum">     535</span> <span class="tlaGNC">           4 :         print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-date&quot;&gt;$(_date_str(t.creation_date))&lt;/td&gt;&quot;&quot;&quot;)</span></span>
-<span id="L536"><span class="lineNum">     536</span> <span class="tlaGNC">           4 :         print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-date&quot;&gt;$(_date_str(t.completion_date))&lt;/td&gt;&quot;&quot;&quot;)</span></span>
-<span id="L537"><span class="lineNum">     537</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;/tr&gt;&quot;)</span></span>
-<span id="L538"><span class="lineNum">     538</span> <span class="tlaGNC">           3 :     end</span></span>
-<span id="L539"><span class="lineNum">     539</span> <span class="tlaGNC">           1 :     print(io, &quot;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&quot;)</span></span>
-<span id="L540"><span class="lineNum">     540</span>              : end</span>
-<span id="L541"><span class="lineNum">     541</span>              : </span>
-<span id="L542"><span class="lineNum">     542</span>              : # HTML show — KanbanView</span>
-<span id="L543"><span class="lineNum">     543</span> <span class="tlaGNC">           4 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::KanbanView)</span></span>
-<span id="L544"><span class="lineNum">     544</span> <span class="tlaGNC">           4 :     print(io, _todo_css())</span></span>
-<span id="L545"><span class="lineNum">     545</span> <span class="tlaGNC">           4 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&lt;div class=&quot;todo-kanban&quot;&gt;&quot;&quot;&quot;)</span></span>
-<span id="L546"><span class="lineNum">     546</span> <span class="tlaGNC">           4 :     for (label, todos) in _kanban_groups(v.todofile, v.group_by)</span></span>
-<span id="L547"><span class="lineNum">     547</span> <span class="tlaGNC">          10 :         print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-kanban-col&quot;&gt;&lt;h3&gt;$(_html_escape(label))&lt;/h3&gt;&quot;&quot;&quot;)</span></span>
-<span id="L548"><span class="lineNum">     548</span> <span class="tlaGNC">          10 :         for t in todos</span></span>
-<span id="L549"><span class="lineNum">     549</span> <span class="tlaGNC">          12 :             print(io, _description_html(t))</span></span>
-<span id="L550"><span class="lineNum">     550</span> <span class="tlaGNC">          12 :         end</span></span>
-<span id="L551"><span class="lineNum">     551</span> <span class="tlaGNC">          10 :         print(io, &quot;&lt;/div&gt;&quot;)</span></span>
-<span id="L552"><span class="lineNum">     552</span> <span class="tlaGNC">          10 :     end</span></span>
-<span id="L553"><span class="lineNum">     553</span> <span class="tlaGNC">           4 :     print(io, &quot;&lt;/div&gt;&lt;/div&gt;&quot;)</span></span>
-<span id="L554"><span class="lineNum">     554</span>              : end</span>
-<span id="L555"><span class="lineNum">     555</span>              : </span>
-<span id="L556"><span class="lineNum">     556</span>              : &quot;&quot;&quot;</span>
-<span id="L557"><span class="lineNum">     557</span>              :     GanttView</span>
-<span id="L558"><span class="lineNum">     558</span>              : </span>
-<span id="L559"><span class="lineNum">     559</span>              : A Gantt chart HTML view of a [`TodoFile`](@ref). Tasks are displayed as horizontal bars</span>
-<span id="L560"><span class="lineNum">     560</span>              : on a timeline. A task needs a `creation_date` (start) and either a `due` metadata key or</span>
-<span id="L561"><span class="lineNum">     561</span>              : `completion_date` (end) to appear on the chart.</span>
-<span id="L562"><span class="lineNum">     562</span>              : </span>
-<span id="L563"><span class="lineNum">     563</span>              : ### Examples</span>
-<span id="L564"><span class="lineNum">     564</span>              : ```julia</span>
-<span id="L565"><span class="lineNum">     565</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
-<span id="L566"><span class="lineNum">     566</span>              : </span>
-<span id="L567"><span class="lineNum">     567</span>              : julia&gt; GanttView(tf)</span>
-<span id="L568"><span class="lineNum">     568</span>              : GanttView(3 tasks)</span>
-<span id="L569"><span class="lineNum">     569</span>              : ```</span>
-<span id="L570"><span class="lineNum">     570</span>              : &quot;&quot;&quot;</span>
-<span id="L571"><span class="lineNum">     571</span>              : struct GanttView</span>
-<span id="L572"><span class="lineNum">     572</span> <span class="tlaGNC">           3 :     todofile::TodoFile</span></span>
-<span id="L573"><span class="lineNum">     573</span>              : end</span>
-<span id="L574"><span class="lineNum">     574</span>              : </span>
-<span id="L575"><span class="lineNum">     575</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::GanttView) = print(io, &quot;GanttView($(length(v.todofile)) tasks)&quot;)</span></span>
-<span id="L576"><span class="lineNum">     576</span>              : </span>
-<span id="L577"><span class="lineNum">     577</span>              : function _gantt_dates(t::Todo)</span>
-<span id="L578"><span class="lineNum">     578</span> <span class="tlaGNC">           6 :     start = t.creation_date</span></span>
-<span id="L579"><span class="lineNum">     579</span> <span class="tlaGNC">          10 :     isnothing(start) &amp;&amp; return nothing</span></span>
-<span id="L580"><span class="lineNum">     580</span> <span class="tlaGNC">           4 :     due_str = get(t.metadata, &quot;due&quot;, &quot;&quot;)</span></span>
-<span id="L581"><span class="lineNum">     581</span> <span class="tlaGNC">           4 :     finish = if !isempty(due_str)</span></span>
-<span id="L582"><span class="lineNum">     582</span> <span class="tlaGNC">           2 :         tryparse(Date, due_str)</span></span>
-<span id="L583"><span class="lineNum">     583</span> <span class="tlaGNC">           3 :     elseif t.completed &amp;&amp; !isnothing(t.completion_date)</span></span>
-<span id="L584"><span class="lineNum">     584</span> <span class="tlaGNC">           1 :         t.completion_date</span></span>
-<span id="L585"><span class="lineNum">     585</span>              :     else</span>
-<span id="L586"><span class="lineNum">     586</span> <span class="tlaGNC">           6 :         nothing</span></span>
-<span id="L587"><span class="lineNum">     587</span>              :     end</span>
-<span id="L588"><span class="lineNum">     588</span> <span class="tlaGNC">           7 :     isnothing(finish) &amp;&amp; return nothing</span></span>
-<span id="L589"><span class="lineNum">     589</span> <span class="tlaGNC">           3 :     finish &lt; start &amp;&amp; return nothing</span></span>
-<span id="L590"><span class="lineNum">     590</span> <span class="tlaGNC">           3 :     return (start, finish)</span></span>
-<span id="L591"><span class="lineNum">     591</span>              : end</span>
-<span id="L592"><span class="lineNum">     592</span>              : </span>
-<span id="L593"><span class="lineNum">     593</span>              : function _gantt_bar_class(t::Todo)</span>
-<span id="L594"><span class="lineNum">     594</span> <span class="tlaGNC">           5 :     cls = if isnothing(t.priority); &quot;todo-gantt-bar-other&quot;</span></span>
-<span id="L595"><span class="lineNum">     595</span> <span class="tlaGNC">           4 :     elseif t.priority == 'A'; &quot;todo-gantt-bar-a&quot;</span></span>
-<span id="L596"><span class="lineNum">     596</span> <span class="tlaGNC">           2 :     elseif t.priority == 'B'; &quot;todo-gantt-bar-b&quot;</span></span>
-<span id="L597"><span class="lineNum">     597</span> <span class="tlaUNC tlaBgUNC">           0 :     elseif t.priority == 'C'; &quot;todo-gantt-bar-c&quot;</span></span>
-<span id="L598"><span class="lineNum">     598</span> <span class="tlaGNC tlaBgGNC">           6 :     else; &quot;todo-gantt-bar-other&quot;</span></span>
-<span id="L599"><span class="lineNum">     599</span>              :     end</span>
-<span id="L600"><span class="lineNum">     600</span> <span class="tlaGNC">           3 :     t.completed ? &quot;$cls todo-gantt-bar-done&quot; : cls</span></span>
-<span id="L601"><span class="lineNum">     601</span>              : end</span>
-<span id="L602"><span class="lineNum">     602</span>              : </span>
-<span id="L603"><span class="lineNum">     603</span> <span class="tlaGNC">           2 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::GanttView)</span></span>
-<span id="L604"><span class="lineNum">     604</span>              :     # Collect plottable tasks</span>
-<span id="L605"><span class="lineNum">     605</span> <span class="tlaGNC">           2 :     items = Tuple{Todo, Date, Date}[]</span></span>
-<span id="L606"><span class="lineNum">     606</span> <span class="tlaGNC">           2 :     for t in v.todofile</span></span>
-<span id="L607"><span class="lineNum">     607</span> <span class="tlaGNC">          10 :         dates = _gantt_dates(t)</span></span>
-<span id="L608"><span class="lineNum">     608</span> <span class="tlaGNC">           9 :         !isnothing(dates) &amp;&amp; push!(items, (t, dates[1], dates[2]))</span></span>
-<span id="L609"><span class="lineNum">     609</span> <span class="tlaGNC">           6 :     end</span></span>
-<span id="L610"><span class="lineNum">     610</span> <span class="tlaGNC">           2 :     print(io, _todo_css())</span></span>
-<span id="L611"><span class="lineNum">     611</span> <span class="tlaGNC">           2 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&quot;&quot;&quot;)</span></span>
-<span id="L612"><span class="lineNum">     612</span> <span class="tlaGNC">           2 :     if isempty(items)</span></span>
-<span id="L613"><span class="lineNum">     613</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;p style=&quot;color:#888;font-style:italic;&quot;&gt;No tasks with both a creation date and a due/completion date to display.&lt;/p&gt;&quot;&quot;&quot;)</span></span>
-<span id="L614"><span class="lineNum">     614</span>              :     else</span>
-<span id="L615"><span class="lineNum">     615</span> <span class="tlaGNC">           2 :         min_date = minimum(x[2] for x in items)</span></span>
-<span id="L616"><span class="lineNum">     616</span> <span class="tlaGNC">           2 :         max_date = maximum(x[3] for x in items)</span></span>
-<span id="L617"><span class="lineNum">     617</span> <span class="tlaGNC">           1 :         span = max(Dates.value(max_date - min_date), 1)</span></span>
-<span id="L618"><span class="lineNum">     618</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;table class=&quot;todo-gantt&quot;&gt;&quot;&quot;&quot;)</span></span>
-<span id="L619"><span class="lineNum">     619</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;thead&gt;&lt;tr&gt;&lt;th class=&quot;todo-gantt-label&quot;&gt;Task&lt;/th&gt;&lt;th&gt;Timeline&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&quot;&quot;&quot;)</span></span>
-<span id="L620"><span class="lineNum">     620</span> <span class="tlaGNC">           1 :         for (t, s, f) in items</span></span>
-<span id="L621"><span class="lineNum">     621</span> <span class="tlaGNC">           3 :             left_pct = round(100.0 * Dates.value(s - min_date) / span, digits=2)</span></span>
-<span id="L622"><span class="lineNum">     622</span> <span class="tlaGNC">           3 :             width_pct = round(100.0 * max(Dates.value(f - s), 1) / span, digits=2)</span></span>
-<span id="L623"><span class="lineNum">     623</span> <span class="tlaGNC">           3 :             width_pct = min(width_pct, 100.0 - left_pct)</span></span>
-<span id="L624"><span class="lineNum">     624</span> <span class="tlaGNC">           3 :             label = _html_escape(t.description)</span></span>
-<span id="L625"><span class="lineNum">     625</span> <span class="tlaGNC">           5 :             bar_cls = _gantt_bar_class(t)</span></span>
-<span id="L626"><span class="lineNum">     626</span> <span class="tlaGNC">           5 :             pri = _priority_html(t.priority)</span></span>
-<span id="L627"><span class="lineNum">     627</span> <span class="tlaGNC">           3 :             print(io, &quot;&lt;tr&gt;&quot;)</span></span>
-<span id="L628"><span class="lineNum">     628</span> <span class="tlaGNC">           3 :             print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-gantt-label&quot;&gt;$pri $label&lt;/td&gt;&quot;&quot;&quot;)</span></span>
-<span id="L629"><span class="lineNum">     629</span> <span class="tlaGNC">           3 :             print(io, &quot;&quot;&quot;&lt;td&gt;&lt;div class=&quot;todo-gantt-track&quot;&gt;&lt;div class=&quot;todo-gantt-bar $bar_cls&quot; style=&quot;left:$(left_pct)%;width:$(width_pct)%&quot; title=&quot;$(s) → $(f)&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&quot;&quot;&quot;)</span></span>
-<span id="L630"><span class="lineNum">     630</span> <span class="tlaGNC">           3 :             print(io, &quot;&lt;/tr&gt;&quot;)</span></span>
-<span id="L631"><span class="lineNum">     631</span> <span class="tlaGNC">           3 :         end</span></span>
-<span id="L632"><span class="lineNum">     632</span> <span class="tlaGNC">           1 :         print(io, &quot;&lt;/tbody&gt;&lt;/table&gt;&quot;)</span></span>
-<span id="L633"><span class="lineNum">     633</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-gantt-dates&quot;&gt;&lt;span&gt;$min_date&lt;/span&gt;&lt;span&gt;$max_date&lt;/span&gt;&lt;/div&gt;&quot;&quot;&quot;)</span></span>
-<span id="L634"><span class="lineNum">     634</span>              :     end</span>
-<span id="L635"><span class="lineNum">     635</span> <span class="tlaGNC">           2 :     print(io, &quot;&lt;/div&gt;&quot;)</span></span>
-<span id="L636"><span class="lineNum">     636</span>              : end</span>
-<span id="L637"><span class="lineNum">     637</span>              : </span>
-<span id="L638"><span class="lineNum">     638</span>              : # Default HTML for TodoFile delegates to ListView</span>
-<span id="L639"><span class="lineNum">     639</span> <span class="tlaGNC">           1 : function Base.show(io::IO, mime::MIME&quot;text/html&quot;, tf::TodoFile)</span></span>
-<span id="L640"><span class="lineNum">     640</span> <span class="tlaGNC">           1 :     show(io, mime, ListView(tf))</span></span>
-<span id="L641"><span class="lineNum">     641</span>              : end</span>
-<span id="L642"><span class="lineNum">     642</span>              : </span>
-<span id="L643"><span class="lineNum">     643</span>              : &quot;&quot;&quot;</span>
-<span id="L644"><span class="lineNum">     644</span>              :     html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)</span>
-<span id="L645"><span class="lineNum">     645</span>              : </span>
-<span id="L646"><span class="lineNum">     646</span>              : Create an HTML view of a [`TodoFile`](@ref) for rich display in notebooks.</span>
-<span id="L647"><span class="lineNum">     647</span>              : </span>
-<span id="L648"><span class="lineNum">     648</span>              : Returns a [`ListView`](@ref), [`TableView`](@ref), [`KanbanView`](@ref), or [`GanttView`](@ref).</span>
-<span id="L649"><span class="lineNum">     649</span>              : </span>
-<span id="L650"><span class="lineNum">     650</span>              : ### Examples</span>
-<span id="L651"><span class="lineNum">     651</span>              : ```julia</span>
-<span id="L652"><span class="lineNum">     652</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
-<span id="L653"><span class="lineNum">     653</span>              : </span>
-<span id="L654"><span class="lineNum">     654</span>              : julia&gt; html_view(tf)</span>
-<span id="L655"><span class="lineNum">     655</span>              : ListView(3 tasks)</span>
-<span id="L656"><span class="lineNum">     656</span>              : </span>
-<span id="L657"><span class="lineNum">     657</span>              : julia&gt; html_view(tf; view=:table)</span>
-<span id="L658"><span class="lineNum">     658</span>              : TableView(3 tasks)</span>
-<span id="L659"><span class="lineNum">     659</span>              : </span>
-<span id="L660"><span class="lineNum">     660</span>              : julia&gt; html_view(tf; view=:kanban, group_by=:projects)</span>
-<span id="L661"><span class="lineNum">     661</span>              : KanbanView(3 tasks, group_by=:projects)</span>
-<span id="L662"><span class="lineNum">     662</span>              : </span>
-<span id="L663"><span class="lineNum">     663</span>              : julia&gt; html_view(tf; view=:gantt)</span>
-<span id="L664"><span class="lineNum">     664</span>              : GanttView(3 tasks)</span>
-<span id="L665"><span class="lineNum">     665</span>              : ```</span>
-<span id="L666"><span class="lineNum">     666</span>              : &quot;&quot;&quot;</span>
-<span id="L667"><span class="lineNum">     667</span> <span class="tlaGNC">           8 : function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)</span></span>
-<span id="L668"><span class="lineNum">     668</span> <span class="tlaGNC">           8 :     if view == :list</span></span>
-<span id="L669"><span class="lineNum">     669</span> <span class="tlaGNC">           2 :         return ListView(tf)</span></span>
-<span id="L670"><span class="lineNum">     670</span> <span class="tlaGNC">           6 :     elseif view == :table</span></span>
-<span id="L671"><span class="lineNum">     671</span> <span class="tlaGNC">           1 :         return TableView(tf)</span></span>
-<span id="L672"><span class="lineNum">     672</span> <span class="tlaGNC">           5 :     elseif view == :kanban</span></span>
-<span id="L673"><span class="lineNum">     673</span> <span class="tlaGNC">           3 :         return KanbanView(tf, group_by)</span></span>
-<span id="L674"><span class="lineNum">     674</span> <span class="tlaGNC">           2 :     elseif view == :gantt</span></span>
-<span id="L675"><span class="lineNum">     675</span> <span class="tlaGNC">           1 :         return GanttView(tf)</span></span>
-<span id="L676"><span class="lineNum">     676</span>              :     else</span>
-<span id="L677"><span class="lineNum">     677</span> <span class="tlaGNC">           1 :         error(&quot;Invalid view: $view. Use :list, :table, :kanban, or :gantt.&quot;)</span></span>
-<span id="L678"><span class="lineNum">     678</span>              :     end</span>
-<span id="L679"><span class="lineNum">     679</span>              : end</span>
-<span id="L680"><span class="lineNum">     680</span>              : </span>
-<span id="L681"><span class="lineNum">     681</span>              : end # module</span>
+<span id="L522"><span class="lineNum">     522</span>              : # HTML show — ListView</span>
+<span id="L523"><span class="lineNum">     523</span> <span class="tlaGNC">           4 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::ListView)</span></span>
+<span id="L524"><span class="lineNum">     524</span> <span class="tlaGNC">           4 :     print(io, _todo_css())</span></span>
+<span id="L525"><span class="lineNum">     525</span> <span class="tlaGNC">           4 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&lt;div class=&quot;todo-list&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L526"><span class="lineNum">     526</span> <span class="tlaGNC">           4 :     for t in v.todofile</span></span>
+<span id="L527"><span class="lineNum">     527</span> <span class="tlaGNC">          10 :         print(io, _description_html(t))</span></span>
+<span id="L528"><span class="lineNum">     528</span> <span class="tlaGNC">          10 :     end</span></span>
+<span id="L529"><span class="lineNum">     529</span> <span class="tlaGNC">           4 :     print(io, &quot;&lt;/div&gt;&lt;/div&gt;&quot;)</span></span>
+<span id="L530"><span class="lineNum">     530</span>              : end</span>
+<span id="L531"><span class="lineNum">     531</span>              : </span>
+<span id="L532"><span class="lineNum">     532</span>              : # HTML show — TableView</span>
+<span id="L533"><span class="lineNum">     533</span> <span class="tlaGNC">          18 : function _sort_value(t::Todo, col::Symbol)</span></span>
+<span id="L534"><span class="lineNum">     534</span> <span class="tlaGNC">          18 :     if col == :completed</span></span>
+<span id="L535"><span class="lineNum">     535</span> <span class="tlaGNC">           3 :         t.completed ? &quot;1&quot; : &quot;0&quot;</span></span>
+<span id="L536"><span class="lineNum">     536</span> <span class="tlaGNC">          15 :     elseif col == :priority</span></span>
+<span id="L537"><span class="lineNum">     537</span> <span class="tlaGNC">           3 :         isnothing(t.priority) ? &quot;ZZ&quot; : string(t.priority)</span></span>
+<span id="L538"><span class="lineNum">     538</span> <span class="tlaGNC">          12 :     elseif col == :description</span></span>
+<span id="L539"><span class="lineNum">     539</span> <span class="tlaGNC">           3 :         t.description</span></span>
+<span id="L540"><span class="lineNum">     540</span> <span class="tlaGNC">           9 :     elseif col == :tags</span></span>
+<span id="L541"><span class="lineNum">     541</span> <span class="tlaGNC">           3 :         join(t.contexts, &quot;,&quot;) * &quot;;&quot; * join(t.projects, &quot;,&quot;)</span></span>
+<span id="L542"><span class="lineNum">     542</span> <span class="tlaGNC">           6 :     elseif col == :creation_date</span></span>
+<span id="L543"><span class="lineNum">     543</span> <span class="tlaGNC">           3 :         _date_str(t.creation_date)</span></span>
+<span id="L544"><span class="lineNum">     544</span> <span class="tlaGNC">           3 :     elseif col == :completion_date</span></span>
+<span id="L545"><span class="lineNum">     545</span> <span class="tlaGNC">           3 :         _date_str(t.completion_date)</span></span>
+<span id="L546"><span class="lineNum">     546</span>              :     else</span>
+<span id="L547"><span class="lineNum">     547</span>              :         &quot;&quot;</span>
+<span id="L548"><span class="lineNum">     548</span>              :     end</span>
+<span id="L549"><span class="lineNum">     549</span>              : end</span>
+<span id="L550"><span class="lineNum">     550</span>              : </span>
+<span id="L551"><span class="lineNum">     551</span> <span class="tlaGNC">           1 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::TableView)</span></span>
+<span id="L552"><span class="lineNum">     552</span> <span class="tlaGNC">           1 :     tid = &quot;todo-table-&quot; * string(hash(v), base=16)</span></span>
+<span id="L553"><span class="lineNum">     553</span> <span class="tlaGNC">           1 :     print(io, _todo_css())</span></span>
+<span id="L554"><span class="lineNum">     554</span> <span class="tlaGNC">           1 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&lt;table class=&quot;todo-table&quot; id=&quot;$tid&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L555"><span class="lineNum">     555</span> <span class="tlaGNC">           1 :     print(io, &quot;&lt;thead&gt;&lt;tr&gt;&quot;)</span></span>
+<span id="L556"><span class="lineNum">     556</span> <span class="tlaGNC">           1 :     for (i, (label, col)) in enumerate([</span></span>
+<span id="L557"><span class="lineNum">     557</span>              :         (&quot;Done&quot;, :completed), (&quot;Priority&quot;, :priority), (&quot;Description&quot;, :description),</span>
+<span id="L558"><span class="lineNum">     558</span>              :         (&quot;Tags&quot;, :tags), (&quot;Created&quot;, :creation_date), (&quot;Completed&quot;, :completion_date)</span>
+<span id="L559"><span class="lineNum">     559</span>              :     ])</span>
+<span id="L560"><span class="lineNum">     560</span> <span class="tlaGNC">           6 :         print(io, &quot;&quot;&quot;&lt;th style=&quot;cursor:pointer;user-select:none;&quot; onclick=&quot;todoSort_$tid($i)&quot;&gt;$label &lt;span class=&quot;todo-sort-arrow&quot; id=&quot;$(tid)_arrow_$i&quot;&gt;&lt;/span&gt;&lt;/th&gt;&quot;&quot;&quot;)</span></span>
+<span id="L561"><span class="lineNum">     561</span> <span class="tlaGNC">          11 :     end</span></span>
+<span id="L562"><span class="lineNum">     562</span> <span class="tlaGNC">           1 :     print(io, &quot;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&quot;)</span></span>
+<span id="L563"><span class="lineNum">     563</span> <span class="tlaGNC">           1 :     cols = [:completed, :priority, :description, :tags, :creation_date, :completion_date]</span></span>
+<span id="L564"><span class="lineNum">     564</span> <span class="tlaGNC">           1 :     for t in v.todofile</span></span>
+<span id="L565"><span class="lineNum">     565</span> <span class="tlaGNC">           3 :         check = t.completed ? &quot;&amp;#10003;&quot; : &quot;&quot;</span></span>
+<span id="L566"><span class="lineNum">     566</span> <span class="tlaGNC">           4 :         pri = isnothing(t.priority) ? &quot;&quot; : _priority_html(t.priority)</span></span>
+<span id="L567"><span class="lineNum">     567</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;tr&gt;&quot;)</span></span>
+<span id="L568"><span class="lineNum">     568</span> <span class="tlaGNC">           3 :         print(io, &quot;&quot;&quot;&lt;td data-sort-value=&quot;$(_html_escape(_sort_value(t, :completed)))&quot;&gt;$check&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L569"><span class="lineNum">     569</span> <span class="tlaGNC">           3 :         print(io, &quot;&quot;&quot;&lt;td data-sort-value=&quot;$(_html_escape(_sort_value(t, :priority)))&quot;&gt;$pri&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L570"><span class="lineNum">     570</span> <span class="tlaGNC">           3 :         print(io, &quot;&quot;&quot;&lt;td data-sort-value=&quot;$(_html_escape(_sort_value(t, :description)))&quot;&gt;$(_html_escape(t.description))&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L571"><span class="lineNum">     571</span> <span class="tlaGNC">           3 :         print(io, &quot;&quot;&quot;&lt;td data-sort-value=&quot;$(_html_escape(_sort_value(t, :tags)))&quot;&gt;$(_tags_html(t))&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L572"><span class="lineNum">     572</span> <span class="tlaGNC">           4 :         print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-date&quot; data-sort-value=&quot;$(_html_escape(_sort_value(t, :creation_date)))&quot;&gt;$(_date_str(t.creation_date))&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L573"><span class="lineNum">     573</span> <span class="tlaGNC">           4 :         print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-date&quot; data-sort-value=&quot;$(_html_escape(_sort_value(t, :completion_date)))&quot;&gt;$(_date_str(t.completion_date))&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L574"><span class="lineNum">     574</span> <span class="tlaGNC">           3 :         print(io, &quot;&lt;/tr&gt;&quot;)</span></span>
+<span id="L575"><span class="lineNum">     575</span> <span class="tlaGNC">           3 :     end</span></span>
+<span id="L576"><span class="lineNum">     576</span> <span class="tlaGNC">           1 :     print(io, &quot;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&quot;)</span></span>
+<span id="L577"><span class="lineNum">     577</span> <span class="tlaGNC">           1 :     print(io, &quot;&quot;&quot;</span></span>
+<span id="L578"><span class="lineNum">     578</span>              :     &lt;script&gt;</span>
+<span id="L579"><span class="lineNum">     579</span>              :     (function(){</span>
+<span id="L580"><span class="lineNum">     580</span>              :       var sortCol=null, sortAsc=true;</span>
+<span id="L581"><span class="lineNum">     581</span>              :       window.todoSort_$tid=function(col){</span>
+<span id="L582"><span class="lineNum">     582</span>              :         var table=document.getElementById(&quot;$tid&quot;);</span>
+<span id="L583"><span class="lineNum">     583</span>              :         var tbody=table.querySelector(&quot;tbody&quot;);</span>
+<span id="L584"><span class="lineNum">     584</span>              :         var rows=Array.from(tbody.querySelectorAll(&quot;tr&quot;));</span>
+<span id="L585"><span class="lineNum">     585</span>              :         if(sortCol===col){sortAsc=!sortAsc}else{sortCol=col;sortAsc=true}</span>
+<span id="L586"><span class="lineNum">     586</span>              :         rows.sort(function(a,b){</span>
+<span id="L587"><span class="lineNum">     587</span>              :           var av=a.cells[col-1].getAttribute(&quot;data-sort-value&quot;)||&quot;&quot;;</span>
+<span id="L588"><span class="lineNum">     588</span>              :           var bv=b.cells[col-1].getAttribute(&quot;data-sort-value&quot;)||&quot;&quot;;</span>
+<span id="L589"><span class="lineNum">     589</span>              :           return sortAsc?av.localeCompare(bv):bv.localeCompare(av);</span>
+<span id="L590"><span class="lineNum">     590</span>              :         });</span>
+<span id="L591"><span class="lineNum">     591</span>              :         rows.forEach(function(r){tbody.appendChild(r)});</span>
+<span id="L592"><span class="lineNum">     592</span>              :         table.querySelectorAll(&quot;.todo-sort-arrow&quot;).forEach(function(el){el.textContent=&quot;&quot;});</span>
+<span id="L593"><span class="lineNum">     593</span>              :         var arrow=document.getElementById(&quot;$(tid)_arrow_&quot;+col);</span>
+<span id="L594"><span class="lineNum">     594</span>              :         if(arrow)arrow.textContent=sortAsc?&quot;\\u25B2&quot;:&quot;\\u25BC&quot;;</span>
+<span id="L595"><span class="lineNum">     595</span>              :       };</span>
+<span id="L596"><span class="lineNum">     596</span>              :     })();</span>
+<span id="L597"><span class="lineNum">     597</span>              :     &lt;/script&gt;&quot;&quot;&quot;)</span>
+<span id="L598"><span class="lineNum">     598</span>              : end</span>
+<span id="L599"><span class="lineNum">     599</span>              : </span>
+<span id="L600"><span class="lineNum">     600</span>              : # HTML show — KanbanView</span>
+<span id="L601"><span class="lineNum">     601</span> <span class="tlaGNC">           4 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::KanbanView)</span></span>
+<span id="L602"><span class="lineNum">     602</span> <span class="tlaGNC">           4 :     print(io, _todo_css())</span></span>
+<span id="L603"><span class="lineNum">     603</span> <span class="tlaGNC">           4 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&lt;div class=&quot;todo-kanban&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L604"><span class="lineNum">     604</span> <span class="tlaGNC">           4 :     for (label, todos) in _kanban_groups(v.todofile, v.group_by)</span></span>
+<span id="L605"><span class="lineNum">     605</span> <span class="tlaGNC">          10 :         print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-kanban-col&quot;&gt;&lt;h3&gt;$(_html_escape(label))&lt;/h3&gt;&quot;&quot;&quot;)</span></span>
+<span id="L606"><span class="lineNum">     606</span> <span class="tlaGNC">          10 :         for t in todos</span></span>
+<span id="L607"><span class="lineNum">     607</span> <span class="tlaGNC">          12 :             print(io, _description_html(t))</span></span>
+<span id="L608"><span class="lineNum">     608</span> <span class="tlaGNC">          12 :         end</span></span>
+<span id="L609"><span class="lineNum">     609</span> <span class="tlaGNC">          10 :         print(io, &quot;&lt;/div&gt;&quot;)</span></span>
+<span id="L610"><span class="lineNum">     610</span> <span class="tlaGNC">          10 :     end</span></span>
+<span id="L611"><span class="lineNum">     611</span> <span class="tlaGNC">           4 :     print(io, &quot;&lt;/div&gt;&lt;/div&gt;&quot;)</span></span>
+<span id="L612"><span class="lineNum">     612</span>              : end</span>
+<span id="L613"><span class="lineNum">     613</span>              : </span>
+<span id="L614"><span class="lineNum">     614</span>              : &quot;&quot;&quot;</span>
+<span id="L615"><span class="lineNum">     615</span>              :     GanttView</span>
+<span id="L616"><span class="lineNum">     616</span>              : </span>
+<span id="L617"><span class="lineNum">     617</span>              : A Gantt chart HTML view of a [`TodoFile`](@ref). Tasks are displayed as horizontal bars</span>
+<span id="L618"><span class="lineNum">     618</span>              : on a timeline. A task needs a `creation_date` (start) and either a `due` metadata key or</span>
+<span id="L619"><span class="lineNum">     619</span>              : `completion_date` (end) to appear on the chart.</span>
+<span id="L620"><span class="lineNum">     620</span>              : </span>
+<span id="L621"><span class="lineNum">     621</span>              : ### Examples</span>
+<span id="L622"><span class="lineNum">     622</span>              : ```julia</span>
+<span id="L623"><span class="lineNum">     623</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
+<span id="L624"><span class="lineNum">     624</span>              : </span>
+<span id="L625"><span class="lineNum">     625</span>              : julia&gt; GanttView(tf)</span>
+<span id="L626"><span class="lineNum">     626</span>              : GanttView(3 tasks)</span>
+<span id="L627"><span class="lineNum">     627</span>              : ```</span>
+<span id="L628"><span class="lineNum">     628</span>              : &quot;&quot;&quot;</span>
+<span id="L629"><span class="lineNum">     629</span>              : struct GanttView</span>
+<span id="L630"><span class="lineNum">     630</span> <span class="tlaGNC">           3 :     todofile::TodoFile</span></span>
+<span id="L631"><span class="lineNum">     631</span>              : end</span>
+<span id="L632"><span class="lineNum">     632</span>              : </span>
+<span id="L633"><span class="lineNum">     633</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::GanttView) = print(io, &quot;GanttView($(length(v.todofile)) tasks)&quot;)</span></span>
+<span id="L634"><span class="lineNum">     634</span>              : </span>
+<span id="L635"><span class="lineNum">     635</span>              : function _gantt_dates(t::Todo)</span>
+<span id="L636"><span class="lineNum">     636</span> <span class="tlaGNC">           6 :     start = t.creation_date</span></span>
+<span id="L637"><span class="lineNum">     637</span> <span class="tlaGNC">          10 :     isnothing(start) &amp;&amp; return nothing</span></span>
+<span id="L638"><span class="lineNum">     638</span> <span class="tlaGNC">           4 :     due_str = get(t.metadata, &quot;due&quot;, &quot;&quot;)</span></span>
+<span id="L639"><span class="lineNum">     639</span> <span class="tlaGNC">           4 :     finish = if !isempty(due_str)</span></span>
+<span id="L640"><span class="lineNum">     640</span> <span class="tlaGNC">           2 :         tryparse(Date, due_str)</span></span>
+<span id="L641"><span class="lineNum">     641</span> <span class="tlaGNC">           3 :     elseif t.completed &amp;&amp; !isnothing(t.completion_date)</span></span>
+<span id="L642"><span class="lineNum">     642</span> <span class="tlaGNC">           1 :         t.completion_date</span></span>
+<span id="L643"><span class="lineNum">     643</span>              :     else</span>
+<span id="L644"><span class="lineNum">     644</span> <span class="tlaGNC">           6 :         nothing</span></span>
+<span id="L645"><span class="lineNum">     645</span>              :     end</span>
+<span id="L646"><span class="lineNum">     646</span> <span class="tlaGNC">           7 :     isnothing(finish) &amp;&amp; return nothing</span></span>
+<span id="L647"><span class="lineNum">     647</span> <span class="tlaGNC">           3 :     finish &lt; start &amp;&amp; return nothing</span></span>
+<span id="L648"><span class="lineNum">     648</span> <span class="tlaGNC">           3 :     return (start, finish)</span></span>
+<span id="L649"><span class="lineNum">     649</span>              : end</span>
+<span id="L650"><span class="lineNum">     650</span>              : </span>
+<span id="L651"><span class="lineNum">     651</span>              : function _gantt_bar_class(t::Todo)</span>
+<span id="L652"><span class="lineNum">     652</span> <span class="tlaGNC">           5 :     cls = if isnothing(t.priority); &quot;todo-gantt-bar-other&quot;</span></span>
+<span id="L653"><span class="lineNum">     653</span> <span class="tlaGNC">           4 :     elseif t.priority == 'A'; &quot;todo-gantt-bar-a&quot;</span></span>
+<span id="L654"><span class="lineNum">     654</span> <span class="tlaGNC">           2 :     elseif t.priority == 'B'; &quot;todo-gantt-bar-b&quot;</span></span>
+<span id="L655"><span class="lineNum">     655</span> <span class="tlaUNC tlaBgUNC">           0 :     elseif t.priority == 'C'; &quot;todo-gantt-bar-c&quot;</span></span>
+<span id="L656"><span class="lineNum">     656</span> <span class="tlaGNC tlaBgGNC">           6 :     else; &quot;todo-gantt-bar-other&quot;</span></span>
+<span id="L657"><span class="lineNum">     657</span>              :     end</span>
+<span id="L658"><span class="lineNum">     658</span> <span class="tlaGNC">           3 :     t.completed ? &quot;$cls todo-gantt-bar-done&quot; : cls</span></span>
+<span id="L659"><span class="lineNum">     659</span>              : end</span>
+<span id="L660"><span class="lineNum">     660</span>              : </span>
+<span id="L661"><span class="lineNum">     661</span> <span class="tlaGNC">           2 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::GanttView)</span></span>
+<span id="L662"><span class="lineNum">     662</span>              :     # Collect plottable tasks</span>
+<span id="L663"><span class="lineNum">     663</span> <span class="tlaGNC">           2 :     items = Tuple{Todo, Date, Date}[]</span></span>
+<span id="L664"><span class="lineNum">     664</span> <span class="tlaGNC">           2 :     for t in v.todofile</span></span>
+<span id="L665"><span class="lineNum">     665</span> <span class="tlaGNC">          10 :         dates = _gantt_dates(t)</span></span>
+<span id="L666"><span class="lineNum">     666</span> <span class="tlaGNC">           9 :         !isnothing(dates) &amp;&amp; push!(items, (t, dates[1], dates[2]))</span></span>
+<span id="L667"><span class="lineNum">     667</span> <span class="tlaGNC">           6 :     end</span></span>
+<span id="L668"><span class="lineNum">     668</span> <span class="tlaGNC">           2 :     print(io, _todo_css())</span></span>
+<span id="L669"><span class="lineNum">     669</span> <span class="tlaGNC">           2 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L670"><span class="lineNum">     670</span> <span class="tlaGNC">           2 :     if isempty(items)</span></span>
+<span id="L671"><span class="lineNum">     671</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;p style=&quot;color:#888;font-style:italic;&quot;&gt;No tasks with both a creation date and a due/completion date to display.&lt;/p&gt;&quot;&quot;&quot;)</span></span>
+<span id="L672"><span class="lineNum">     672</span>              :     else</span>
+<span id="L673"><span class="lineNum">     673</span> <span class="tlaGNC">           2 :         min_date = minimum(x[2] for x in items)</span></span>
+<span id="L674"><span class="lineNum">     674</span> <span class="tlaGNC">           2 :         max_date = maximum(x[3] for x in items)</span></span>
+<span id="L675"><span class="lineNum">     675</span> <span class="tlaGNC">           1 :         span = max(Dates.value(max_date - min_date), 1)</span></span>
+<span id="L676"><span class="lineNum">     676</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;table class=&quot;todo-gantt&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L677"><span class="lineNum">     677</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;thead&gt;&lt;tr&gt;&lt;th class=&quot;todo-gantt-label&quot;&gt;Task&lt;/th&gt;&lt;th&gt;Timeline&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&quot;&quot;&quot;)</span></span>
+<span id="L678"><span class="lineNum">     678</span> <span class="tlaGNC">           1 :         for (t, s, f) in items</span></span>
+<span id="L679"><span class="lineNum">     679</span> <span class="tlaGNC">           3 :             left_pct = round(100.0 * Dates.value(s - min_date) / span, digits=2)</span></span>
+<span id="L680"><span class="lineNum">     680</span> <span class="tlaGNC">           3 :             width_pct = round(100.0 * max(Dates.value(f - s), 1) / span, digits=2)</span></span>
+<span id="L681"><span class="lineNum">     681</span> <span class="tlaGNC">           3 :             width_pct = min(width_pct, 100.0 - left_pct)</span></span>
+<span id="L682"><span class="lineNum">     682</span> <span class="tlaGNC">           3 :             label = _html_escape(t.description)</span></span>
+<span id="L683"><span class="lineNum">     683</span> <span class="tlaGNC">           5 :             bar_cls = _gantt_bar_class(t)</span></span>
+<span id="L684"><span class="lineNum">     684</span> <span class="tlaGNC">           5 :             pri = _priority_html(t.priority)</span></span>
+<span id="L685"><span class="lineNum">     685</span> <span class="tlaGNC">           3 :             print(io, &quot;&lt;tr&gt;&quot;)</span></span>
+<span id="L686"><span class="lineNum">     686</span> <span class="tlaGNC">           3 :             print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-gantt-label&quot;&gt;$pri $label&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L687"><span class="lineNum">     687</span> <span class="tlaGNC">           3 :             print(io, &quot;&quot;&quot;&lt;td&gt;&lt;div class=&quot;todo-gantt-track&quot;&gt;&lt;div class=&quot;todo-gantt-bar $bar_cls&quot; style=&quot;left:$(left_pct)%;width:$(width_pct)%&quot; title=&quot;$(s) → $(f)&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L688"><span class="lineNum">     688</span> <span class="tlaGNC">           3 :             print(io, &quot;&lt;/tr&gt;&quot;)</span></span>
+<span id="L689"><span class="lineNum">     689</span> <span class="tlaGNC">           3 :         end</span></span>
+<span id="L690"><span class="lineNum">     690</span> <span class="tlaGNC">           1 :         print(io, &quot;&lt;/tbody&gt;&lt;/table&gt;&quot;)</span></span>
+<span id="L691"><span class="lineNum">     691</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-gantt-dates&quot;&gt;&lt;span&gt;$min_date&lt;/span&gt;&lt;span&gt;$max_date&lt;/span&gt;&lt;/div&gt;&quot;&quot;&quot;)</span></span>
+<span id="L692"><span class="lineNum">     692</span>              :     end</span>
+<span id="L693"><span class="lineNum">     693</span> <span class="tlaGNC">           2 :     print(io, &quot;&lt;/div&gt;&quot;)</span></span>
+<span id="L694"><span class="lineNum">     694</span>              : end</span>
+<span id="L695"><span class="lineNum">     695</span>              : </span>
+<span id="L696"><span class="lineNum">     696</span>              : &quot;&quot;&quot;</span>
+<span id="L697"><span class="lineNum">     697</span>              :     DueView</span>
+<span id="L698"><span class="lineNum">     698</span>              : </span>
+<span id="L699"><span class="lineNum">     699</span>              : A timeline HTML view of a [`TodoFile`](@ref) showing time remaining until each task is due.</span>
+<span id="L700"><span class="lineNum">     700</span>              : Tasks need a `due` metadata key (e.g. `due:2024-02-01`) to appear. Bars are colored by</span>
+<span id="L701"><span class="lineNum">     701</span>              : urgency: overdue (red), ≤3 days (orange), ≤7 days (yellow), ≤14 days (green), &gt;14 days (blue).</span>
+<span id="L702"><span class="lineNum">     702</span>              : </span>
+<span id="L703"><span class="lineNum">     703</span>              : The `today` field defaults to `Dates.today()` but can be overridden for testing.</span>
+<span id="L704"><span class="lineNum">     704</span>              : </span>
+<span id="L705"><span class="lineNum">     705</span>              : ### Examples</span>
+<span id="L706"><span class="lineNum">     706</span>              : ```julia</span>
+<span id="L707"><span class="lineNum">     707</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
+<span id="L708"><span class="lineNum">     708</span>              : </span>
+<span id="L709"><span class="lineNum">     709</span>              : julia&gt; DueView(tf)</span>
+<span id="L710"><span class="lineNum">     710</span>              : DueView(3 tasks)</span>
+<span id="L711"><span class="lineNum">     711</span>              : ```</span>
+<span id="L712"><span class="lineNum">     712</span>              : &quot;&quot;&quot;</span>
+<span id="L713"><span class="lineNum">     713</span>              : struct DueView</span>
+<span id="L714"><span class="lineNum">     714</span> <span class="tlaGNC">           4 :     todofile::TodoFile</span></span>
+<span id="L715"><span class="lineNum">     715</span>              :     today::Date</span>
+<span id="L716"><span class="lineNum">     716</span>              : end</span>
+<span id="L717"><span class="lineNum">     717</span> <span class="tlaGNC">           2 : DueView(tf::TodoFile) = DueView(tf, Dates.today())</span></span>
+<span id="L718"><span class="lineNum">     718</span>              : </span>
+<span id="L719"><span class="lineNum">     719</span> <span class="tlaGNC">           1 : Base.show(io::IO, v::DueView) = print(io, &quot;DueView($(length(v.todofile)) tasks)&quot;)</span></span>
+<span id="L720"><span class="lineNum">     720</span>              : </span>
+<span id="L721"><span class="lineNum">     721</span>              : function _due_date(t::Todo)</span>
+<span id="L722"><span class="lineNum">     722</span> <span class="tlaGNC">           6 :     due_str = get(t.metadata, &quot;due&quot;, &quot;&quot;)</span></span>
+<span id="L723"><span class="lineNum">     723</span> <span class="tlaGNC">           6 :     isempty(due_str) &amp;&amp; return nothing</span></span>
+<span id="L724"><span class="lineNum">     724</span> <span class="tlaGNC">           4 :     return tryparse(Date, due_str)</span></span>
+<span id="L725"><span class="lineNum">     725</span>              : end</span>
+<span id="L726"><span class="lineNum">     726</span>              : </span>
+<span id="L727"><span class="lineNum">     727</span>              : function _due_urgency_class(days_remaining::Int)</span>
+<span id="L728"><span class="lineNum">     728</span> <span class="tlaGNC">           4 :     if days_remaining &lt; 0</span></span>
+<span id="L729"><span class="lineNum">     729</span>              :         &quot;todo-due-overdue&quot;</span>
+<span id="L730"><span class="lineNum">     730</span> <span class="tlaGNC">           3 :     elseif days_remaining &lt;= 3</span></span>
+<span id="L731"><span class="lineNum">     731</span>              :         &quot;todo-due-urgent&quot;</span>
+<span id="L732"><span class="lineNum">     732</span> <span class="tlaGNC">           1 :     elseif days_remaining &lt;= 7</span></span>
+<span id="L733"><span class="lineNum">     733</span>              :         &quot;todo-due-soon&quot;</span>
+<span id="L734"><span class="lineNum">     734</span> <span class="tlaGNC">           1 :     elseif days_remaining &lt;= 14</span></span>
+<span id="L735"><span class="lineNum">     735</span>              :         &quot;todo-due-ok&quot;</span>
+<span id="L736"><span class="lineNum">     736</span>              :     else</span>
+<span id="L737"><span class="lineNum">     737</span>              :         &quot;todo-due-plenty&quot;</span>
+<span id="L738"><span class="lineNum">     738</span>              :     end</span>
+<span id="L739"><span class="lineNum">     739</span>              : end</span>
+<span id="L740"><span class="lineNum">     740</span>              : </span>
+<span id="L741"><span class="lineNum">     741</span>              : function _due_label(days_remaining::Int)</span>
+<span id="L742"><span class="lineNum">     742</span> <span class="tlaGNC">           4 :     if days_remaining &lt; 0</span></span>
+<span id="L743"><span class="lineNum">     743</span> <span class="tlaGNC">           1 :         &quot;$(abs(days_remaining))d overdue&quot;</span></span>
+<span id="L744"><span class="lineNum">     744</span> <span class="tlaGNC">           3 :     elseif days_remaining == 0</span></span>
+<span id="L745"><span class="lineNum">     745</span>              :         &quot;due today&quot;</span>
+<span id="L746"><span class="lineNum">     746</span> <span class="tlaGNC">           2 :     elseif days_remaining == 1</span></span>
+<span id="L747"><span class="lineNum">     747</span>              :         &quot;1 day left&quot;</span>
+<span id="L748"><span class="lineNum">     748</span>              :     else</span>
+<span id="L749"><span class="lineNum">     749</span> <span class="tlaGNC">           2 :         &quot;$days_remaining days left&quot;</span></span>
+<span id="L750"><span class="lineNum">     750</span>              :     end</span>
+<span id="L751"><span class="lineNum">     751</span>              : end</span>
+<span id="L752"><span class="lineNum">     752</span>              : </span>
+<span id="L753"><span class="lineNum">     753</span> <span class="tlaGNC">           2 : function Base.show(io::IO, ::MIME&quot;text/html&quot;, v::DueView)</span></span>
+<span id="L754"><span class="lineNum">     754</span> <span class="tlaGNC">           2 :     today = v.today</span></span>
+<span id="L755"><span class="lineNum">     755</span> <span class="tlaGNC">           2 :     items = Tuple{Todo, Date, Int}[]</span></span>
+<span id="L756"><span class="lineNum">     756</span> <span class="tlaGNC">           2 :     for t in v.todofile</span></span>
+<span id="L757"><span class="lineNum">     757</span> <span class="tlaGNC">           7 :         t.completed &amp;&amp; continue</span></span>
+<span id="L758"><span class="lineNum">     758</span> <span class="tlaGNC">          10 :         due = _due_date(t)</span></span>
+<span id="L759"><span class="lineNum">     759</span> <span class="tlaGNC">          10 :         isnothing(due) &amp;&amp; continue</span></span>
+<span id="L760"><span class="lineNum">     760</span> <span class="tlaGNC">           4 :         days = Dates.value(due - today)</span></span>
+<span id="L761"><span class="lineNum">     761</span> <span class="tlaGNC">           4 :         push!(items, (t, due, days))</span></span>
+<span id="L762"><span class="lineNum">     762</span> <span class="tlaGNC">           7 :     end</span></span>
+<span id="L763"><span class="lineNum">     763</span> <span class="tlaGNC">           5 :     sort!(items, by = x -&gt; x[3])</span></span>
+<span id="L764"><span class="lineNum">     764</span> <span class="tlaGNC">           2 :     print(io, _todo_css())</span></span>
+<span id="L765"><span class="lineNum">     765</span> <span class="tlaGNC">           2 :     print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-container&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L766"><span class="lineNum">     766</span> <span class="tlaGNC">           2 :     if isempty(items)</span></span>
+<span id="L767"><span class="lineNum">     767</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;p style=&quot;color:#888;font-style:italic;&quot;&gt;No pending tasks with a due date to display.&lt;/p&gt;&quot;&quot;&quot;)</span></span>
+<span id="L768"><span class="lineNum">     768</span>              :     else</span>
+<span id="L769"><span class="lineNum">     769</span> <span class="tlaGNC">           2 :         min_days = minimum(x[3] for x in items)</span></span>
+<span id="L770"><span class="lineNum">     770</span> <span class="tlaGNC">           2 :         max_days = maximum(x[3] for x in items)</span></span>
+<span id="L771"><span class="lineNum">     771</span> <span class="tlaGNC">           1 :         range_start = min(min_days, 0)</span></span>
+<span id="L772"><span class="lineNum">     772</span> <span class="tlaGNC">           1 :         range_end = max(max_days, 1)</span></span>
+<span id="L773"><span class="lineNum">     773</span> <span class="tlaGNC">           1 :         span = range_end - range_start</span></span>
+<span id="L774"><span class="lineNum">     774</span> <span class="tlaGNC">           1 :         span = max(span, 1)</span></span>
+<span id="L775"><span class="lineNum">     775</span> <span class="tlaGNC">           1 :         today_pct = round(100.0 * (0 - range_start) / span, digits=2)</span></span>
+<span id="L776"><span class="lineNum">     776</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;table class=&quot;todo-gantt&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L777"><span class="lineNum">     777</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;thead&gt;&lt;tr&gt;&lt;th class=&quot;todo-gantt-label&quot;&gt;Task&lt;/th&gt;&lt;th&gt;Time to Due Date&lt;/th&gt;&lt;th class=&quot;todo-due-label&quot; style=&quot;text-align:right;&quot;&gt;Status&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&quot;&quot;&quot;)</span></span>
+<span id="L778"><span class="lineNum">     778</span> <span class="tlaGNC">           1 :         for (t, due, days) in items</span></span>
+<span id="L779"><span class="lineNum">     779</span> <span class="tlaGNC">           7 :             cls = _due_urgency_class(days)</span></span>
+<span id="L780"><span class="lineNum">     780</span> <span class="tlaGNC">           4 :             label = _html_escape(t.description)</span></span>
+<span id="L781"><span class="lineNum">     781</span> <span class="tlaGNC">           6 :             pri = _priority_html(t.priority)</span></span>
+<span id="L782"><span class="lineNum">     782</span> <span class="tlaGNC">           7 :             status = _due_label(days)</span></span>
+<span id="L783"><span class="lineNum">     783</span> <span class="tlaGNC">           4 :             if days &lt; 0</span></span>
+<span id="L784"><span class="lineNum">     784</span> <span class="tlaGNC">           1 :                 bar_end = 0 - range_start</span></span>
+<span id="L785"><span class="lineNum">     785</span> <span class="tlaGNC">           1 :                 bar_start = days - range_start</span></span>
+<span id="L786"><span class="lineNum">     786</span> <span class="tlaGNC">           1 :                 left_pct = round(100.0 * bar_start / span, digits=2)</span></span>
+<span id="L787"><span class="lineNum">     787</span> <span class="tlaGNC">           1 :                 width_pct = round(100.0 * (bar_end - bar_start) / span, digits=2)</span></span>
+<span id="L788"><span class="lineNum">     788</span>              :             else</span>
+<span id="L789"><span class="lineNum">     789</span> <span class="tlaGNC">           3 :                 bar_start = 0 - range_start</span></span>
+<span id="L790"><span class="lineNum">     790</span> <span class="tlaGNC">           3 :                 bar_end = days - range_start</span></span>
+<span id="L791"><span class="lineNum">     791</span> <span class="tlaGNC">           3 :                 left_pct = round(100.0 * bar_start / span, digits=2)</span></span>
+<span id="L792"><span class="lineNum">     792</span> <span class="tlaGNC">           3 :                 width_pct = round(100.0 * max(bar_end - bar_start, 0.5) / span, digits=2)</span></span>
+<span id="L793"><span class="lineNum">     793</span>              :             end</span>
+<span id="L794"><span class="lineNum">     794</span> <span class="tlaGNC">           4 :             width_pct = min(width_pct, 100.0 - left_pct)</span></span>
+<span id="L795"><span class="lineNum">     795</span> <span class="tlaGNC">           4 :             print(io, &quot;&lt;tr&gt;&quot;)</span></span>
+<span id="L796"><span class="lineNum">     796</span> <span class="tlaGNC">           4 :             print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-gantt-label&quot;&gt;$pri $label&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L797"><span class="lineNum">     797</span> <span class="tlaGNC">           4 :             print(io, &quot;&quot;&quot;&lt;td&gt;&lt;div class=&quot;todo-due-track&quot;&gt;&quot;&quot;&quot;)</span></span>
+<span id="L798"><span class="lineNum">     798</span> <span class="tlaGNC">           4 :             print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-due-today&quot; style=&quot;left:$(today_pct)%&quot; title=&quot;today&quot;&gt;&lt;/div&gt;&quot;&quot;&quot;)</span></span>
+<span id="L799"><span class="lineNum">     799</span> <span class="tlaGNC">           4 :             print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-due-bar $cls&quot; style=&quot;left:$(left_pct)%;width:$(width_pct)%&quot; title=&quot;due: $due ($status)&quot;&gt;&lt;/div&gt;&quot;&quot;&quot;)</span></span>
+<span id="L800"><span class="lineNum">     800</span> <span class="tlaGNC">           4 :             print(io, &quot;&quot;&quot;&lt;/div&gt;&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L801"><span class="lineNum">     801</span> <span class="tlaGNC">           7 :             print(io, &quot;&quot;&quot;&lt;td class=&quot;todo-due-label&quot; style=&quot;text-align:right;color:$(days &lt; 0 ? &quot;#e53935&quot; : days &lt;= 3 ? &quot;#e65100&quot; : &quot;#333&quot;)&quot;&gt;$status&lt;/td&gt;&quot;&quot;&quot;)</span></span>
+<span id="L802"><span class="lineNum">     802</span> <span class="tlaGNC">           4 :             print(io, &quot;&lt;/tr&gt;&quot;)</span></span>
+<span id="L803"><span class="lineNum">     803</span> <span class="tlaGNC">           4 :         end</span></span>
+<span id="L804"><span class="lineNum">     804</span> <span class="tlaGNC">           1 :         print(io, &quot;&lt;/tbody&gt;&lt;/table&gt;&quot;)</span></span>
+<span id="L805"><span class="lineNum">     805</span> <span class="tlaGNC">           1 :         print(io, &quot;&quot;&quot;&lt;div class=&quot;todo-gantt-dates&quot;&gt;&lt;span&gt;$(today + Day(range_start))&lt;/span&gt;&lt;span style=&quot;font-weight:600;&quot;&gt;today ($today)&lt;/span&gt;&lt;span&gt;$(today + Day(range_end))&lt;/span&gt;&lt;/div&gt;&quot;&quot;&quot;)</span></span>
+<span id="L806"><span class="lineNum">     806</span>              :     end</span>
+<span id="L807"><span class="lineNum">     807</span> <span class="tlaGNC">           2 :     print(io, &quot;&lt;/div&gt;&quot;)</span></span>
+<span id="L808"><span class="lineNum">     808</span>              : end</span>
+<span id="L809"><span class="lineNum">     809</span>              : </span>
+<span id="L810"><span class="lineNum">     810</span>              : # Default HTML for TodoFile delegates to ListView</span>
+<span id="L811"><span class="lineNum">     811</span> <span class="tlaGNC">           1 : function Base.show(io::IO, mime::MIME&quot;text/html&quot;, tf::TodoFile)</span></span>
+<span id="L812"><span class="lineNum">     812</span> <span class="tlaGNC">           1 :     show(io, mime, ListView(tf))</span></span>
+<span id="L813"><span class="lineNum">     813</span>              : end</span>
+<span id="L814"><span class="lineNum">     814</span>              : </span>
+<span id="L815"><span class="lineNum">     815</span>              : &quot;&quot;&quot;</span>
+<span id="L816"><span class="lineNum">     816</span>              :     html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)</span>
+<span id="L817"><span class="lineNum">     817</span>              : </span>
+<span id="L818"><span class="lineNum">     818</span>              : Create an HTML view of a [`TodoFile`](@ref) for rich display in notebooks.</span>
+<span id="L819"><span class="lineNum">     819</span>              : </span>
+<span id="L820"><span class="lineNum">     820</span>              : Returns a [`ListView`](@ref), [`TableView`](@ref), [`KanbanView`](@ref), [`GanttView`](@ref), or [`DueView`](@ref).</span>
+<span id="L821"><span class="lineNum">     821</span>              : </span>
+<span id="L822"><span class="lineNum">     822</span>              : ### Examples</span>
+<span id="L823"><span class="lineNum">     823</span>              : ```julia</span>
+<span id="L824"><span class="lineNum">     824</span>              : julia&gt; tf = TodoFile(&quot;todo.txt&quot;)</span>
+<span id="L825"><span class="lineNum">     825</span>              : </span>
+<span id="L826"><span class="lineNum">     826</span>              : julia&gt; html_view(tf)</span>
+<span id="L827"><span class="lineNum">     827</span>              : ListView(3 tasks)</span>
+<span id="L828"><span class="lineNum">     828</span>              : </span>
+<span id="L829"><span class="lineNum">     829</span>              : julia&gt; html_view(tf; view=:table)</span>
+<span id="L830"><span class="lineNum">     830</span>              : TableView(3 tasks)</span>
+<span id="L831"><span class="lineNum">     831</span>              : </span>
+<span id="L832"><span class="lineNum">     832</span>              : julia&gt; html_view(tf; view=:kanban, group_by=:projects)</span>
+<span id="L833"><span class="lineNum">     833</span>              : KanbanView(3 tasks, group_by=:projects)</span>
+<span id="L834"><span class="lineNum">     834</span>              : </span>
+<span id="L835"><span class="lineNum">     835</span>              : julia&gt; html_view(tf; view=:gantt)</span>
+<span id="L836"><span class="lineNum">     836</span>              : GanttView(3 tasks)</span>
+<span id="L837"><span class="lineNum">     837</span>              : </span>
+<span id="L838"><span class="lineNum">     838</span>              : julia&gt; html_view(tf; view=:due)</span>
+<span id="L839"><span class="lineNum">     839</span>              : DueView(3 tasks)</span>
+<span id="L840"><span class="lineNum">     840</span>              : ```</span>
+<span id="L841"><span class="lineNum">     841</span>              : &quot;&quot;&quot;</span>
+<span id="L842"><span class="lineNum">     842</span> <span class="tlaGNC">           9 : function html_view(tf::TodoFile; view::Symbol=:list, group_by::Symbol=:priority)</span></span>
+<span id="L843"><span class="lineNum">     843</span> <span class="tlaGNC">           9 :     if view == :list</span></span>
+<span id="L844"><span class="lineNum">     844</span> <span class="tlaGNC">           2 :         return ListView(tf)</span></span>
+<span id="L845"><span class="lineNum">     845</span> <span class="tlaGNC">           7 :     elseif view == :table</span></span>
+<span id="L846"><span class="lineNum">     846</span> <span class="tlaGNC">           1 :         return TableView(tf)</span></span>
+<span id="L847"><span class="lineNum">     847</span> <span class="tlaGNC">           6 :     elseif view == :kanban</span></span>
+<span id="L848"><span class="lineNum">     848</span> <span class="tlaGNC">           3 :         return KanbanView(tf, group_by)</span></span>
+<span id="L849"><span class="lineNum">     849</span> <span class="tlaGNC">           3 :     elseif view == :gantt</span></span>
+<span id="L850"><span class="lineNum">     850</span> <span class="tlaGNC">           1 :         return GanttView(tf)</span></span>
+<span id="L851"><span class="lineNum">     851</span> <span class="tlaGNC">           2 :     elseif view == :due</span></span>
+<span id="L852"><span class="lineNum">     852</span> <span class="tlaGNC">           1 :         return DueView(tf)</span></span>
+<span id="L853"><span class="lineNum">     853</span>              :     else</span>
+<span id="L854"><span class="lineNum">     854</span> <span class="tlaGNC">           1 :         error(&quot;Invalid view: $view. Use :list, :table, :kanban, :gantt, or :due.&quot;)</span></span>
+<span id="L855"><span class="lineNum">     855</span>              :     end</span>
+<span id="L856"><span class="lineNum">     856</span>              : end</span>
+<span id="L857"><span class="lineNum">     857</span>              : </span>
+<span id="L858"><span class="lineNum">     858</span>              : end # module</span>
         </pre>
               </td>
             </tr>

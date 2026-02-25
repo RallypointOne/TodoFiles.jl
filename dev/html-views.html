@@ -77,7 +77,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-c35b4686a6fabbef78126217f9bf200b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-beb4e643c83e12bf1c6ffd49d46c3bd0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-e9512225fbbb2050a673b742e2d1457e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -328,7 +328,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -346,6 +347,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
 </div>
 </div>
@@ -376,7 +386,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -394,6 +405,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
 </div>
 </div>
@@ -421,7 +441,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -439,6 +460,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
 </div>
 </div>
@@ -469,7 +499,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -487,70 +518,98 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container">
-<table class="todo-table caption-top table table-sm table-striped small">
+<table id="todo-table-d49cc0cf948cf4bf" class="todo-table caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th">Done</th>
-<th data-quarto-table-cell-role="th">Priority</th>
-<th data-quarto-table-cell-role="th">Description</th>
-<th data-quarto-table-cell-role="th">Tags</th>
-<th data-quarto-table-cell-role="th">Created</th>
-<th data-quarto-table-cell-role="th">Completed</th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(1)">Done <span id="todo-table-d49cc0cf948cf4bf_arrow_1" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(2)">Priority <span id="todo-table-d49cc0cf948cf4bf_arrow_2" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(3)">Description <span id="todo-table-d49cc0cf948cf4bf_arrow_3" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(4)">Tags <span id="todo-table-d49cc0cf948cf4bf_arrow_4" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(5)">Created <span id="todo-table-d49cc0cf948cf4bf_arrow_5" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(6)">Completed <span id="todo-table-d49cc0cf948cf4bf_arrow_6" class="todo-sort-arrow"></span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td></td>
-<td><span class="todo-priority todo-priority-a">A</span></td>
-<td>Call Mom</td>
-<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></td>
-<td class="todo-date">2024-01-15</td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="A"><span class="todo-priority todo-priority-a">A</span></td>
+<td data-sort-value="Call Mom">Call Mom</td>
+<td data-sort-value="phone;Family"><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></td>
+<td class="todo-date" data-sort-value="2024-01-15">2024-01-15</td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="even">
-<td></td>
-<td><span class="todo-priority todo-priority-b">B</span></td>
-<td>Buy groceries</td>
-<td><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></td>
-<td class="todo-date">2024-01-20</td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="B"><span class="todo-priority todo-priority-b">B</span></td>
+<td data-sort-value="Buy groceries">Buy groceries</td>
+<td data-sort-value="store;Errands"><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></td>
+<td class="todo-date" data-sort-value="2024-01-20">2024-01-20</td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="odd">
-<td></td>
-<td><span class="todo-priority todo-priority-a">A</span></td>
-<td>Write report</td>
-<td><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></td>
-<td class="todo-date">2024-01-10</td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="A"><span class="todo-priority todo-priority-a">A</span></td>
+<td data-sort-value="Write report">Write report</td>
+<td data-sort-value="computer;Work"><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></td>
+<td class="todo-date" data-sort-value="2024-01-10">2024-01-10</td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="even">
-<td></td>
-<td><span class="todo-priority todo-priority-c">C</span></td>
-<td>Schedule dentist</td>
-<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></td>
-<td class="todo-date"></td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="C"><span class="todo-priority todo-priority-c">C</span></td>
+<td data-sort-value="Schedule dentist">Schedule dentist</td>
+<td data-sort-value="phone;Health"><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></td>
+<td class="todo-date" data-sort-value=""></td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="odd">
-<td>✓</td>
-<td></td>
-<td>Pay bills</td>
-<td></td>
-<td class="todo-date">2024-01-10</td>
-<td class="todo-date">2024-01-16</td>
+<td data-sort-value="1">✓</td>
+<td data-sort-value="ZZ"></td>
+<td data-sort-value="Pay bills">Pay bills</td>
+<td data-sort-value=";"></td>
+<td class="todo-date" data-sort-value="2024-01-10">2024-01-10</td>
+<td class="todo-date" data-sort-value="2024-01-16">2024-01-16</td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td>Clean garage</td>
-<td><span class="todo-pill todo-prj">+Home</span></td>
-<td class="todo-date"></td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="ZZ"></td>
+<td data-sort-value="Clean garage">Clean garage</td>
+<td data-sort-value=";Home"><span class="todo-pill todo-prj">+Home</span></td>
+<td class="todo-date" data-sort-value=""></td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 </tbody>
 </table>
-</div>
+</div><script>
+(function(){
+  var sortCol=null, sortAsc=true;
+  window.todoSort_todo-table-d49cc0cf948cf4bf=function(col){
+    var table=document.getElementById("todo-table-d49cc0cf948cf4bf");
+    var tbody=table.querySelector("tbody");
+    var rows=Array.from(tbody.querySelectorAll("tr"));
+    if(sortCol===col){sortAsc=!sortAsc}else{sortCol=col;sortAsc=true}
+    rows.sort(function(a,b){
+      var av=a.cells[col-1].getAttribute("data-sort-value")||"";
+      var bv=b.cells[col-1].getAttribute("data-sort-value")||"";
+      return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
+    });
+    rows.forEach(function(r){tbody.appendChild(r)});
+    table.querySelectorAll(".todo-sort-arrow").forEach(function(el){el.textContent=""});
+    var arrow=document.getElementById("todo-table-d49cc0cf948cf4bf_arrow_"+col);
+    if(arrow)arrow.textContent=sortAsc?"\u25B2":"\u25BC";
+  };
+})();
+</script>
 </div>
 </div>
 </section>
@@ -580,7 +639,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -598,6 +658,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">A</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">B</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">C</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(none)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
 </div>
 </div>
@@ -626,7 +695,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -644,6 +714,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Done</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Pending</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
 </div>
 </div>
@@ -674,7 +753,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -692,6 +772,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Errands</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Family</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Health</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Home</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Work</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no project)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div></div></div>
 </div>
 </div>
@@ -721,7 +810,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -739,6 +829,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">computer</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">phone</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">store</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no context)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div></div>
 </div>
 </div>
@@ -770,7 +869,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -788,6 +888,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container">
 <table class="todo-gantt caption-top table table-sm table-striped small">
 <colgroup>
@@ -866,7 +975,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -884,6 +994,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div></div>
 </div>
 </div>
@@ -910,7 +1029,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -928,70 +1048,98 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container">
-<table class="todo-table caption-top table table-sm table-striped small">
+<table id="todo-table-d49cc0cf948cf4bf" class="todo-table caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th">Done</th>
-<th data-quarto-table-cell-role="th">Priority</th>
-<th data-quarto-table-cell-role="th">Description</th>
-<th data-quarto-table-cell-role="th">Tags</th>
-<th data-quarto-table-cell-role="th">Created</th>
-<th data-quarto-table-cell-role="th">Completed</th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(1)">Done <span id="todo-table-d49cc0cf948cf4bf_arrow_1" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(2)">Priority <span id="todo-table-d49cc0cf948cf4bf_arrow_2" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(3)">Description <span id="todo-table-d49cc0cf948cf4bf_arrow_3" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(4)">Tags <span id="todo-table-d49cc0cf948cf4bf_arrow_4" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(5)">Created <span id="todo-table-d49cc0cf948cf4bf_arrow_5" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-d49cc0cf948cf4bf(6)">Completed <span id="todo-table-d49cc0cf948cf4bf_arrow_6" class="todo-sort-arrow"></span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td></td>
-<td><span class="todo-priority todo-priority-a">A</span></td>
-<td>Call Mom</td>
-<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></td>
-<td class="todo-date">2024-01-15</td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="A"><span class="todo-priority todo-priority-a">A</span></td>
+<td data-sort-value="Call Mom">Call Mom</td>
+<td data-sort-value="phone;Family"><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></td>
+<td class="todo-date" data-sort-value="2024-01-15">2024-01-15</td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="even">
-<td></td>
-<td><span class="todo-priority todo-priority-b">B</span></td>
-<td>Buy groceries</td>
-<td><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></td>
-<td class="todo-date">2024-01-20</td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="B"><span class="todo-priority todo-priority-b">B</span></td>
+<td data-sort-value="Buy groceries">Buy groceries</td>
+<td data-sort-value="store;Errands"><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></td>
+<td class="todo-date" data-sort-value="2024-01-20">2024-01-20</td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="odd">
-<td></td>
-<td><span class="todo-priority todo-priority-a">A</span></td>
-<td>Write report</td>
-<td><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></td>
-<td class="todo-date">2024-01-10</td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="A"><span class="todo-priority todo-priority-a">A</span></td>
+<td data-sort-value="Write report">Write report</td>
+<td data-sort-value="computer;Work"><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></td>
+<td class="todo-date" data-sort-value="2024-01-10">2024-01-10</td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="even">
-<td></td>
-<td><span class="todo-priority todo-priority-c">C</span></td>
-<td>Schedule dentist</td>
-<td><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></td>
-<td class="todo-date"></td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="C"><span class="todo-priority todo-priority-c">C</span></td>
+<td data-sort-value="Schedule dentist">Schedule dentist</td>
+<td data-sort-value="phone;Health"><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></td>
+<td class="todo-date" data-sort-value=""></td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 <tr class="odd">
-<td>✓</td>
-<td></td>
-<td>Pay bills</td>
-<td></td>
-<td class="todo-date">2024-01-10</td>
-<td class="todo-date">2024-01-16</td>
+<td data-sort-value="1">✓</td>
+<td data-sort-value="ZZ"></td>
+<td data-sort-value="Pay bills">Pay bills</td>
+<td data-sort-value=";"></td>
+<td class="todo-date" data-sort-value="2024-01-10">2024-01-10</td>
+<td class="todo-date" data-sort-value="2024-01-16">2024-01-16</td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td>Clean garage</td>
-<td><span class="todo-pill todo-prj">+Home</span></td>
-<td class="todo-date"></td>
-<td class="todo-date"></td>
+<td data-sort-value="0"></td>
+<td data-sort-value="ZZ"></td>
+<td data-sort-value="Clean garage">Clean garage</td>
+<td data-sort-value=";Home"><span class="todo-pill todo-prj">+Home</span></td>
+<td class="todo-date" data-sort-value=""></td>
+<td class="todo-date" data-sort-value=""></td>
 </tr>
 </tbody>
 </table>
-</div>
+</div><script>
+(function(){
+  var sortCol=null, sortAsc=true;
+  window.todoSort_todo-table-d49cc0cf948cf4bf=function(col){
+    var table=document.getElementById("todo-table-d49cc0cf948cf4bf");
+    var tbody=table.querySelector("tbody");
+    var rows=Array.from(tbody.querySelectorAll("tr"));
+    if(sortCol===col){sortAsc=!sortAsc}else{sortCol=col;sortAsc=true}
+    rows.sort(function(a,b){
+      var av=a.cells[col-1].getAttribute("data-sort-value")||"";
+      var bv=b.cells[col-1].getAttribute("data-sort-value")||"";
+      return sortAsc?av.localeCompare(bv):bv.localeCompare(av);
+    });
+    rows.forEach(function(r){tbody.appendChild(r)});
+    table.querySelectorAll(".todo-sort-arrow").forEach(function(el){el.textContent=""});
+    var arrow=document.getElementById("todo-table-d49cc0cf948cf4bf_arrow_"+col);
+    if(arrow)arrow.textContent=sortAsc?"\u25B2":"\u25BC";
+  };
+})();
+</script>
 </div>
 </div>
 <div id="26" class="cell" data-execution_count="1">
@@ -1017,7 +1165,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -1035,6 +1184,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container"><div class="todo-kanban"><div class="todo-kanban-col"><h3 class="anchored">Errands</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span><span class="todo-pill todo-meta">due:2024-01-25</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Family</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-01-20</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Health</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Schedule dentist</span><span class="todo-priority todo-priority-c">C</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Health</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Home</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Clean garage</span><span class="todo-pill todo-prj">+Home</span></div></div><div class="todo-kanban-col"><h3 class="anchored">Work</h3><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Write report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@computer</span><span class="todo-pill todo-prj">+Work</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div><div class="todo-kanban-col"><h3 class="anchored">(no project)</h3><div class="todo-card todo-done"><span class="todo-checkbox">✓</span><span class="todo-desc">Pay bills</span></div></div></div></div>
 </div>
 </div>
@@ -1061,7 +1219,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-meta { background: #f3e5f5; color: #6a1b9a; }
 .todo-date { color: #888; font-size: 12px; white-space: nowrap; }
 .todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
 .todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
 .todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
 .todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
@@ -1079,6 +1238,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-gantt-bar-other { background: #90a4ae; }
 .todo-gantt-bar-done { opacity: 0.4; }
 .todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container">
 <table class="todo-gantt caption-top table table-sm table-striped small">
 <colgroup>
