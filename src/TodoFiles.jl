@@ -50,6 +50,7 @@ A single task in the [Todo.txt](https://github.com/todotxt/todo.txt) format.
 - `contexts::Vector{String}`: `@context` tags.
 - `projects::Vector{String}`: `+project` tags.
 - `metadata::Dict{String, String}`: `key:value` pairs.
+- `subtasks::Vector{Todo}`: Nested sub-tasks (used by `MarkdownTodoFile`; empty for flat Todo.txt).
 
 ### Examples
 ```julia
@@ -79,6 +80,7 @@ struct Todo
     contexts::Vector{String}
     projects::Vector{String}
     metadata::Dict{String, String}
+    subtasks::Vector{Todo}
 end
 
 function Todo(description::String;
@@ -88,12 +90,14 @@ function Todo(description::String;
               creation_date::Union{Date, Nothing}=nothing,
               contexts::Vector{String}=String[],
               projects::Vector{String}=String[],
-              metadata::Dict{String, String}=Dict{String, String}())
+              metadata::Dict{String, String}=Dict{String, String}(),
+              subtasks::Vector{Todo}=Todo[])
     desc, parsed_ctx, parsed_prj, parsed_meta = _extract_tags(description)
     Todo(completed, priority, completion_date, creation_date, desc,
          isempty(contexts) ? parsed_ctx : contexts,
          isempty(projects) ? parsed_prj : projects,
-         isempty(metadata) ? parsed_meta : metadata)
+         isempty(metadata) ? parsed_meta : metadata,
+         subtasks)
 end
 
 function Base.:(==)(a::Todo, b::Todo)
@@ -104,7 +108,8 @@ function Base.:(==)(a::Todo, b::Todo)
     a.description == b.description &&
     a.contexts == b.contexts &&
     a.projects == b.projects &&
-    a.metadata == b.metadata
+    a.metadata == b.metadata &&
+    a.subtasks == b.subtasks
 end
 
 function Base.show(io::IO, t::Todo)
@@ -173,7 +178,7 @@ function parse_todo(line::AbstractString)
     desc_str = strip(s)
     desc, ctx, prj, meta = _extract_tags(desc_str)
 
-    Todo(completed, priority, completion_date, creation_date, String(desc), ctx, prj, meta)
+    Todo(completed, priority, completion_date, creation_date, String(desc), ctx, prj, meta, Todo[])
 end
 
 """
@@ -378,29 +383,36 @@ struct MarkdownTodoFile
 end
 
 function Base.show(io::IO, mf::MarkdownTodoFile)
-    n = sum(length(s.todos) for s in mf.sections; init=0)
+    n = length(mf)
     ns = length(mf.sections)
     print(io, "MarkdownTodoFile(\"$(mf.filepath)\") with $ns section$(ns == 1 ? "" : "s"), $n task$(n == 1 ? "" : "s")")
 end
 
-Base.length(mf::MarkdownTodoFile) = sum(length(s.todos) for s in mf.sections; init=0)
+Base.length(mf::MarkdownTodoFile) = sum(length(s.todos) + sum(length(t.subtasks) for t in s.todos; init=0) for s in mf.sections; init=0)
 Base.eltype(::Type{MarkdownTodoFile}) = Todo
 
 function Base.iterate(mf::MarkdownTodoFile)
-    for (si, s) in enumerate(mf.sections)
-        if !isempty(s.todos)
-            return (s.todos[1], (si, 1))
+    for si in 1:length(mf.sections)
+        if !isempty(mf.sections[si].todos)
+            return (mf.sections[si].todos[1], (si, 1, 0))
         end
     end
     return nothing
 end
 
 function Base.iterate(mf::MarkdownTodoFile, state)
-    si, ti = state
+    si, ti, sti = state
+    # Try next subtask
+    sti += 1
+    todo = mf.sections[si].todos[ti]
+    if sti <= length(todo.subtasks)
+        return (todo.subtasks[sti], (si, ti, sti))
+    end
+    # Move to next todo
     ti += 1
     while si <= length(mf.sections)
         if ti <= length(mf.sections[si].todos)
-            return (mf.sections[si].todos[ti], (si, ti))
+            return (mf.sections[si].todos[ti], (si, ti, 0))
         end
         si += 1
         ti = 1
@@ -411,10 +423,14 @@ end
 function Base.getindex(mf::MarkdownTodoFile, i::Int)
     idx = i
     for s in mf.sections
-        if idx <= length(s.todos)
-            return s.todos[idx]
+        for t in s.todos
+            idx == 1 && return t
+            idx -= 1
+            for st in t.subtasks
+                idx == 1 && return st
+                idx -= 1
+            end
         end
-        idx -= length(s.todos)
     end
     throw(BoundsError(mf, i))
 end
@@ -457,8 +473,14 @@ function parse_markdown_todos(text::AbstractString)
             current_heading = strip(String(m.captures[2]))
             current_todos = Todo[]
         elseif startswith(stripped, "- ")
+            indent = length(line) - length(lstrip(line))
             todo_text = strip(stripped[3:end])
-            !isempty(todo_text) && push!(current_todos, parse_todo(todo_text))
+            isempty(todo_text) && continue
+            if indent > 0 && !isempty(current_todos)
+                push!(current_todos[end].subtasks, parse_todo(todo_text))
+            else
+                push!(current_todos, parse_todo(todo_text))
+            end
         end
     end
 
@@ -497,6 +519,9 @@ function write_markdown_todos(sections::Vector{TodoSection})
         end
         for t in s.todos
             push!(section_lines, "- " * write_todo(t))
+            for st in t.subtasks
+                push!(section_lines, "    - " * write_todo(st))
+            end
         end
         !isempty(section_lines) && push!(parts, join(section_lines, "\n"))
     end
@@ -532,7 +557,7 @@ Tables.rowaccess(::Type{TodoFile}) = true
 Tables.rows(tf::TodoFile) = tf.todos
 Tables.schema(::TodoFile) = Tables.Schema(
     fieldnames(Todo),
-    (Bool, Union{Char, Nothing}, Union{Date, Nothing}, Union{Date, Nothing}, String, Vector{String}, Vector{String}, Dict{String, String})
+    (Bool, Union{Char, Nothing}, Union{Date, Nothing}, Union{Date, Nothing}, String, Vector{String}, Vector{String}, Dict{String, String}, Vector{Todo})
 )
 
 Tables.columnnames(::Todo) = fieldnames(Todo)
@@ -1067,7 +1092,12 @@ function _with_section_metadata(mf::MarkdownTodoFile)
         for t in s.todos
             meta = copy(t.metadata)
             meta["_section"] = section_name
-            push!(todos, Todo(t.completed, t.priority, t.completion_date, t.creation_date, t.description, copy(t.contexts), copy(t.projects), meta))
+            push!(todos, Todo(t.completed, t.priority, t.completion_date, t.creation_date, t.description, copy(t.contexts), copy(t.projects), meta, Todo[]))
+            for st in t.subtasks
+                smeta = copy(st.metadata)
+                smeta["_section"] = section_name
+                push!(todos, Todo(st.completed, st.priority, st.completion_date, st.creation_date, st.description, copy(st.contexts), copy(st.projects), smeta, Todo[]))
+            end
         end
     end
     TodoFile(mf.filepath, todos)

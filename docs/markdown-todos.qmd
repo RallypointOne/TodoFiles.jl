@@ -25,6 +25,46 @@ In addition to flat Todo.txt files, TodoFiles.jl can parse markdown files where 
 
 Each list item is parsed using the same Todo.txt rules as `parse_todo`.
 
+## Subtasks
+
+Indented `- ` items under a top-level todo are parsed as subtasks:
+
+```{julia}
+subtask_text = """
+# Work
+- (A) Finish report @office
+    - Write introduction
+    - Add charts
+- Email client
+"""
+
+sections = parse_markdown_todos(subtask_text)
+sections[1].todos[1]
+```
+
+```{julia}
+sections[1].todos[1].subtasks
+```
+
+When iterating a `MarkdownTodoFile`, subtasks are flattened alongside their parents:
+
+```{julia}
+sub_path = tempname() * ".md"
+write_markdown_todos(sub_path, sections)
+sub_mf = MarkdownTodoFile(sub_path)
+length(sub_mf)  # 4: 2 top-level + 2 subtasks
+```
+
+```{julia}
+collect(sub_mf)
+```
+
+When writing back to markdown, subtasks are indented with 4 spaces:
+
+```{julia}
+print(write_markdown_todos(sections))
+```
+
 ## Parsing
 
 `parse_markdown_todos` returns a vector of `TodoSection`s, each with a heading, level, and todos:

@@ -14,6 +14,7 @@ using Test
         @test t.contexts == []
         @test t.projects == []
         @test t.metadata == Dict()
+        @test t.subtasks == Todo[]
     end
 
     @testset "parse task with priority" begin
@@ -172,6 +173,21 @@ using Test
         @test t1 == t2
         t3 = parse_todo("(B) Call Mom")
         @test t1 != t3
+    end
+
+    @testset "subtasks" begin
+        @test Todo("Task").subtasks == Todo[]
+
+        t = Todo("Report"; subtasks=[Todo("Write intro"), Todo("Add charts")])
+        @test length(t.subtasks) == 2
+        @test t.subtasks[1].description == "Write intro"
+        @test t.subtasks[2].description == "Add charts"
+
+        # Equality includes subtasks
+        t2 = Todo("Report"; subtasks=[Todo("Write intro"), Todo("Add charts")])
+        t3 = Todo("Report")
+        @test t == t2
+        @test t != t3
     end
 
     @testset "canonical write order" begin
@@ -680,6 +696,100 @@ using Test
                 @test contains(html, "Buy groceries")
                 # Internal _section metadata should not appear as a pill
                 @test !contains(html, "_section")
+            end
+        end
+
+        @testset "parse subtasks" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                - Write introduction
+                - Add charts
+            - Email client
+            """
+            sections = parse_markdown_todos(text)
+            @test length(sections) == 1
+            @test length(sections[1].todos) == 2
+
+            parent = sections[1].todos[1]
+            @test parent.description == "Finish report"
+            @test length(parent.subtasks) == 2
+            @test parent.subtasks[1].description == "Write introduction"
+            @test parent.subtasks[2].description == "Add charts"
+            @test isempty(sections[1].todos[2].subtasks)
+        end
+
+        @testset "write subtasks roundtrip" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                - Write introduction
+                - Add charts
+            - Email client
+            """
+            sections = parse_markdown_todos(text)
+            written = write_markdown_todos(sections)
+            @test contains(written, "    - Write introduction")
+            @test contains(written, "    - Add charts")
+
+            reparsed = parse_markdown_todos(written)
+            @test length(reparsed[1].todos[1].subtasks) == 2
+            @test reparsed[1].todos[1].subtasks[1].description == "Write introduction"
+        end
+
+        @testset "iteration flattens subtasks" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                - Write introduction
+                - Add charts
+            - Email client
+            """
+            mktempdir() do dir
+                filepath = joinpath(dir, "todos.md")
+                write_markdown_todos(filepath, parse_markdown_todos(text))
+                mf = MarkdownTodoFile(filepath)
+
+                @test length(mf) == 4
+                @test mf[1].description == "Finish report"
+                @test mf[2].description == "Write introduction"
+                @test mf[3].description == "Add charts"
+                @test mf[4].description == "Email client"
+
+                all_todos = collect(mf)
+                @test length(all_todos) == 4
+            end
+        end
+
+        @testset "views include subtasks" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                - Write introduction
+            """
+            mktempdir() do dir
+                filepath = joinpath(dir, "todos.md")
+                write_markdown_todos(filepath, parse_markdown_todos(text))
+                mf = MarkdownTodoFile(filepath)
+
+                html = sprint(show, MIME("text/html"), ListView(mf))
+                @test contains(html, "Finish report")
+                @test contains(html, "Write introduction")
+            end
+        end
+
+        @testset "show counts subtasks" begin
+            text = """
+            # Work
+            - Report
+                - Subtask
+            """
+            mktempdir() do dir
+                filepath = joinpath(dir, "todos.md")
+                write_markdown_todos(filepath, parse_markdown_todos(text))
+                mf = MarkdownTodoFile(filepath)
+                s = sprint(show, mf)
+                @test contains(s, "2 tasks")
             end
         end
     end
