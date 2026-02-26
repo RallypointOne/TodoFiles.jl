@@ -250,6 +250,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#the-markdown-format" id="toc-the-markdown-format" class="nav-link active" data-scroll-target="#the-markdown-format">The Markdown Format</a></li>
+  <li><a href="#subtasks" id="toc-subtasks" class="nav-link" data-scroll-target="#subtasks">Subtasks</a></li>
   <li><a href="#parsing" id="toc-parsing" class="nav-link" data-scroll-target="#parsing">Parsing</a></li>
   <li><a href="#writing" id="toc-writing" class="nav-link" data-scroll-target="#writing">Writing</a></li>
   <li><a href="#markdowntodofile" id="toc-markdowntodofile" class="nav-link" data-scroll-target="#markdowntodofile">MarkdownTodoFile</a></li>
@@ -294,56 +295,114 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>(B) Call Mom @phone +Family due:2024-02-01</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Each list item is parsed using the same Todo.txt rules as <code>parse_todo</code>.</p>
 </section>
+<section id="subtasks" class="level2">
+<h2 class="anchored" data-anchor-id="subtasks">Subtasks</h2>
+<p>Indented <code>-</code> items under a top-level todo are parsed as subtasks:</p>
+<div id="4" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>subtask_text <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st"># Work</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">- (A) Finish report @office</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="st">    - Write introduction</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="st">    - Add charts</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="st">- Email client</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(subtask_text)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].todos[<span class="fl">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Todo: (A) Finish report @office</code></pre>
+</div>
+</div>
+<div id="6" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].todos[<span class="fl">1</span>].subtasks</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>2-element Vector{Todo}:
+ Todo: Write introduction
+ Todo: Add charts</code></pre>
+</div>
+</div>
+<p>When iterating a <code>MarkdownTodoFile</code>, subtasks are flattened alongside their parents:</p>
+<div id="8" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sub_path <span class="op">=</span> <span class="fu">tempname</span>() <span class="op">*</span> <span class="st">".md"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_markdown_todos</span>(sub_path, sections)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sub_mf <span class="op">=</span> <span class="fu">MarkdownTodoFile</span>(sub_path)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(sub_mf)  <span class="co"># 4: 2 top-level + 2 subtasks</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>4</code></pre>
+</div>
+</div>
+<div id="10" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">collect</span>(sub_mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>4-element Vector{Todo}:
+ Todo: (A) Finish report @office
+ Todo: Write introduction
+ Todo: Add charts
+ Todo: Email client</code></pre>
+</div>
+</div>
+<p>When writing back to markdown, subtasks are indented with 4 spaces:</p>
+<div id="12" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">write_markdown_todos</span>(sections))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Work
+- (A) Finish report @office
+    - Write introduction
+    - Add charts
+- Email client</code></pre>
+</div>
+</div>
+</section>
 <section id="parsing" class="level2">
 <h2 class="anchored" data-anchor-id="parsing">Parsing</h2>
 <p><code>parse_markdown_todos</code> returns a vector of <code>TodoSection</code>s, each with a heading, level, and todos:</p>
-<div id="4" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"""</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st"># Work</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">- (A) Finish report @office +ClientProject</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="st">- Email client @office</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="st">## Personal</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="st">- Buy groceries @store +Errands</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="st">- (B) Call Mom @phone +Family due:2024-02-01</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="14" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="st"># Work</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="st">- (A) Finish report @office +ClientProject</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="st">- Email client @office</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="st">## Personal</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="st">- Buy groceries @store +Errands</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="st">- (B) Call Mom @phone +Family due:2024-02-01</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>2-element Vector{TodoSection}:
  TodoSection("Work", 2 tasks)
  TodoSection("Personal", 2 tasks)</code></pre>
 </div>
 </div>
-<div id="6" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].heading, sections[<span class="fl">1</span>].level</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="16" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].heading, sections[<span class="fl">1</span>].level</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>("Work", 1)</code></pre>
 </div>
 </div>
-<div id="8" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].todos</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="18" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].todos</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>2-element Vector{Todo}:
  Todo: (A) Finish report @office +ClientProject
  Todo: Email client @office</code></pre>
 </div>
 </div>
-<div id="10" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">2</span>].heading, sections[<span class="fl">2</span>].level</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="20" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">2</span>].heading, sections[<span class="fl">2</span>].level</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>("Personal", 2)</code></pre>
 </div>
 </div>
 <p>Todos appearing before any heading are placed in a section with <code>heading=""</code> and <code>level=0</code>:</p>
-<div id="12" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(<span class="st">"""</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="st">- Orphan task</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="st"># Section</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="st">- Task in section</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].heading, sections[<span class="fl">1</span>].level, sections[<span class="fl">1</span>].todos</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="22" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(<span class="st">"""</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="st">- Orphan task</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="st"># Section</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="st">- Task in section</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>sections[<span class="fl">1</span>].heading, sections[<span class="fl">1</span>].level, sections[<span class="fl">1</span>].todos</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>("", 0, Todo[Todo: Orphan task])</code></pre>
 </div>
@@ -352,9 +411,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="writing" class="level2">
 <h2 class="anchored" data-anchor-id="writing">Writing</h2>
 <p><code>write_markdown_todos</code> serializes sections back to markdown with blank lines between sections:</p>
-<div id="14" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(text)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">write_markdown_todos</span>(sections))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="24" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(text)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">write_markdown_todos</span>(sections))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Work
 - (A) Finish report @office +ClientProject
@@ -369,98 +428,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="markdowntodofile" class="level2">
 <h2 class="anchored" data-anchor-id="markdowntodofile">MarkdownTodoFile</h2>
 <p><code>MarkdownTodoFile</code> is the section-aware counterpart to <code>TodoFile</code>. It reads a markdown file, provides iteration over all todos (flattened across sections), and can write back to disk:</p>
-<div id="16" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> <span class="fu">tempname</span>() <span class="op">*</span> <span class="st">".md"</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_markdown_todos</span>(path, <span class="fu">parse_markdown_todos</span>(text))</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>mf <span class="op">=</span> <span class="fu">MarkdownTodoFile</span>(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<style>
-.todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
-.todo-list { list-style: none; padding: 0; margin: 0; }
-.todo-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-.todo-card.todo-done { opacity: 0.6; }
-.todo-checkbox { width: 18px; height: 18px; border: 2px solid #999; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.todo-card.todo-done .todo-checkbox { background: #4caf50; border-color: #4caf50; color: #fff; }
-.todo-desc { flex: 1; }
-.todo-card.todo-done .todo-desc { text-decoration: line-through; color: #888; }
-.todo-priority { display: inline-block; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
-.todo-priority-a { background: #e53935; }
-.todo-priority-b { background: #fb8c00; }
-.todo-priority-c { background: #fdd835; color: #333; }
-.todo-priority-other { background: #90a4ae; }
-.todo-pill { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
-.todo-ctx { background: #e3f2fd; color: #1565c0; }
-.todo-prj { background: #e8f5e9; color: #2e7d32; }
-.todo-meta { background: #f3e5f5; color: #6a1b9a; }
-.todo-date { color: #888; font-size: 12px; white-space: nowrap; }
-.todo-table { border-collapse: collapse; width: 100%; }
-.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
-.todo-sort-arrow { font-size: 10px; color: #666; }
-.todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-.todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
-.todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
-.todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
-.todo-kanban-col .todo-card { font-size: 13px; }
-.todo-gantt { width: 100%; border-collapse: collapse; }
-.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
-.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
-.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
-.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
-.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
-.todo-gantt-bar-a { background: #e53935; }
-.todo-gantt-bar-b { background: #fb8c00; }
-.todo-gantt-bar-c { background: #fdd835; }
-.todo-gantt-bar-other { background: #90a4ae; }
-.todo-gantt-bar-done { opacity: 0.4; }
-.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
-.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
-.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
-.todo-due-overdue { background: #e53935; }
-.todo-due-urgent { background: #fb8c00; }
-.todo-due-soon { background: #fdd835; }
-.todo-due-ok { background: #66bb6a; }
-.todo-due-plenty { background: #42a5f5; }
-.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
-.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
-</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Finish report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@office</span><span class="todo-pill todo-prj">+ClientProject</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Email client</span><span class="todo-pill todo-ctx">@office</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div></div>
-</div>
-</div>
-<div id="18" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>4</code></pre>
-</div>
-</div>
-<div id="20" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mf[<span class="fl">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>Todo: (A) Finish report @office +ClientProject</code></pre>
-</div>
-</div>
-<div id="22" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">collect</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>4-element Vector{Todo}:
- Todo: (A) Finish report @office +ClientProject
- Todo: Email client @office
- Todo: Buy groceries @store +Errands
- Todo: (B) Call Mom @phone +Family due:2024-02-01</code></pre>
-</div>
-</div>
-<p>Write back to disk with <code>write_todos</code>:</p>
-<div id="24" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(mf)  <span class="co"># writes to mf.filepath</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>163</code></pre>
-</div>
-</div>
-</section>
-<section id="html-views" class="level2">
-<h2 class="anchored" data-anchor-id="html-views">HTML Views</h2>
-<p>All existing views work with <code>MarkdownTodoFile</code> – todos are flattened automatically:</p>
 <div id="26" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ListView</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> <span class="fu">tempname</span>() <span class="op">*</span> <span class="st">".md"</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_markdown_todos</span>(path, <span class="fu">parse_markdown_todos</span>(text))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>mf <span class="op">=</span> <span class="fu">MarkdownTodoFile</span>(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <style>
 .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
@@ -514,7 +486,94 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div id="28" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TableView</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>4</code></pre>
+</div>
+</div>
+<div id="30" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mf[<span class="fl">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Todo: (A) Finish report @office +ClientProject</code></pre>
+</div>
+</div>
+<div id="32" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">collect</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>4-element Vector{Todo}:
+ Todo: (A) Finish report @office +ClientProject
+ Todo: Email client @office
+ Todo: Buy groceries @store +Errands
+ Todo: (B) Call Mom @phone +Family due:2024-02-01</code></pre>
+</div>
+</div>
+<p>Write back to disk with <code>write_todos</code>:</p>
+<div id="34" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(mf)  <span class="co"># writes to mf.filepath</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>163</code></pre>
+</div>
+</div>
+</section>
+<section id="html-views" class="level2">
+<h2 class="anchored" data-anchor-id="html-views">HTML Views</h2>
+<p>All existing views work with <code>MarkdownTodoFile</code> – todos are flattened automatically:</p>
+<div id="36" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ListView</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<style>
+.todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
+.todo-list { list-style: none; padding: 0; margin: 0; }
+.todo-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.todo-card.todo-done { opacity: 0.6; }
+.todo-checkbox { width: 18px; height: 18px; border: 2px solid #999; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.todo-card.todo-done .todo-checkbox { background: #4caf50; border-color: #4caf50; color: #fff; }
+.todo-desc { flex: 1; }
+.todo-card.todo-done .todo-desc { text-decoration: line-through; color: #888; }
+.todo-priority { display: inline-block; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0; }
+.todo-priority-a { background: #e53935; }
+.todo-priority-b { background: #fb8c00; }
+.todo-priority-c { background: #fdd835; color: #333; }
+.todo-priority-other { background: #90a4ae; }
+.todo-pill { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
+.todo-ctx { background: #e3f2fd; color: #1565c0; }
+.todo-prj { background: #e8f5e9; color: #2e7d32; }
+.todo-meta { background: #f3e5f5; color: #6a1b9a; }
+.todo-date { color: #888; font-size: 12px; white-space: nowrap; }
+.todo-table { border-collapse: collapse; width: 100%; }
+.todo-table th { background: #f5f5f5; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; white-space: nowrap; }
+.todo-sort-arrow { font-size: 10px; color: #666; }
+.todo-table td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+.todo-kanban-col { background: #f5f5f5; border-radius: 8px; padding: 12px; min-width: 220px; max-width: 300px; flex-shrink: 0; }
+.todo-kanban-col h3 { margin: 0 0 10px 0; font-size: 15px; padding-bottom: 6px; border-bottom: 2px solid #ddd; }
+.todo-kanban-col .todo-card { font-size: 13px; }
+.todo-gantt { width: 100%; border-collapse: collapse; }
+.todo-gantt th, .todo-gantt td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.todo-gantt th { background: #f5f5f5; font-weight: 600; font-size: 13px; }
+.todo-gantt-label { white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-size: 13px; width: 200px; }
+.todo-gantt-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-gantt-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; opacity: 0.9; }
+.todo-gantt-bar-a { background: #e53935; }
+.todo-gantt-bar-b { background: #fb8c00; }
+.todo-gantt-bar-c { background: #fdd835; }
+.todo-gantt-bar-other { background: #90a4ae; }
+.todo-gantt-bar-done { opacity: 0.4; }
+.todo-gantt-dates { display: flex; justify-content: space-between; font-size: 11px; color: #888; padding: 0 8px; }
+.todo-due-track { position: relative; height: 24px; background: #f9f9f9; border-radius: 4px; min-width: 300px; }
+.todo-due-bar { position: absolute; top: 2px; height: 20px; border-radius: 4px; }
+.todo-due-overdue { background: #e53935; }
+.todo-due-urgent { background: #fb8c00; }
+.todo-due-soon { background: #fdd835; }
+.todo-due-ok { background: #66bb6a; }
+.todo-due-plenty { background: #42a5f5; }
+.todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
+</style><div class="todo-container"><div class="todo-list"><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Finish report</span><span class="todo-priority todo-priority-a">A</span><span class="todo-pill todo-ctx">@office</span><span class="todo-pill todo-prj">+ClientProject</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Email client</span><span class="todo-pill todo-ctx">@office</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Buy groceries</span><span class="todo-pill todo-ctx">@store</span><span class="todo-pill todo-prj">+Errands</span></div><div class="todo-card"><span class="todo-checkbox"></span><span class="todo-desc">Call Mom</span><span class="todo-priority todo-priority-b">B</span><span class="todo-pill todo-ctx">@phone</span><span class="todo-pill todo-prj">+Family</span><span class="todo-pill todo-meta">due:2024-02-01</span></div></div></div>
+</div>
+</div>
+<div id="38" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TableView</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <style>
 .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
@@ -565,15 +624,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 .todo-due-label { font-size: 12px; font-weight: 600; white-space: nowrap; }
 .todo-due-today { position: absolute; top: 0; bottom: 0; width: 2px; background: #333; z-index: 1; }
 </style><div class="todo-container">
-<table id="todo-table-c54e701ed1826b1" class="todo-table caption-top table table-sm table-striped small">
+<table id="todo-table-b70e90bb86d7110b" class="todo-table caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-c54e701ed1826b1(1)">Done <span id="todo-table-c54e701ed1826b1_arrow_1" class="todo-sort-arrow"></span></th>
-<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-c54e701ed1826b1(2)">Priority <span id="todo-table-c54e701ed1826b1_arrow_2" class="todo-sort-arrow"></span></th>
-<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-c54e701ed1826b1(3)">Description <span id="todo-table-c54e701ed1826b1_arrow_3" class="todo-sort-arrow"></span></th>
-<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-c54e701ed1826b1(4)">Tags <span id="todo-table-c54e701ed1826b1_arrow_4" class="todo-sort-arrow"></span></th>
-<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-c54e701ed1826b1(5)">Created <span id="todo-table-c54e701ed1826b1_arrow_5" class="todo-sort-arrow"></span></th>
-<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-c54e701ed1826b1(6)">Completed <span id="todo-table-c54e701ed1826b1_arrow_6" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-b70e90bb86d7110b(1)">Done <span id="todo-table-b70e90bb86d7110b_arrow_1" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-b70e90bb86d7110b(2)">Priority <span id="todo-table-b70e90bb86d7110b_arrow_2" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-b70e90bb86d7110b(3)">Description <span id="todo-table-b70e90bb86d7110b_arrow_3" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-b70e90bb86d7110b(4)">Tags <span id="todo-table-b70e90bb86d7110b_arrow_4" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-b70e90bb86d7110b(5)">Created <span id="todo-table-b70e90bb86d7110b_arrow_5" class="todo-sort-arrow"></span></th>
+<th data-quarto-table-cell-role="th" style="cursor: pointer; user-select: none" onclick="todoSort_todo-table-b70e90bb86d7110b(6)">Completed <span id="todo-table-b70e90bb86d7110b_arrow_6" class="todo-sort-arrow"></span></th>
 </tr>
 </thead>
 <tbody>
@@ -614,8 +673,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div><script>
 (function(){
   var sortCol=null, sortAsc=true;
-  window.todoSort_todo-table-c54e701ed1826b1=function(col){
-    var table=document.getElementById("todo-table-c54e701ed1826b1");
+  window.todoSort_todo-table-b70e90bb86d7110b=function(col){
+    var table=document.getElementById("todo-table-b70e90bb86d7110b");
     var tbody=table.querySelector("tbody");
     var rows=Array.from(tbody.querySelectorAll("tr"));
     if(sortCol===col){sortAsc=!sortAsc}else{sortCol=col;sortAsc=true}
@@ -626,15 +685,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     });
     rows.forEach(function(r){tbody.appendChild(r)});
     table.querySelectorAll(".todo-sort-arrow").forEach(function(el){el.textContent=""});
-    var arrow=document.getElementById("todo-table-c54e701ed1826b1_arrow_"+col);
+    var arrow=document.getElementById("todo-table-b70e90bb86d7110b_arrow_"+col);
     if(arrow)arrow.textContent=sortAsc?"\u25B2":"\u25BC";
   };
 })();
 </script>
 </div>
 </div>
-<div id="30" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">KanbanView</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="40" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">KanbanView</span>(mf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <style>
 .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
@@ -690,8 +749,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="group-by-section" class="level3">
 <h3 class="anchored" data-anchor-id="group-by-section">Group by section</h3>
 <p><code>KanbanView</code> supports <code>:section</code> as a <code>group_by</code> option, which groups todos by their markdown heading:</p>
-<div id="32" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">KanbanView</span>(mf, <span class="op">:</span>section)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="42" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">KanbanView</span>(mf, <span class="op">:</span>section)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <style>
 .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
@@ -745,8 +804,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The <code>html_view</code> convenience function also accepts <code>MarkdownTodoFile</code>:</p>
-<div id="34" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(mf; view<span class="op">=:</span>kanban, group_by<span class="op">=:</span>section)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="44" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">html_view</span>(mf; view<span class="op">=:</span>kanban, group_by<span class="op">=:</span>section)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <style>
 .todo-container { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1a1a1a; }
