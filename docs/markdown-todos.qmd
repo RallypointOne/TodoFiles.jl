@@ -65,6 +65,53 @@ When writing back to markdown, subtasks are indented with 4 spaces:
 print(write_markdown_todos(sections))
 ```
 
+## Notes (Blockquotes)
+
+Tasks can have associated notes, written as blockquote lines (`> ...`) beneath the task. Notes are stored in the `notes` field as a single string (lines joined by `\n`):
+
+```{julia}
+notes_text = """
+# Work
+- (A) Finish report @office +ClientProject due:2024-02-01
+    > Need to include Q4 numbers from the finance team.
+    > Ask Sarah for the updated spreadsheet.
+    - Get Q4 data from finance
+    - Write executive summary
+
+- Email client @office +ClientProject
+    > They prefer to be contacted after 2pm EST.
+"""
+
+sections = parse_markdown_todos(notes_text)
+sections[1].todos[1].notes
+```
+
+```{julia}
+sections[1].todos[2].notes
+```
+
+Subtasks can also have notes:
+
+```{julia}
+sub_notes_text = """
+# Work
+- Report
+    - Get data
+        > From the finance team.
+"""
+
+sub_sections = parse_markdown_todos(sub_notes_text)
+sub_sections[1].todos[1].subtasks[1].notes
+```
+
+Notes roundtrip through write and parse:
+
+```{julia}
+print(write_markdown_todos(sections))
+```
+
+Tasks without notes have an empty string and are written without any blockquote lines (fully backward-compatible).
+
 ## Parsing
 
 `parse_markdown_todos` returns a vector of `TodoSection`s, each with a heading, level, and todos:
