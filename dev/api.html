@@ -399,6 +399,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>projects::Vector{String}</code>: <code>+project</code> tags.</li>
 <li><code>metadata::Dict{String, String}</code>: <code>key:value</code> pairs.</li>
 <li><code>subtasks::Vector{Todo}</code>: Nested sub-tasks (used by <code>MarkdownTodoFile</code>; empty for flat Todo.txt).</li>
+<li><code>notes::String</code>: Blockquote notes associated with the task (used by <code>MarkdownTodoFile</code>; empty for flat Todo.txt).</li>
 </ul>
 <section id="examples-6" class="level3">
 <h3 class="anchored" data-anchor-id="examples-6">Examples</h3>
@@ -500,21 +501,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="parse_markdown_todos"><code>parse_markdown_todos</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_markdown_todos</span>(text<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> <span class="dt">Vector</span>{TodoSection}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Parse markdown text with <code>#</code>-headings as sections and <code>-</code> list items as <a href="@ref"><code>Todo</code></a> entries. Blank lines and non-todo content are skipped.</p>
-<section id="examples-9" class="level3">
-<h3 class="anchored" data-anchor-id="examples-9">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> sections <span class="op">=</span> <span class="fu">parse_markdown_todos</span>(<span class="st">"""</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="st">       # Work</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="st">       - (A) Finish report @office</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="st">       - Email client @office +ClientProject</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="st">       ## Personal</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="st">       - Buy groceries @store +Errands</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="st">       """</span>)</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fl">2</span><span class="op">-</span>element <span class="dt">Vector</span>{TodoSection}<span class="op">:</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a> <span class="fu">TodoSection</span>(<span class="st">"Work"</span>, <span class="fl">2</span> tasks)</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a> <span class="fu">TodoSection</span>(<span class="st">"Personal"</span>, <span class="fl">1</span> task)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
+<p>No documentation found for public binding <code>TodoFiles.parse_markdown_todos</code>.</p>
+<p><code>TodoFiles.parse_markdown_todos</code> is a <code>Function</code>.</p>
+<pre><code># 1 method for generic function "parse_markdown_todos" from TodoFiles:
+ [1] parse_markdown_todos(text::AbstractString)
+     @ ~/work/TodoFiles.jl/TodoFiles.jl/src/TodoFiles.jl:467</code></pre>
 </div>
 </div>
 <div class="card mb-3">
@@ -522,15 +513,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="parse_todo"><code>parse_todo</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_todo</span>(line<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> Todo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_todo</span>(line<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> Todo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Parse a single line of Todo.txt format into a <a href="@ref"><code>Todo</code></a>.</p>
-<section id="examples-10" class="level3">
-<h3 class="anchored" data-anchor-id="examples-10">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">parse_todo</span>(<span class="st">"(A) 2024-01-15 Call Mom @phone +Family"</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>Todo<span class="op">:</span> (A) <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Call Mom <span class="pp">@phone</span> <span class="op">+</span>Family</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">parse_todo</span>(<span class="st">"x 2024-01-16 2024-01-15 Call Mom @phone +Family"</span>)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>Todo<span class="op">:</span> x <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">16</span> <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Call Mom <span class="pp">@phone</span> <span class="op">+</span>Family</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-9" class="level3">
+<h3 class="anchored" data-anchor-id="examples-9">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">parse_todo</span>(<span class="st">"(A) 2024-01-15 Call Mom @phone +Family"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>Todo<span class="op">:</span> (A) <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Call Mom <span class="pp">@phone</span> <span class="op">+</span>Family</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">parse_todo</span>(<span class="st">"x 2024-01-16 2024-01-15 Call Mom @phone +Family"</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>Todo<span class="op">:</span> x <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">16</span> <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Call Mom <span class="pp">@phone</span> <span class="op">+</span>Family</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -539,20 +530,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="parse_todos"><code>parse_todos</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_todos</span>(text<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> <span class="dt">Vector</span>{Todo}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_todos</span>(text<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> <span class="dt">Vector</span>{Todo}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Parse multiple lines of Todo.txt format into a vector of <a href="@ref"><code>Todo</code></a> items. Blank lines are skipped.</p>
-<section id="examples-11" class="level3">
-<h3 class="anchored" data-anchor-id="examples-11">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> todos <span class="op">=</span> <span class="fu">parse_todos</span>(<span class="st">"""</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="st">       (A) Call Mom @phone</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="st">       (B) Buy groceries @store +Errands</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="st">       x 2024-01-15 Pay bills</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="st">       """</span>)</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fl">3</span><span class="op">-</span>element <span class="dt">Vector</span>{Todo}<span class="op">:</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a> Todo<span class="op">:</span> (A) Call Mom <span class="pp">@phone</span></span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a> Todo<span class="op">:</span> (B) Buy groceries <span class="pp">@store</span> <span class="op">+</span>Errands</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a> Todo<span class="op">:</span> x <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Pay bills</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-10" class="level3">
+<h3 class="anchored" data-anchor-id="examples-10">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> todos <span class="op">=</span> <span class="fu">parse_todos</span>(<span class="st">"""</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="st">       (A) Call Mom @phone</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="st">       (B) Buy groceries @store +Errands</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="st">       x 2024-01-15 Pay bills</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="st">       """</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="fl">3</span><span class="op">-</span>element <span class="dt">Vector</span>{Todo}<span class="op">:</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a> Todo<span class="op">:</span> (A) Call Mom <span class="pp">@phone</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a> Todo<span class="op">:</span> (B) Buy groceries <span class="pp">@store</span> <span class="op">+</span>Errands</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a> Todo<span class="op">:</span> x <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Pay bills</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -561,11 +552,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="read_markdown_todos"><code>read_markdown_todos</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_markdown_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> <span class="dt">Vector</span>{TodoSection}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_markdown_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> <span class="dt">Vector</span>{TodoSection}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Read a markdown file and parse it into <a href="@ref"><code>TodoSection</code></a>s.</p>
-<section id="examples-12" class="level3">
-<h3 class="anchored" data-anchor-id="examples-12">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> sections <span class="op">=</span> <span class="fu">read_markdown_todos</span>(<span class="st">"todos.md"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-11" class="level3">
+<h3 class="anchored" data-anchor-id="examples-11">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> sections <span class="op">=</span> <span class="fu">read_markdown_todos</span>(<span class="st">"todos.md"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -574,11 +565,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="read_todos"><code>read_todos</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> <span class="dt">Vector</span>{Todo}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>) <span class="op">-&gt;</span> <span class="dt">Vector</span>{Todo}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Read a Todo.txt file and return a vector of <a href="@ref"><code>Todo</code></a> items.</p>
-<section id="examples-13" class="level3">
-<h3 class="anchored" data-anchor-id="examples-13">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> todos <span class="op">=</span> <span class="fu">read_todos</span>(<span class="st">"todo.txt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-12" class="level3">
+<h3 class="anchored" data-anchor-id="examples-12">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> todos <span class="op">=</span> <span class="fu">read_todos</span>(<span class="st">"todo.txt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -587,9 +578,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="write_markdown_todos"><code>write_markdown_todos</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_markdown_todos</span>(sections<span class="op">::</span><span class="dt">Vector{TodoSection}</span>) <span class="op">-&gt;</span> <span class="dt">String</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_markdown_todos</span>(sections<span class="op">::</span><span class="dt">Vector{TodoSection}</span>) <span class="op">-&gt;</span> <span class="dt">String</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Serialize <a href="@ref"><code>TodoSection</code></a>s to a markdown string with <code>#</code>-headings and <code>-</code> list items.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_markdown_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>, sections<span class="op">::</span><span class="dt">Vector{TodoSection}</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_markdown_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>, sections<span class="op">::</span><span class="dt">Vector{TodoSection}</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Write <a href="@ref"><code>TodoSection</code></a>s to a markdown file.</p>
 </div>
 </div>
@@ -598,15 +589,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="write_todo"><code>write_todo</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todo</span>(t<span class="op">::</span><span class="dt">Todo</span>) <span class="op">-&gt;</span> <span class="dt">String</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todo</span>(t<span class="op">::</span><span class="dt">Todo</span>) <span class="op">-&gt;</span> <span class="dt">String</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Serialize a <a href="@ref"><code>Todo</code></a> back to a single Todo.txt formatted line.</p>
-<section id="examples-14" class="level3">
-<h3 class="anchored" data-anchor-id="examples-14">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> t <span class="op">=</span> <span class="fu">Todo</span>(<span class="st">"Call Mom @phone +Family"</span>; priority<span class="op">=</span><span class="ch">'A'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">15</span>))</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>Todo<span class="op">:</span> (A) <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Call Mom <span class="pp">@phone</span> <span class="op">+</span>Family</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">write_todo</span>(t)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="st">"(A) 2024-01-15 Call Mom @phone +Family"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-13" class="level3">
+<h3 class="anchored" data-anchor-id="examples-13">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> t <span class="op">=</span> <span class="fu">Todo</span>(<span class="st">"Call Mom @phone +Family"</span>; priority<span class="op">=</span><span class="ch">'A'</span>, creation_date<span class="op">=</span><span class="fu">Date</span>(<span class="fl">2024</span>, <span class="fl">1</span>, <span class="fl">15</span>))</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>Todo<span class="op">:</span> (A) <span class="fl">2024</span><span class="op">-</span><span class="fl">01</span><span class="op">-</span><span class="fl">15</span> Call Mom <span class="pp">@phone</span> <span class="op">+</span>Family</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">write_todo</span>(t)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="st">"(A) 2024-01-15 Call Mom @phone +Family"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </div>
 </div>
@@ -615,16 +606,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="write_todos"><code>write_todos</code></h4>
 </section>
 <div class="card-body">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(todos<span class="op">::</span><span class="dt">Vector{Todo}</span>) <span class="op">-&gt;</span> <span class="dt">String</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(todos<span class="op">::</span><span class="dt">Vector{Todo}</span>) <span class="op">-&gt;</span> <span class="dt">String</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Serialize a vector of <a href="@ref"><code>Todo</code></a> items into a Todo.txt formatted string.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>, todos<span class="op">::</span><span class="dt">Vector{Todo}</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(filepath<span class="op">::</span><span class="dt">AbstractString</span>, todos<span class="op">::</span><span class="dt">Vector{Todo}</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Write a vector of <a href="@ref"><code>Todo</code></a> items to a file in Todo.txt format.</p>
-<section id="examples-15" class="level3">
-<h3 class="anchored" data-anchor-id="examples-15">Examples</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">write_todos</span>(<span class="st">"todo.txt"</span>, todos)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(tf<span class="op">::</span><span class="dt">TodoFile</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="examples-14" class="level3">
+<h3 class="anchored" data-anchor-id="examples-14">Examples</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">write_todos</span>(<span class="st">"todo.txt"</span>, todos)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(tf<span class="op">::</span><span class="dt">TodoFile</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Write a <a href="@ref"><code>TodoFile</code></a> back to its filepath.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(mf<span class="op">::</span><span class="dt">MarkdownTodoFile</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_todos</span>(mf<span class="op">::</span><span class="dt">MarkdownTodoFile</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Write a <a href="@ref"><code>MarkdownTodoFile</code></a> back to its filepath.</p>
 </section>
 </div>
