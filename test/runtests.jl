@@ -778,6 +778,88 @@ using Test
             end
         end
 
+        @testset "parse blockquote notes on top-level task" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                > Need to include Q4 numbers.
+            - Email client
+            """
+            sections = parse_markdown_todos(text)
+            @test sections[1].todos[1].notes == "Need to include Q4 numbers."
+            @test sections[1].todos[2].notes == ""
+        end
+
+        @testset "parse multiline notes" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                > Need to include Q4 numbers.
+                > Ask Sarah for the spreadsheet.
+            """
+            sections = parse_markdown_todos(text)
+            @test sections[1].todos[1].notes == "Need to include Q4 numbers.\nAsk Sarah for the spreadsheet."
+        end
+
+        @testset "parse notes on subtasks" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                > Parent note.
+                - Get Q4 data
+                    > Subtask note line 1.
+                    > Subtask note line 2.
+                - Write summary
+            """
+            sections = parse_markdown_todos(text)
+            parent = sections[1].todos[1]
+            @test parent.notes == "Parent note."
+            @test parent.subtasks[1].notes == "Subtask note line 1.\nSubtask note line 2."
+            @test parent.subtasks[2].notes == ""
+        end
+
+        @testset "write notes as blockquotes" begin
+            sections = [
+                TodoSection("Work", 1, [
+                    Todo("Task A"; priority='A', notes="Note line 1\nNote line 2",
+                         subtasks=[Todo("Sub1"; notes="Sub note")])
+                ])
+            ]
+            result = write_markdown_todos(sections)
+            @test contains(result, "    > Note line 1")
+            @test contains(result, "    > Note line 2")
+            @test contains(result, "        > Sub note")
+        end
+
+        @testset "notes roundtrip" begin
+            text = """
+            # Work
+            - (A) Finish report @office
+                > Need Q4 numbers.
+                > Ask Sarah.
+                - Get data
+                    > From finance team.
+            - Email client
+            """
+            sections = parse_markdown_todos(text)
+            written = write_markdown_todos(sections)
+            reparsed = parse_markdown_todos(written)
+            @test reparsed[1].todos[1].notes == "Need Q4 numbers.\nAsk Sarah."
+            @test reparsed[1].todos[1].subtasks[1].notes == "From finance team."
+            @test reparsed[1].todos[2].notes == ""
+        end
+
+        @testset "backward compat: tasks without notes" begin
+            text = """
+            # Work
+            - Task A
+            - Task B
+            """
+            sections = parse_markdown_todos(text)
+            @test sections[1].todos[1].notes == ""
+            @test sections[1].todos[2].notes == ""
+        end
+
         @testset "show counts subtasks" begin
             text = """
             # Work

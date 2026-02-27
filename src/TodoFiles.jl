@@ -51,6 +51,7 @@ A single task in the [Todo.txt](https://github.com/todotxt/todo.txt) format.
 - `projects::Vector{String}`: `+project` tags.
 - `metadata::Dict{String, String}`: `key:value` pairs.
 - `subtasks::Vector{Todo}`: Nested sub-tasks (used by `MarkdownTodoFile`; empty for flat Todo.txt).
+- `notes::String`: Blockquote notes associated with the task (used by `MarkdownTodoFile`; empty for flat Todo.txt).
 
 ### Examples
 ```julia
@@ -81,6 +82,7 @@ struct Todo
     projects::Vector{String}
     metadata::Dict{String, String}
     subtasks::Vector{Todo}
+    notes::String
 end
 
 function Todo(description::String;
@@ -91,13 +93,14 @@ function Todo(description::String;
               contexts::Vector{String}=String[],
               projects::Vector{String}=String[],
               metadata::Dict{String, String}=Dict{String, String}(),
-              subtasks::Vector{Todo}=Todo[])
+              subtasks::Vector{Todo}=Todo[],
+              notes::String="")
     desc, parsed_ctx, parsed_prj, parsed_meta = _extract_tags(description)
     Todo(completed, priority, completion_date, creation_date, desc,
          isempty(contexts) ? parsed_ctx : contexts,
          isempty(projects) ? parsed_prj : projects,
          isempty(metadata) ? parsed_meta : metadata,
-         subtasks)
+         subtasks, notes)
 end
 
 function Base.:(==)(a::Todo, b::Todo)
@@ -109,7 +112,8 @@ function Base.:(==)(a::Todo, b::Todo)
     a.contexts == b.contexts &&
     a.projects == b.projects &&
     a.metadata == b.metadata &&
-    a.subtasks == b.subtasks
+    a.subtasks == b.subtasks &&
+    a.notes == b.notes
 end
 
 function Base.show(io::IO, t::Todo)
@@ -178,7 +182,7 @@ function parse_todo(line::AbstractString)
     desc_str = strip(s)
     desc, ctx, prj, meta = _extract_tags(desc_str)
 
-    Todo(completed, priority, completion_date, creation_date, String(desc), ctx, prj, meta, Todo[])
+    Todo(completed, priority, completion_date, creation_date, String(desc), ctx, prj, meta, Todo[], "")
 end
 
 """
@@ -455,11 +459,17 @@ julia> sections = parse_markdown_todos(\"\"\"
  TodoSection("Personal", 1 task)
 ```
 """
+function _set_notes(t::Todo, notes::AbstractString)
+    Todo(t.completed, t.priority, t.completion_date, t.creation_date, t.description,
+         t.contexts, t.projects, t.metadata, t.subtasks, String(notes))
+end
+
 function parse_markdown_todos(text::AbstractString)
     sections = TodoSection[]
     current_heading = ""
     current_level = 0
     current_todos = Todo[]
+    last_was_subtask = false
 
     for line in split(text, r"\r?\n")
         stripped = strip(line)
@@ -472,14 +482,29 @@ function parse_markdown_todos(text::AbstractString)
             current_level = length(m.captures[1])
             current_heading = strip(String(m.captures[2]))
             current_todos = Todo[]
+            last_was_subtask = false
         elseif startswith(stripped, "- ")
             indent = length(line) - length(lstrip(line))
             todo_text = strip(stripped[3:end])
             isempty(todo_text) && continue
             if indent > 0 && !isempty(current_todos)
                 push!(current_todos[end].subtasks, parse_todo(todo_text))
+                last_was_subtask = true
             else
                 push!(current_todos, parse_todo(todo_text))
+                last_was_subtask = false
+            end
+        elseif startswith(stripped, "> ") || stripped == ">"
+            !isempty(current_todos) || continue
+            note_line = stripped == ">" ? "" : stripped[3:end]
+            if last_was_subtask
+                st = current_todos[end].subtasks[end]
+                new_notes = isempty(st.notes) ? note_line : st.notes * "\n" * note_line
+                current_todos[end].subtasks[end] = _set_notes(st, new_notes)
+            else
+                t = current_todos[end]
+                new_notes = isempty(t.notes) ? note_line : t.notes * "\n" * note_line
+                current_todos[end] = _set_notes(t, new_notes)
             end
         end
     end
@@ -519,8 +544,18 @@ function write_markdown_todos(sections::Vector{TodoSection})
         end
         for t in s.todos
             push!(section_lines, "- " * write_todo(t))
+            if !isempty(t.notes)
+                for note_line in split(t.notes, "\n")
+                    push!(section_lines, "    > " * note_line)
+                end
+            end
             for st in t.subtasks
                 push!(section_lines, "    - " * write_todo(st))
+                if !isempty(st.notes)
+                    for note_line in split(st.notes, "\n")
+                        push!(section_lines, "        > " * note_line)
+                    end
+                end
             end
         end
         !isempty(section_lines) && push!(parts, join(section_lines, "\n"))
@@ -557,7 +592,7 @@ Tables.rowaccess(::Type{TodoFile}) = true
 Tables.rows(tf::TodoFile) = tf.todos
 Tables.schema(::TodoFile) = Tables.Schema(
     fieldnames(Todo),
-    (Bool, Union{Char, Nothing}, Union{Date, Nothing}, Union{Date, Nothing}, String, Vector{String}, Vector{String}, Dict{String, String}, Vector{Todo})
+    (Bool, Union{Char, Nothing}, Union{Date, Nothing}, Union{Date, Nothing}, String, Vector{String}, Vector{String}, Dict{String, String}, Vector{Todo}, String)
 )
 
 Tables.columnnames(::Todo) = fieldnames(Todo)
@@ -1092,11 +1127,11 @@ function _with_section_metadata(mf::MarkdownTodoFile)
         for t in s.todos
             meta = copy(t.metadata)
             meta["_section"] = section_name
-            push!(todos, Todo(t.completed, t.priority, t.completion_date, t.creation_date, t.description, copy(t.contexts), copy(t.projects), meta, Todo[]))
+            push!(todos, Todo(t.completed, t.priority, t.completion_date, t.creation_date, t.description, copy(t.contexts), copy(t.projects), meta, Todo[], t.notes))
             for st in t.subtasks
                 smeta = copy(st.metadata)
                 smeta["_section"] = section_name
-                push!(todos, Todo(st.completed, st.priority, st.completion_date, st.creation_date, st.description, copy(st.contexts), copy(st.projects), smeta, Todo[]))
+                push!(todos, Todo(st.completed, st.priority, st.completion_date, st.creation_date, st.description, copy(st.contexts), copy(st.projects), smeta, Todo[], st.notes))
             end
         end
     end
